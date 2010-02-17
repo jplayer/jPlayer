@@ -1,0 +1,14 @@
+jPlayer : the CSS styleable jQuery audio player plugin
+
+http://www.happyworm.com/jquery/jplayer
+
+What is jPlayer?
+
+jPlayer is a jQuery plugin that allows you to:
+
+ * play and control audio files in your webpage
+ * create and style an audio player using just HTML and CSS
+ * add sound effects to your jQuery projects
+ * stream faster using HTML5 and alternative ogg format support
+
+All of this with HTML5 <audio> support for compliant browsers that allow mp3 or ogg format, while supporting other browsers using mp3 format with no visible Flash.
