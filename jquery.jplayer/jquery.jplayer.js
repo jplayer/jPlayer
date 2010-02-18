@@ -1,501 +1,625 @@
 /*
-Copyright (c) 2009 Happyworm Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-
-Author: Mark J Panaghiston
-Version: 0.2.5.beta
-Documentation: www.happyworm.com/jquery/jplayer
-*/
+ * jPlayer Plugin for jQuery JavaScript Library
+ * http://www.happyworm.com/jquery/jplayer
+ *
+ * Copyright (c) 2009 - 2010 Happyworm Ltd
+ * Dual licensed under the MIT and GPL licenses.
+ *  - http://www.opensource.org/licenses/mit-license.php
+ *  - http://www.gnu.org/copyleft/gpl.html
+ *
+ * Author: Mark J Panaghiston
+ * Version: 1.0.0
+ * Date: 18th February 2010
+ */
 
 (function($) {
-	$.jPlayerCount = 0;
+
+	// Adapted from ui.core.js (1.7.2)
+	function getter(plugin, method, args) {
+		function getMethods(type) {
+			var methods = $[plugin][type] || [];
+			return (typeof methods == 'string' ? methods.split(/,?\s+/) : methods);
+		}
+		var methods = getMethods('getter');
+		return ($.inArray(method, methods) != -1);
+	}
+
+	// Adapted from ui.core.js (1.7.2) $.widget() "create plugin method"
+	// $.data() info at http://docs.jquery.com/Internals/jQuery.data
+	$.fn.jPlayer = function(options) {
+		
+		var name = "jPlayer";
+		var isMethodCall = (typeof options == 'string');
+		var args = Array.prototype.slice.call(arguments, 1);
+		
+		// prevent calls to internal methods
+		if (isMethodCall && options.substring(0, 1) == '_') {
+			return this;
+		}
+
+		// handle getter methods
+		if (isMethodCall && getter(name, options, args)) {
+			var instance = $.data(this[0], name);
+			return (instance ? instance[options].apply(instance, args) : undefined);
+		}
+
+		// handle initialization and non-getter methods
+		return this.each(function() {
+			var instance = $.data(this, name);
+
+			// constructor
+			if(!instance && !isMethodCall) {
+				$.data(this, name, new $[name](this, options))._init();
+			}
+
+			// method call
+			(instance && isMethodCall && $.isFunction(instance[options]) &&
+				instance[options].apply(instance, args));
+		});
+	};
 	
-	var methods = {
-		jPlayer: function(options) {
-			$.jPlayerCount++;
+	$.jPlayer = function(element, options) {
+		this.options = $.extend({}, options);
+		this.element = $(element);
+	};
+	
+	$.jPlayer.getter = "jPlayerOnProgressChange jPlayerOnSoundComplete jPlayerVolume jPlayerReady getData jPlayerController";
+	
+	$.jPlayer.defaults = {
+		cssPrefix: "jqjp",
+		swfPath: "js",
+		volume: 80,
+		oggSupport: false,
+		nativeSupport: true,
+		customCssIds: false,
+		graphicsFix: true,
+		errorAlerts: false,
+		warningAlerts: false,
+		position: "absolute",
+		width: "0",
+		height: "0",
+		top: "0",
+		left: "0",
+		quality: "high",
+		bgcolor: "#ffffff"
+	};
+
+	$.jPlayer._config = {
+		jPlayerControllerId: undefined,
+		isWaitingForPlay:false
+	};
+
+	$.jPlayer._diag = {
+		isPlaying: false,
+		src: "",
+		loadPercent: 0,
+		playedPercentRelative: 0,
+		playedPercentAbsolute: 0,
+		playedTime: 0,
+		totalTime: 0
+	};
+
+	$.jPlayer._cssId = {
+		play: "jplayer_play",
+		pause: "jplayer_pause",
+		stop: "jplayer_stop",
+		loadBar: "jplayer_load_bar",
+		playBar: "jplayer_play_bar",
+		volumeMin: "jplayer_volume_min",
+		volumeMax: "jplayer_volume_max",
+		volumeBar: "jplayer_volume_bar",
+		volumeBarValue: "jplayer_volume_bar_value"
+	};
+	
+	$.jPlayer.count = 0;
+
+	$.jPlayer.timeFormat = {
+		showHour: false,
+		showMin: true,
+		showSec: true,
+		padHour: false,
+		padMin: true,
+		padSec: true,
+		sepHour: ":",
+		sepMin: ":",
+		sepSec: ""
+	};
+	
+	$.jPlayer.convertTime = function(mSec) {
+		var myTime = new Date(mSec);
+		var hour = myTime.getUTCHours();
+		var min = myTime.getUTCMinutes();
+		var sec = myTime.getUTCSeconds();
+		var strHour = ($.jPlayer.timeFormat.padHour && hour < 10) ? "0" + hour : hour;
+		var strMin = ($.jPlayer.timeFormat.padMin && min < 10) ? "0" + min : min;
+		var strSec = ($.jPlayer.timeFormat.padSec && sec < 10) ? "0" + sec : sec;
+		return (($.jPlayer.timeFormat.showHour) ? strHour + $.jPlayer.timeFormat.sepHour : "") + (($.jPlayer.timeFormat.showMin) ? strMin + $.jPlayer.timeFormat.sepMin : "") + (($.jPlayer.timeFormat.showSec) ? strSec + $.jPlayer.timeFormat.sepSec : "");
+	};
+	
+	$.jPlayer.prototype = {
+		_init: function() {
+			var self = this;
+			var element = this.element;
 			
-			var config = {
-				ready: null,
-				cssPrefix: "jqjp",
-				swfPath: "js",
-				volume: 80,
-				oggSupport: false,
-				position: "absolute",
-				width: 0,
-				height: 0,
-				top: 0,
-				left: 0,
-				quality: "high",
-				bgcolor: "#ffffff"
-			};
-			$.extend(config, options);
+			this.config = $.extend({}, $.jPlayer.defaults, this.options, $.jPlayer._config);
+			this.config.diag = $.extend({}, $.jPlayer._diag);
+			this.config.cssId = {};
+			this.config.cssSelector = {};
+			this.config.cssDisplay = {};
+			this.config.clickHandler = {};
+			
+			this.element.data("jPlayer.config", this.config);
 
-			var configWithoutOptions = {
-				id: $(this).attr("id"),
-				swf: config.swfPath + ((config.swfPath != "") ? "/" : "") + "Jplayer.swf",
-				fid: config.cssPrefix + "_flash_" + $.jPlayerCount,
-				aid: config.cssPrefix + "_audio_" + $.jPlayerCount,
-				hid: config.cssPrefix + "_force_" + $.jPlayerCount,
-				i: $.jPlayerCount
-			};
-			$.extend(config, configWithoutOptions);
+			$.extend(this.config, {
+				id: this.element.attr("id"),
+				swf: this.config.swfPath + ((this.config.swfPath != "" && this.config.swfPath.slice(-1) != "/") ? "/" : "") + "Jplayer.swf",
+				fid: this.config.cssPrefix + "_flash_" + $.jPlayer.count,
+				aid: this.config.cssPrefix + "_audio_" + $.jPlayer.count,
+				hid: this.config.cssPrefix + "_force_" + $.jPlayer.count,
+				i: $.jPlayer.count
+			});
 
-			$.fn["jPlayerReady" + config.i] = config.ready;
+			$.jPlayer.count++;
 
-			$(this).prepend('<audio id="' + config.aid + '"></audio>'); // Begin check for HTML5 <audio>
-			var audioArray = $("#"+config.aid).get();
+			if(this.config.ready != undefined) {
+				if($.isFunction(this.config.ready)) {
+					this.jPlayerReady = this.config.ready;
+				} else {
+					this._warning("Constructor's ready option is not a function.");
+				}
+			}
+			
+			this.element.prepend('<audio id="' + this.config.aid + '"></audio>'); // Begin check for HTML5 <audio>
+			$.extend(this.config, {
+				aSel: $("#" + this.config.aid)
+			});			
+			var audioArray = this.config.aSel.get();
 
-			var configForAudioFormat = {
-				canPlayMP3: Boolean((audioArray[0].canPlayType) ? (("" != audioArray[0].canPlayType("audio/mpeg")) && ("no" != audioArray[0].canPlayType("audio/mpeg"))) : false),
-				canPlayOGG: Boolean((audioArray[0].canPlayType) ? (("" != audioArray[0].canPlayType("audio/ogg")) && ("no" != audioArray[0].canPlayType("audio/ogg"))) : false),
+			$.extend(this.config, {
+				canPlayMP3: !!((audioArray[0].canPlayType) ? (("" != audioArray[0].canPlayType("audio/mpeg")) && ("no" != audioArray[0].canPlayType("audio/mpeg"))) : false),
+				canPlayOGG: !!((audioArray[0].canPlayType) ? (("" != audioArray[0].canPlayType("audio/ogg")) && ("no" != audioArray[0].canPlayType("audio/ogg"))) : false),
 				audio: audioArray[0]
-			};
-			$.extend(config, configForAudioFormat);
+			});
 
-			var configForHtmlAudio = {
-				html5: Boolean((config.oggSupport) ? ((config.canPlayOGG) ? true : config.canPlayMP3) : config.canPlayMP3)
-			};
-			$.extend(config, configForHtmlAudio);
+			$.extend(this.config, {
+				html5: !!((this.config.oggSupport) ? ((this.config.canPlayOGG) ? true : this.config.canPlayMP3) : this.config.canPlayMP3)
+			});
 
-			$(this).data("jPlayer.config", config);
+			$.extend(this.config, {
+				usingFlash: !(this.config.html5 && this.config.nativeSupport),
+				usingMP3: !(this.config.oggSupport && this.config.canPlayOGG && this.config.nativeSupport)
+			});
 
 			var events = {
 				setButtons: function(e, playing) {
-					var playId = $(this).data("jPlayer.cssId.play");
-					var pauseId = $(this).data("jPlayer.cssId.pause");
-					var prefix = $(this).data("jPlayer.config").cssPrefix;
-
-					if(playId != null && pauseId != null) {
+					self.config.diag.isPlaying = playing;
+					if(self.config.cssId.play != undefined && self.config.cssId.pause != undefined) {
 						if(playing) {
-							var style = $(this).data("jPlayer.cssDisplay.pause");
-							$("#"+playId).css("display", "none");
-							$("#"+pauseId).css("display", style);
+							self.config.cssSelector.play.css("display", "none");
+							self.config.cssSelector.pause.css("display", self.config.cssDisplay.pause);
 						} else {
-							var style = $(this).data("jPlayer.cssDisplay.play");
-							$("#"+playId).css("display", style);
-							$("#"+pauseId).css("display", "none");
+							self.config.cssSelector.play.css("display", self.config.cssDisplay.play);
+							self.config.cssSelector.pause.css("display", "none");
 						}
 					}
+					if(playing) {
+						self.config.isWaitingForPlay = false;
+					}
+					
 				}
 			};
 
 			var eventsForFlash = {
-				setFile: function(e, f) {
-					var fid = $(this).data("jPlayer.config").fid;
-					var m = $(this).data("jPlayer.getMovie")(fid);
-					m.fl_setFile_mp3(f.mp3);
-					$(this).trigger("jPlayer.setButtons", false);
+				setFile: function(e, mp3, ogg) {
+					try {
+						self._getMovie().fl_setFile_mp3(mp3);
+						self.config.diag.src = mp3;
+						self.config.isWaitingForPlay = true;
+						element.trigger("jPlayer.setButtons", false);
+					} catch(err) { self._flashError(err); }
 				},
 				play: function(e) {
-					var fid = $(this).data("jPlayer.config").fid;
-					var m = $(this).data("jPlayer.getMovie")(fid);
-					var r = m.fl_play_mp3();
-					if(r) {
-						$(this).trigger("jPlayer.setButtons", true);
-					}
+					try {
+						if(self._getMovie().fl_play_mp3()) {
+							element.trigger("jPlayer.setButtons", true);
+						}
+					} catch(err) { self._flashError(err); }
 				},
 				pause: function(e) {
-					var fid = $(this).data("jPlayer.config").fid;
-					var m = $(this).data("jPlayer.getMovie")(fid);
-					var r = m.fl_pause_mp3();
-					if(r) {
-						$(this).trigger("jPlayer.setButtons", false);
-					}
+					try {
+						if(self._getMovie().fl_pause_mp3()) {
+							element.trigger("jPlayer.setButtons", false);
+						}
+					} catch(err) { self._flashError(err); }
 				},
 				stop: function(e) {
-					var fid = $(this).data("jPlayer.config").fid;
-					var m = $(this).data("jPlayer.getMovie")(fid);
-					var r = m.fl_stop_mp3();
-					if(r) {
-						$(this).trigger("jPlayer.setButtons", false);
-					}
+					try {
+						if(self._getMovie().fl_stop_mp3()) {
+							element.trigger("jPlayer.setButtons", false);
+						}
+					} catch(err) { self._flashError(err); }
 				},
 				playHead: function(e, p) {
-					var fid = $(this).data("jPlayer.config").fid;
-					var m = $(this).data("jPlayer.getMovie")(fid);
-					var r = m.fl_play_head_mp3(p);
-					if(r) {
-						$(this).trigger("jPlayer.setButtons", true);
-					}
+					try {
+						if(self._getMovie().fl_play_head_mp3(p)) {
+							element.trigger("jPlayer.setButtons", true);
+						}
+					} catch(err) { self._flashError(err); }
 				},
 				playHeadTime: function(e, t) {
-					var fid = $(this).data("jPlayer.config").fid;
-					var m = $(this).data("jPlayer.getMovie")(fid);
-					var r = m.fl_play_head_time_mp3(t);
-					if(r) {
-						$(this).trigger("jPlayer.setButtons", true);
-					}
+					try {
+						if(self._getMovie().fl_play_head_time_mp3(t)) {
+							element.trigger("jPlayer.setButtons", true);
+						}
+					} catch(err) { self._flashError(err); }
 				},
 				volume: function(e, v) {
-					$(this).data("jPlayer.config").volume = v;
-					var fid = $(this).data("jPlayer.config").fid;
-					var m = $(this).data("jPlayer.getMovie")(fid);
-					m.fl_volume_mp3(v);
+					self.config.volume = v;
+					try {
+						self._getMovie().fl_volume_mp3(v);
+					} catch(err) { self._flashError(err); }
 				}
 			};
 
 			var eventsForHtmlAudio = {
-				setFile: function(e, f) {
-					$("#"+$(this).data("jPlayer.config").aid).remove();
-					$(this).prepend('<audio id="' + $(this).data("jPlayer.config").aid + '"></audio>');
-					var audioArray = $("#"+$(this).data("jPlayer.config").aid).get();
-					$(this).data("jPlayer.config").audio = audioArray[0];
-					$(this).data("jPlayer.config").audio.volume = $(this).data("jPlayer.config").volume/100;
-
-					if($(this).data("jPlayer.config").oggSupport && $(this).data("jPlayer.config").canPlayOGG) {
-						$(this).data("jPlayer.config").audio.src = f.ogg;
+				setFile: function(e, mp3, ogg) {
+					self.config.aSel.remove();
+					element.prepend('<audio id="' + self.config.aid + '"></audio>');
+					self.config.aSel = $("#"+self.config.aid)
+					var audioArray = self.config.aSel.get();
+					self.config.audio = audioArray[0];
+					self.config.audio.volume = self.config.volume/100;
+					if(self.config.usingMP3) {
+						self.config.diag.src = mp3;
 					} else { 
-						$(this).data("jPlayer.config").audio.src = f.mp3;
+						self.config.diag.src = ogg;
 					}
-					$(this).trigger("jPlayer.setButtons", false);
+					self.config.isWaitingForPlay = true;
+					element.trigger("jPlayer.setButtons", false);
+					self.jPlayerOnProgressChange(0, 0, 0, 0, 0);
 				},
 				play: function(e) {
-					$(this).data("jPlayer.config").audio.play();
-					$(this).trigger("jPlayer.setButtons", true);
-
-					clearInterval($(this).data("jPlayer.interval.jPlayerController"));
-					$(this).data("jPlayer.interval.jPlayerController", window.setInterval($(this).jPlayerController, 50, $(this), false));
+					if(self.config.isWaitingForPlay) {
+						self.config.audio.src = self.config.diag.src;
+					}
+					self.config.audio.play();
+					element.trigger("jPlayer.setButtons", true);
+					clearInterval(self.config.jPlayerControllerId);
+					self.config.jPlayerControllerId = window.setInterval( function() {
+						self.jPlayerController(false);
+					}, 100);
 				},
 				pause: function(e) {
-					$(this).data("jPlayer.config").audio.pause();
-					$(this).trigger("jPlayer.setButtons", false);
-					clearInterval($(this).data("jPlayer.interval.jPlayerController"));
+					self.config.audio.pause();
+					element.trigger("jPlayer.setButtons", false);
 				},
 				stop: function(e) {
-					$(this).data("jPlayer.config").audio.currentTime = 0;
-					$(this).trigger("jPlayer.pause");
-					$(this).jPlayerController($(this), true); // With override true
+					try {
+						self.config.audio.currentTime = 0;
+						element.trigger("jPlayer.pause");
+						clearInterval(self.config.jPlayerControllerId);
+						self.config.jPlayerControllerId = window.setInterval( function() {
+							self.jPlayerController(true); // With override true
+						}, 100);
+						
+					} catch(err) {
+						window.setTimeout(function() {
+							self.stop();
+						}, 100);
+					}
 				},
 				playHead: function(e, p) {
-					$(this).data("jPlayer.config").audio.currentTime = ($(this).data("jPlayer.config").audio.buffered) ? p * $(this).data("jPlayer.config").audio.buffered.end() / 100 : p * $(this).data("jPlayer.config").audio.duration / 100;
-					$(this).trigger("jPlayer.play");
+					try {
+						self.config.audio.currentTime = (self.config.audio.buffered) ? p * self.config.audio.buffered.end() / 100 : p * self.config.audio.duration / 100;
+						element.trigger("jPlayer.play");
+					} catch(err) {
+						window.setTimeout(function() {
+							self.playHead(p);
+						}, 100);
+					}
 				},
 				playHeadTime: function(e, t) {
-					$(this).data("jPlayer.config").audio.currentTime = t/1000;
-					$(this).trigger("jPlayer.play");
+					try {
+						self.config.audio.currentTime = t/1000;
+						element.trigger("jPlayer.play");
+					} catch(err) {
+						window.setTimeout(function() {
+							self.playHeadTime(t);
+						}, 100);
+					}
 				},
 				volume: function(e, v) {
-					$(this).data("jPlayer.config").volume = v;
-					$(this).data("jPlayer.config").audio.volume = v/100;
-					$(this).jPlayerVolume(v);
+					self.config.volume = v;
+					self.config.audio.volume = v/100;
+					self.jPlayerVolume(v);
 				}
 			};
 
-			if( config.html5 ) {
-				$.extend(events, eventsForHtmlAudio);
-			} else {
+			if(this.config.usingFlash) {
 				$.extend(events, eventsForFlash);
+			} else {
+				$.extend(events, eventsForHtmlAudio);
 			}
 			
 			for(var event in events) {
 				var e = "jPlayer." + event;
-				$(this).unbind(e);
-				$(this).bind(e, events[event]);
+				this.element.unbind(e);
+				this.element.bind(e, events[event]);
 			}
 
-			var getMovie = function(fid) {
-				return document[fid];
-			};
-			$(this).data("jPlayer.getMovie", getMovie);
-
-			// Function checkForFlash adapted from FlashReplace by Robert Nyman
-			// http://code.google.com/p/flashreplace/
-			var checkForFlash = function (version){
-				var flashIsInstalled = false;
-				var flash;
-				if(window.ActiveXObject){
-					try{
-						flash = new ActiveXObject(("ShockwaveFlash.ShockwaveFlash." + version));
-						flashIsInstalled = true;
-					}
-					catch(e){
-						// Throws an error if the version isn't available			
-					}
-				}
-				else if(navigator.plugins && navigator.mimeTypes.length > 0){
-					flash = navigator.plugins["Shockwave Flash"];
-					if(flash){
-						var flashVersion = navigator.plugins["Shockwave Flash"].description.replace(/.*\s(\d+\.\d+).*/, "$1");
-						if(flashVersion >= version){
-							flashIsInstalled = true;
-						}
-					}
-				}
-				return flashIsInstalled;
-			};
-
-			if( !config.html5 ) {
-				if(checkForFlash(8)) {
+			if(this.config.usingFlash) {
+				if(this._checkForFlash(8)) {
 					if($.browser.msie) {
-						var html_obj = '<object id="' + config.fid + '"';
+						var html_obj = '<object id="' + this.config.fid + '"';
 						html_obj += ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"';
 						html_obj += ' codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab"';
 						html_obj += ' type="application/x-shockwave-flash"';
-						html_obj += ' width="' + config.width + '" height="' + config.height + '">';
+						html_obj += ' width="' + this.config.width + '" height="' + this.config.height + '">';
 						html_obj += '</object>';
 			
 						var obj_param = new Array();
-						obj_param[0] = '<param name="movie" value="' + config.swf + '" />';
+						obj_param[0] = '<param name="movie" value="' + this.config.swf + '" />';
 						obj_param[1] = '<param name="quality" value="high" />';
-						obj_param[2] = '<param name="FlashVars" value="id=' + escape(config.id) + '&fid=' + escape(config.fid) + '&vol=' + config.volume + '" />';
+						obj_param[2] = '<param name="FlashVars" value="id=' + escape(this.config.id) + '&fid=' + escape(this.config.fid) + '&vol=' + this.config.volume + '" />';
 						obj_param[3] = '<param name="allowScriptAccess" value="always" />';
-						obj_param[4] = '<param name="bgcolor" value="' + config.bgcolor + '" />';
+						obj_param[4] = '<param name="bgcolor" value="' + this.config.bgcolor + '" />';
 				
 						var ie_dom = document.createElement(html_obj);
 						for(var i=0; i < obj_param.length; i++) {
 							ie_dom.appendChild(document.createElement(obj_param[i]));
 						}
-						$(this).html(ie_dom);
+						this.element.html(ie_dom);
 					} else {
-						var html_embed = '<embed name="' + config.fid + '" id="' + config.fid + '" src="' + config.swf + '"';
-						html_embed += ' width="' + config.width + '" height="' + config.height + '" bgcolor="' + config.bgcolor + '"';
-						html_embed += ' quality="high" FlashVars="id=' + escape(config.id) + '&fid=' + escape(config.fid) + '&vol=' + config.volume + '"';
+						var html_embed = '<embed name="' + this.config.fid + '" id="' + this.config.fid + '" src="' + this.config.swf + '"';
+						html_embed += ' width="' + this.config.width + '" height="' + this.config.height + '" bgcolor="' + this.config.bgcolor + '"';
+						html_embed += ' quality="high" FlashVars="id=' + escape(this.config.id) + '&fid=' + escape(this.config.fid) + '&vol=' + this.config.volume + '"';
 						html_embed += ' allowScriptAccess="always"';
 						html_embed += ' type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />';
-						$(this).html(html_embed);
+						this.element.html(html_embed);
 					}
 			
 				} else {
-					$(this).html("<p>Flash 8 or above is not installed. <a href='http://get.adobe.com/flashplayer'>Get Flash!</a></p>");
+					this.element.html("<p>Flash 8 or above is not installed. <a href='http://get.adobe.com/flashplayer'>Get Flash!</a></p>");
 				}
 			}
 
-			var html_hidden = '<div id="' + config.hid + '"></div>';
-			$(this).append(html_hidden);
+			this.element.css({'position':this.config.position, 'top':this.config.top, 'left':this.config.left});
 			
-			$(this).css({'position':config.position, 'top':config.top, 'left':config.left});
-			$("#"+config.hid).css({'text-indent':'-9999px'});
+			if(this.config.graphicsFix) {
+				var html_hidden = '<div id="' + this.config.hid + '"></div>';
+				this.element.append(html_hidden);
+			
+				$.extend(this.config, {
+					hSel: $("#"+this.config.hid)
+				});
+				this.config.hSel.css({'text-indent':'-9999px'});
+			}
 
-			if( config.html5 ) { // Emulate initial flash calls after 100ms
-				var self = $(this);
+			if(!this.config.customCssIds) {
+				$.each($.jPlayer._cssId, function(name, id) {
+					self.cssId(name, id);
+				});
+			}
+
+			if(!this.config.usingFlash) { // Emulate initial flash call after 100ms
+				this.element.css({'left':'-9999px'}); // Mobile Safari always shows the <audio> controls, so hide them.
 				window.setTimeout( function() {
-					self.volume(config.volume);
+					self.volume(self.config.volume);
 					self.jPlayerReady();
 				}, 100);
 			}
-			
-			return $(this);
 		},
-		setFile: function(f1, f2) {
-			var f = {mp3:f1, ogg:f2};
-			$(this).trigger("jPlayer.setFile", f);
-			return $(this);
+		jPlayerReady: function() { // Called from Flash / HTML5 interval
+			// Replaced by ready function from options in _init()
+		},
+		setFile: function(mp3, ogg) {
+			this.element.trigger("jPlayer.setFile", [mp3, ogg]);
 		},
 		play: function() {
-			$(this).trigger("jPlayer.play");
-			return $(this);
+			this.element.trigger("jPlayer.play");
 		},
 		pause: function() {
-			$(this).trigger("jPlayer.pause");
-			return $(this);
+			this.element.trigger("jPlayer.pause");
 		},
 		stop: function() {
-			$(this).trigger("jPlayer.stop");
-			return $(this);
+			this.element.trigger("jPlayer.stop");
 		},
 		playHead: function(p) {
-			$(this).trigger("jPlayer.playHead", p);
-			return $(this);
+			this.element.trigger("jPlayer.playHead", [p]);
 		},
 		playHeadTime: function(t) {
-			$(this).trigger("jPlayer.playHeadTime", t);
-			return $(this);
+			this.element.trigger("jPlayer.playHeadTime", [t]);
 		},
 		volume: function(v) {
-			$(this).trigger("jPlayer.volume", v);
-			return $(this);
+			this.element.trigger("jPlayer.volume", [v]);
 		},
-		jPlayerId: function(fn, id) {
-			if(id != null) {
-				var isValid = eval("$(this)."+fn);
-				if(isValid != null) {
-					$(this).data("jPlayer.cssId." + fn, id);
-					var jPlayerId = $(this).data("jPlayer.config").id;
-					eval("var myHandler = function(e) { $(\"#" + jPlayerId + "\")." + fn + "(e); return false; }");
-					$("#"+id).click(myHandler).hover($(this).jPlayerRollOver, $(this).jPlayerRollOut).data("jPlayerId", jPlayerId);
-					
-					var display = $("#"+id).css("display");
-					$(this).data("jPlayer.cssDisplay." + fn, display);
-					
+		cssId: function(fn, id) {
+			var self = this;
+			if(typeof id == 'string') {
+				if($.jPlayer._cssId[fn]) {
+					if(this.config.cssId[fn] != undefined) {
+						this.config.cssSelector[fn].unbind("click", this.config.clickHandler[fn]);
+					}
+					this.config.cssId[fn] = id;
+					this.config.cssSelector[fn] = $("#"+id);
+					this.config.clickHandler[fn] = function(e) {
+						self[fn](e);
+						return false;
+					}
+					this.config.cssSelector[fn].click(this.config.clickHandler[fn]);
+					this.config.cssDisplay[fn] = this.config.cssSelector[fn].css("display");
 					if(fn == "pause") {
-						$("#"+id).css("display", "none");
+						this.config.cssSelector[fn].css("display", "none");
 					}
 				} else {
-					alert("Unknown function assigned in: jPlayerId( fn="+fn+", id="+id+" )");
+					this._warning("Unknown/Illegal function in cssId\n\njPlayer('cssId', '"+fn+"', '"+id+"')");
 				}
 			} else {
-				id = $(this).data("jPlayer.cssId." + fn);
-				if(id != null) {
-					return id;
-				} else {
-					alert("Unknown function id requested: jPlayerId( fn="+fn+" )");
-					return false;
-				}
+				this._warning("cssId CSS Id must be a string\n\njPlayer('cssId', '"+fn+"', "+id+")");
 			}
-			return $(this);
 		},
 		loadBar: function(e) { // Handles clicks on the loadBar
-			var lbId = $(this).data("jPlayer.cssId.loadBar");
-			if( lbId != null ) {
-				var offset = $("#"+lbId).offset();
+			if( this.config.cssId.loadBar != undefined ) {
+				var offset = this.config.cssSelector.loadBar.offset();
 				var x = e.pageX - offset.left;
-				var w = $("#"+lbId).width();
+				var w = this.config.cssSelector.loadBar.width();
 				var p = 100*x/w;
-				$(this).playHead(p);
+				this.playHead(p);
 			}
 		},
 		playBar: function(e) { // Handles clicks on the playBar
-			$(this).loadBar(e);
+			this.loadBar(e);
 		},
 		onProgressChange: function(fn) {
-			$.fn["jPlayerOnProgressChange" + $(this).data("jPlayer.config").i] = fn;
-			return $(this);
-		},
-		jPlayerOnProgressChange: function(loadPercent, playedPercentRelative, playedPercentAbsolute, playedTime, totalTime) { // Called from Flash
-			var lbId = $(this).data("jPlayer.cssId.loadBar");
-			if (lbId != null) {
-				$("#"+lbId).width(loadPercent+"%");
+			if($.isFunction(fn)) {
+				this.onProgressChangeCustom = fn;
+			} else {
+				this._warning("onProgressChange parameter is not a function.");
 			}
-			var pbId = $(this).data("jPlayer.cssId.playBar");
-			if (pbId != null ) {
-				$("#"+pbId).width(playedPercentRelative+"%");
-			}
-			
-			$(this)["jPlayerOnProgressChange" + $(this).data("jPlayer.config").i](loadPercent, playedPercentRelative, playedPercentAbsolute, playedTime, totalTime);
-			$(this).jPlayerForceUpdate();
-			return true;
 		},
-		jPlayerController: function(self, override) { // For HTML5 interval.
-			var playedTime = 0;
-			var totalTime = 0;
-			var playedPercentAbsolute = 0;
-			var loadPercent = 0;
-			var playedPercentRelative = 0;
-			
-			if(self.data("jPlayer.config").audio.readyState >= 1) {
-				playedTime = self.data("jPlayer.config").audio.currentTime * 1000; // milliSeconds
-				totalTime = self.data("jPlayer.config").audio.duration * 1000; // milliSeconds
-				playedPercentAbsolute = 100 * playedTime / totalTime;
-				loadPercent = (self.data("jPlayer.config").audio.buffered) ? 100 * self.data("jPlayer.config").audio.buffered.end() / self.data("jPlayer.config").audio.duration : 100;
-				playedPercentRelative = (self.data("jPlayer.config").audio.buffered) ? 100 * self.data("jPlayer.config").audio.currentTime / self.data("jPlayer.config").audio.buffered.end() : playedPercentAbsolute;
+		onProgressChangeCustom: function() {
+			// Replaced in onProgressChange()
+		},
+		jPlayerOnProgressChange: function(lp, ppr, ppa, pt, tt) { // Called from Flash / HTML5 interval
+			this.config.diag.loadPercent = lp;
+			this.config.diag.playedPercentRelative = ppr;
+			this.config.diag.playedPercentAbsolute = ppa;
+			this.config.diag.playedTime = pt;
+			this.config.diag.totalTime = tt;
+
+			if (this.config.cssId.loadBar != undefined) {
+				this.config.cssSelector.loadBar.width(lp+"%");
+			}
+			if (this.config.cssId.playBar != undefined ) {
+				this.config.cssSelector.playBar.width(ppr+"%");
+			}
+
+			this.onProgressChangeCustom(lp, ppr, ppa, pt, tt);
+			this._forceUpdate();
+		},
+		jPlayerController: function(override) { // The HTML5 interval function.
+			var pt = 0, tt = 0, ppa = 0, lp = 0, ppr = 0;
+			if(this.config.audio.readyState >= 1) {
+				pt = this.config.audio.currentTime * 1000; // milliSeconds
+				tt = this.config.audio.duration * 1000; // milliSeconds
+				tt = isNaN(tt) ? 0 : tt; // Clean up duration in Firefox 3.5+
+				ppa = (tt > 0) ? 100 * pt / tt : 0;
+				lp = (this.config.audio.buffered) ? 100 * this.config.audio.buffered.end() / this.config.audio.duration : 100;
+				ppr = (this.config.audio.buffered) ? 100 * this.config.audio.currentTime / this.config.audio.buffered.end() : ppa;
+			}
+
+			if (this.config.audio.ended) {
+				clearInterval(this.config.jPlayerControllerId);
+				this.jPlayerOnSoundComplete();
+			} else if(!this.config.diag.isPlaying && lp >= 100) {
+				clearInterval(this.config.jPlayerControllerId);
 			}
 			
 			if(override) {
-				self.jPlayerOnProgressChange(loadPercent, 0, 0, 0, totalTime);
+				this.jPlayerOnProgressChange(lp, 0, 0, 0, tt);
 			} else {
-				self.jPlayerOnProgressChange(loadPercent, playedPercentRelative, playedPercentAbsolute, playedTime, totalTime);
-				
-				if (self.data("jPlayer.config").audio.ended) {
-					clearInterval(self.data("jPlayer.interval.jPlayerController"));
-					self.jPlayerOnSoundComplete();
-				}
+				this.jPlayerOnProgressChange(lp, ppr, ppa, pt, tt);
 			}
 		},
 		volumeMin: function() {
-			$(this).volume(0);
-			return $(this);
+			this.volume(0);
 		},
 		volumeMax: function() {
-			$(this).volume(100);
-			return $(this);
+			this.volume(100);
 		},
 		volumeBar: function(e) { // Handles clicks on the volumeBar
-			var vbId = $(this).data("jPlayer.cssId.volumeBar");
-			if( vbId != null ) {
-				var offset = $("#"+vbId).offset();
+			if( this.config.cssId.volumeBar != undefined ) {
+				var offset = this.config.cssSelector.volumeBar.offset();
 				var x = e.pageX - offset.left;
-				var w = $("#"+vbId).width();
+				var w = this.config.cssSelector.volumeBar.width();
 				var p = 100*x/w;
-				$(this).volume(p);
+				this.volume(p);
 			}
 		},
 		volumeBarValue: function(e) { // Handles clicks on the volumeBarValue
-			$(this).volumeBar(e);
+			this.volumeBar(e);
 		},
-		jPlayerVolume: function(v) { // Called from Flash
-			var vbvId = $(this).data("jPlayer.cssId.volumeBarValue");
-			if( vbvId != null ) {
-				$("#"+vbvId).width(v+"%");
-				$(this).jPlayerForceUpdate();
-				return true;
+		jPlayerVolume: function(v) { // Called from Flash / HTML5 event
+			if( this.config.cssId.volumeBarValue != null ) {
+				this.config.cssSelector.volumeBarValue.width(v+"%");
+				this._forceUpdate();
 			}
 		},
 		onSoundComplete: function(fn) {
-			$.fn["jPlayerOnSoundComplete" + $(this).data("jPlayer.config").i] = fn;
-			return $(this);
+			if($.isFunction(fn)) {
+				this.onSoundCompleteCustom = fn;
+			} else {
+				this._warning("onSoundComplete parameter is not a function.");
+			}
 		},
-		jPlayerOnSoundComplete: function() { // Called from Flash
-			$(this).trigger("jPlayer.setButtons", false);
-			$(this)["jPlayerOnSoundComplete" + $(this).data("jPlayer.config").i]();
-			return true;
+		onSoundCompleteCustom: function() {
+			// Replaced in onSoundComplete()
 		},
-		jPlayerBufferState: function (b) { // Called from Flash
-			var lbId = $(this).data("jPlayer.cssId.loadBar");
-			if( lbId != null ) {
-				var prefix = $(this).data("jPlayer.config").cssPrefix;
-				if(b) {
-					$("#"+lbId).addClass(prefix + "_buffer");
+		jPlayerOnSoundComplete: function() { // Called from Flash / HTML5 interval
+			this.element.trigger("jPlayer.setButtons", false);
+			this.onSoundCompleteCustom();
+		},
+		getData: function(name) {
+			var n = name.split(".");
+			var p = this.config;
+			for(var i = 0; i < n.length; i++) {
+				if(p[n[i]] != undefined) {
+					p = p[n[i]];
 				} else {
-					$("#"+lbId).removeClass(prefix + "_buffer");
+					this._warning("Undefined data requested.\n\njPlayer('getData', '" + name + "')");
+					return undefined;
 				}
-				return true;
-			} else {
-				return false;
+			}
+			return p;
+		},
+		_getMovie: function() {
+			return document[this.config.fid];
+		},
+		_checkForFlash: function (version){
+			// Function checkForFlash adapted from FlashReplace by Robert Nyman
+			// http://code.google.com/p/flashreplace/
+			var flashIsInstalled = false;
+			var flash;
+			if(window.ActiveXObject){
+				try{
+					flash = new ActiveXObject(("ShockwaveFlash.ShockwaveFlash." + version));
+					flashIsInstalled = true;
+				}
+				catch(e){
+					// Throws an error if the version isn't available			
+				}
+			}
+			else if(navigator.plugins && navigator.mimeTypes.length > 0){
+				flash = navigator.plugins["Shockwave Flash"];
+				if(flash){
+					var flashVersion = navigator.plugins["Shockwave Flash"].description.replace(/.*\s(\d+\.\d+).*/, "$1");
+					if(flashVersion >= version){
+						flashIsInstalled = true;
+					}
+				}
+			}
+			return flashIsInstalled;
+		},
+		_forceUpdate: function() { // For Safari and Chrome
+			if(this.config.graphicsFix) {
+				this.config.hSel.text(""+Math.random());
 			}
 		},
-		bufferMsg: function() {
-			// Empty: Initialized to enable jPlayerId() to work.
-			// See jPlayerBufferMsg() for code.
+		_flashError: function(e) {
+			this._error("Problem with Flash component.\n\nCheck the swfPath points at the Jplayer.swf path.\n\nswfPath = " + this.config.swfPath + "\nurl: " + this.config.swf + "\n\nError: " + e.message);
 		},
-		jPlayerBufferMsg: function (msg) { // Called from Flash
-			var bmId = $(this).data("jPlayer.cssId.bufferMsg");
-			if( bmId != null ) {
-				$("#"+bmId).html(msg);
-				return true;
-			} else {
-				return false;
+		_error: function(msg) {
+			if(this.config.errorAlerts) {
+				this._alert("Error!\n\n" + msg);
 			}
 		},
-		jPlayerForceUpdate: function() { // For Safari and Chrome
-			var hid = $(this).data("jPlayer.config").hid;
-			$("#"+hid).html(Math.random());
+		_warning: function(msg) {
+			if(this.config.warningAlerts) {
+				this._alert("Warning!\n\n" + msg);
+			}
 		},
-		jPlayerRollOver: function() {
-			var jPlayerId = $(this).data("jPlayerId");
-			var prefix = $("#"+jPlayerId).data("jPlayer.config").cssPrefix;
-			$(this).addClass(prefix + "_hover");
-		},
-		jPlayerRollOut: function() {
-			var jPlayerId = $(this).data("jPlayerId");
-			var prefix = $("#"+jPlayerId).data("jPlayer.config").cssPrefix;
-			$(this).removeClass(prefix + "_hover");
-		},
-		jPlayerReady: function() { // Called from Flash
-			$(this)["jPlayerReady" + $(this).data("jPlayer.config").i]();
-		},
-		jPlayerGetInfo: function(info) {
-			return $(this).data("jPlayer.config")[info];
+		_alert: function(msg) {
+			alert("jPlayer : id='" + this.config.id +"' : " + msg);
 		}
 	};
-
-	$.each(methods, function(i) {
-		$.fn[i] = this;
-	});
 })(jQuery);
