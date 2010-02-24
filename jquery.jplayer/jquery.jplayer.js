@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 1.0.0
- * Date: 18th February 2010
+ * Version: 1.0.0a
+ * Date: 24th February 2010
  */
 
 (function($) {
@@ -268,7 +268,6 @@
 					self.config.aSel = $("#"+self.config.aid)
 					var audioArray = self.config.aSel.get();
 					self.config.audio = audioArray[0];
-					self.config.audio.volume = self.config.volume/100;
 					if(self.config.usingMP3) {
 						self.config.diag.src = mp3;
 					} else { 
@@ -277,6 +276,9 @@
 					self.config.isWaitingForPlay = true;
 					element.trigger("jPlayer.setButtons", false);
 					self.jPlayerOnProgressChange(0, 0, 0, 0, 0);
+					self.config.audio.addEventListener("canplay", function() {
+						self.config.audio.volume = self.config.volume/100; // Fix for Chrome 4: Event solves initial volume not being set correctly.
+					}, false);
 				},
 				play: function(e) {
 					if(self.config.isWaitingForPlay) {
