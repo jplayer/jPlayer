@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 1.0.0a
- * Date: 24th February 2010
+ * Version: 1.0.0b
+ * Date: 2nd March 2010
  */
 
 (function($) {
@@ -354,7 +354,7 @@
 					if($.browser.msie) {
 						var html_obj = '<object id="' + this.config.fid + '"';
 						html_obj += ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"';
-						html_obj += ' codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab"';
+						html_obj += ' codebase="' + document.URL.substring(0,document.URL.indexOf(':')) + '://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab"'; // Fixed IE non secured element warning.
 						html_obj += ' type="application/x-shockwave-flash"';
 						html_obj += ' width="' + this.config.width + '" height="' + this.config.height + '">';
 						html_obj += '</object>';
