@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 1.0.0b
- * Date: 2nd March 2010
+ * Version: 1.0.0c
+ * Date: 11th March 2010
  */
 
 (function($) {
@@ -86,7 +86,8 @@
 
 	$.jPlayer._config = {
 		jPlayerControllerId: undefined,
-		isWaitingForPlay:false
+		isWaitingForPlay:false,
+		isFileSet:false
 	};
 
 	$.jPlayer._diag = {
@@ -215,6 +216,7 @@
 						self._getMovie().fl_setFile_mp3(mp3);
 						self.config.diag.src = mp3;
 						self.config.isWaitingForPlay = true;
+						self.config.isFileSet = true; // Set here for conformity, but the flash handles this internally and through return values.
 						element.trigger("jPlayer.setButtons", false);
 					} catch(err) { self._flashError(err); }
 				},
@@ -274,6 +276,7 @@
 						self.config.diag.src = ogg;
 					}
 					self.config.isWaitingForPlay = true;
+					self.config.isFileSet = true;
 					element.trigger("jPlayer.setButtons", false);
 					self.jPlayerOnProgressChange(0, 0, 0, 0, 0);
 					self.config.audio.addEventListener("canplay", function() {
@@ -281,53 +284,63 @@
 					}, false);
 				},
 				play: function(e) {
-					if(self.config.isWaitingForPlay) {
-						self.config.audio.src = self.config.diag.src;
-					}
-					self.config.audio.play();
-					element.trigger("jPlayer.setButtons", true);
-					clearInterval(self.config.jPlayerControllerId);
-					self.config.jPlayerControllerId = window.setInterval( function() {
-						self.jPlayerController(false);
-					}, 100);
-				},
-				pause: function(e) {
-					self.config.audio.pause();
-					element.trigger("jPlayer.setButtons", false);
-				},
-				stop: function(e) {
-					try {
-						self.config.audio.currentTime = 0;
-						element.trigger("jPlayer.pause");
+					if(self.config.isFileSet) {
+						if(self.config.isWaitingForPlay) {
+							self.config.audio.src = self.config.diag.src;
+						}
+						self.config.audio.play();
+						element.trigger("jPlayer.setButtons", true);
 						clearInterval(self.config.jPlayerControllerId);
 						self.config.jPlayerControllerId = window.setInterval( function() {
-							self.jPlayerController(true); // With override true
+							self.jPlayerController(false);
 						}, 100);
-						
-					} catch(err) {
-						window.setTimeout(function() {
-							self.stop();
-						}, 100);
+					}
+				},
+				pause: function(e) {
+					if(self.config.isFileSet) {
+						self.config.audio.pause();
+						element.trigger("jPlayer.setButtons", false);
+					}
+				},
+				stop: function(e) {
+					if(self.config.isFileSet) {
+						try {
+							self.config.audio.currentTime = 0;
+							element.trigger("jPlayer.pause");
+							clearInterval(self.config.jPlayerControllerId);
+							self.config.jPlayerControllerId = window.setInterval( function() {
+								self.jPlayerController(true); // With override true
+							}, 100);
+
+						} catch(err) {
+							window.setTimeout(function() {
+								self.stop();
+							}, 100);
+						}
 					}
 				},
 				playHead: function(e, p) {
-					try {
-						self.config.audio.currentTime = (self.config.audio.buffered) ? p * self.config.audio.buffered.end() / 100 : p * self.config.audio.duration / 100;
-						element.trigger("jPlayer.play");
-					} catch(err) {
-						window.setTimeout(function() {
-							self.playHead(p);
-						}, 100);
+					if(self.config.isFileSet) {
+						try {
+							self.config.audio.currentTime = (self.config.audio.buffered) ? p * self.config.audio.buffered.end() / 100 : p * self.config.audio.duration / 100;
+							element.trigger("jPlayer.play");
+						} catch(err) {
+							window.setTimeout(function() {
+								self.playHead(p);
+							}, 100);
+						}
 					}
 				},
 				playHeadTime: function(e, t) {
-					try {
-						self.config.audio.currentTime = t/1000;
-						element.trigger("jPlayer.play");
-					} catch(err) {
-						window.setTimeout(function() {
-							self.playHeadTime(t);
-						}, 100);
+					if(self.config.isFileSet) {
+						try {
+							self.config.audio.currentTime = t/1000;
+							element.trigger("jPlayer.play");
+						} catch(err) {
+							window.setTimeout(function() {
+								self.playHeadTime(t);
+							}, 100);
+						}
 					}
 				},
 				volume: function(e, v) {
