@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 1.0.0c
- * Date: 11th March 2010
+ * Version: 1.0.0d
+ * Date: 18th March 2010
  */
 
 (function($) {
@@ -157,7 +157,8 @@
 				fid: this.config.cssPrefix + "_flash_" + $.jPlayer.count,
 				aid: this.config.cssPrefix + "_audio_" + $.jPlayer.count,
 				hid: this.config.cssPrefix + "_force_" + $.jPlayer.count,
-				i: $.jPlayer.count
+				i: $.jPlayer.count,
+				volume: this._limitValue(this.config.volume, 0, 100)
 			});
 
 			$.jPlayer.count++;
@@ -446,6 +447,7 @@
 			this.element.trigger("jPlayer.playHeadTime", [t]);
 		},
 		volume: function(v) {
+			v = this._limitValue(v, 0, 100);
 			this.element.trigger("jPlayer.volume", [v]);
 		},
 		cssId: function(fn, id) {
@@ -619,6 +621,9 @@
 			if(this.config.graphicsFix) {
 				this.config.hSel.text(""+Math.random());
 			}
+		},
+		_limitValue: function(value, min, max) {
+			return (value < min) ? min : ((value > max) ? max : value);
 		},
 		_flashError: function(e) {
 			this._error("Problem with Flash component.\n\nCheck the swfPath points at the Jplayer.swf path.\n\nswfPath = " + this.config.swfPath + "\nurl: " + this.config.swf + "\n\nError: " + e.message);
