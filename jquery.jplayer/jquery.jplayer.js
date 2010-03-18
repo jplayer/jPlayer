@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 1.0.0d
+ * Version: 1.0.0e
  * Date: 18th March 2010
  */
 
@@ -86,6 +86,7 @@
 
 	$.jPlayer._config = {
 		jPlayerControllerId: undefined,
+		delayedCommandId: undefined,
 		isWaitingForPlay:false,
 		isFileSet:false
 	};
@@ -216,9 +217,17 @@
 					try {
 						self._getMovie().fl_setFile_mp3(mp3);
 						self.config.diag.src = mp3;
-						self.config.isWaitingForPlay = true;
+						// self.config.isWaitingForPlay = true;
 						self.config.isFileSet = true; // Set here for conformity, but the flash handles this internally and through return values.
 						element.trigger("jPlayer.setButtons", false);
+					} catch(err) { self._flashError(err); }
+				},
+				clearFile: function(e) {
+					try {
+						element.trigger("jPlayer.setButtons", false); // Before flash method so states correct for when onProgressChange is called
+						self._getMovie().fl_clearFile_mp3();
+						self.config.diag.src = "";
+						self.config.isFileSet = false;
 					} catch(err) { self._flashError(err); }
 				},
 				play: function(e) {
@@ -280,9 +289,15 @@
 					self.config.isFileSet = true;
 					element.trigger("jPlayer.setButtons", false);
 					self.jPlayerOnProgressChange(0, 0, 0, 0, 0);
+					clearInterval(self.config.jPlayerControllerId);
 					self.config.audio.addEventListener("canplay", function() {
 						self.config.audio.volume = self.config.volume/100; // Fix for Chrome 4: Event solves initial volume not being set correctly.
 					}, false);
+				},
+				clearFile: function(e) {
+					self.setFile("","");
+					self.config.isWaitingForPlay = false;
+					self.config.isFileSet = false;
 				},
 				play: function(e) {
 					if(self.config.isFileSet) {
@@ -295,6 +310,7 @@
 						self.config.jPlayerControllerId = window.setInterval( function() {
 							self.jPlayerController(false);
 						}, 100);
+						clearInterval(self.config.delayedCommandId);
 					}
 				},
 				pause: function(e) {
@@ -314,7 +330,8 @@
 							}, 100);
 
 						} catch(err) {
-							window.setTimeout(function() {
+							clearInterval(self.config.delayedCommandId);
+							self.config.delayedCommandId = window.setTimeout(function() {
 								self.stop();
 							}, 100);
 						}
@@ -326,7 +343,8 @@
 							self.config.audio.currentTime = (self.config.audio.buffered) ? p * self.config.audio.buffered.end() / 100 : p * self.config.audio.duration / 100;
 							element.trigger("jPlayer.play");
 						} catch(err) {
-							window.setTimeout(function() {
+							clearInterval(self.config.delayedCommandId);
+							self.config.delayedCommandId = window.setTimeout(function() {
 								self.playHead(p);
 							}, 100);
 						}
@@ -338,7 +356,8 @@
 							self.config.audio.currentTime = t/1000;
 							element.trigger("jPlayer.play");
 						} catch(err) {
-							window.setTimeout(function() {
+							clearInterval(self.config.delayedCommandId);
+							self.config.delayedCommandId = window.setTimeout(function() {
 								self.playHeadTime(t);
 							}, 100);
 						}
@@ -430,6 +449,9 @@
 		},
 		setFile: function(mp3, ogg) {
 			this.element.trigger("jPlayer.setFile", [mp3, ogg]);
+		},
+		clearFile: function() {
+			this.element.trigger("jPlayer.clearFile");
 		},
 		play: function() {
 			this.element.trigger("jPlayer.play");

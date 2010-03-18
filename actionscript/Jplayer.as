@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 1.0.0
- * Date: 18th February 2010
+ * Version: 1.0.0e
+ * Date: 18th March 2010
  *
  * FlashVars expected:
  *	id:	(URL Encoded) Id of container <div> tag of Flash
@@ -63,6 +63,7 @@ class Jplayer {
 		clearInterval(this.init_id);
 		
 		ExternalInterface.addCallback("fl_setFile_mp3", this, this.setFile_mp3);
+		ExternalInterface.addCallback("fl_clearFile_mp3", this, this.clearFile_mp3);
 		ExternalInterface.addCallback("fl_play_mp3", this, this.play_mp3);
 		ExternalInterface.addCallback("fl_pause_mp3", this, this.pause_mp3);
 		ExternalInterface.addCallback("fl_stop_mp3", this, this.stop_mp3);
@@ -101,6 +102,11 @@ class Jplayer {
 		} else {
 			return false;
 		}
+	}
+	
+	function clearFile_mp3():Void {
+		this.setFile_mp3("");
+		this.isReady = false;
 	}
 	
 	function play_mp3():Boolean {
