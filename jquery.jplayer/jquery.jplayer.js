@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 1.0.0e
- * Date: 18th March 2010
+ * Version: 1.0.6
+ * Date: 25th March 2010
  */
 
 (function($) {
@@ -172,16 +172,18 @@
 				}
 			}
 			
-			this.element.prepend('<audio id="' + this.config.aid + '"></audio>'); // Begin check for HTML5 <audio>
+			try {
+				this.config.audio = new Audio();
+				this.config.audio.id = this.config.aid;
+				this.element.append(this.config.audio);
+			} catch(err) {
+				this.config.audio = {};
+			}
+			
 			$.extend(this.config, {
+				canPlayMP3: !!((this.config.audio.canPlayType) ? (("" != this.config.audio.canPlayType("audio/mpeg")) && ("no" != this.config.audio.canPlayType("audio/mpeg"))) : false),
+				canPlayOGG: !!((this.config.audio.canPlayType) ? (("" != this.config.audio.canPlayType("audio/ogg")) && ("no" != this.config.audio.canPlayType("audio/ogg"))) : false),
 				aSel: $("#" + this.config.aid)
-			});			
-			var audioArray = this.config.aSel.get();
-
-			$.extend(this.config, {
-				canPlayMP3: !!((audioArray[0].canPlayType) ? (("" != audioArray[0].canPlayType("audio/mpeg")) && ("no" != audioArray[0].canPlayType("audio/mpeg"))) : false),
-				canPlayOGG: !!((audioArray[0].canPlayType) ? (("" != audioArray[0].canPlayType("audio/ogg")) && ("no" != audioArray[0].canPlayType("audio/ogg"))) : false),
-				audio: audioArray[0]
 			});
 
 			$.extend(this.config, {
@@ -217,7 +219,6 @@
 					try {
 						self._getMovie().fl_setFile_mp3(mp3);
 						self.config.diag.src = mp3;
-						// self.config.isWaitingForPlay = true;
 						self.config.isFileSet = true; // Set here for conformity, but the flash handles this internally and through return values.
 						element.trigger("jPlayer.setButtons", false);
 					} catch(err) { self._flashError(err); }
@@ -275,11 +276,10 @@
 
 			var eventsForHtmlAudio = {
 				setFile: function(e, mp3, ogg) {
-					self.config.aSel.remove();
-					element.prepend('<audio id="' + self.config.aid + '"></audio>');
-					self.config.aSel = $("#"+self.config.aid)
-					var audioArray = self.config.aSel.get();
-					self.config.audio = audioArray[0];
+					self.config.audio = new Audio();
+					self.config.audio.id = self.config.aid;
+					self.config.aSel.replaceWith(self.config.audio);
+					self.config.aSel = $("#"+self.config.aid);
 					if(self.config.usingMP3) {
 						self.config.diag.src = mp3;
 					} else { 
@@ -340,7 +340,11 @@
 				playHead: function(e, p) {
 					if(self.config.isFileSet) {
 						try {
-							self.config.audio.currentTime = (self.config.audio.buffered) ? p * self.config.audio.buffered.end() / 100 : p * self.config.audio.duration / 100;
+							if((typeof self.config.audio.buffered == "object") && (self.config.audio.buffered.length > 0)) {
+								self.config.audio.currentTime = p * self.config.audio.buffered.end(self.config.audio.buffered.length-1) / 100;
+							} else {
+								self.config.audio.currentTime = p * self.config.audio.duration / 100;
+							}
 							element.trigger("jPlayer.play");
 						} catch(err) {
 							clearInterval(self.config.delayedCommandId);
@@ -543,8 +547,13 @@
 				tt = this.config.audio.duration * 1000; // milliSeconds
 				tt = isNaN(tt) ? 0 : tt; // Clean up duration in Firefox 3.5+
 				ppa = (tt > 0) ? 100 * pt / tt : 0;
-				lp = (this.config.audio.buffered) ? 100 * this.config.audio.buffered.end() / this.config.audio.duration : 100;
-				ppr = (this.config.audio.buffered) ? 100 * this.config.audio.currentTime / this.config.audio.buffered.end() : ppa;
+				if((typeof this.config.audio.buffered == "object") && (this.config.audio.buffered.length > 0)) {
+					lp = 100 * this.config.audio.buffered.end(this.config.audio.buffered.length-1) / this.config.audio.duration;
+					ppr = 100 * this.config.audio.currentTime / this.config.audio.buffered.end(this.config.audio.buffered.length-1);
+				} else {
+					lp = 100;
+					ppr = ppa;
+				}
 			}
 
 			if (this.config.audio.ended) {
