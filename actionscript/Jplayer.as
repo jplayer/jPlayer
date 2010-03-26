@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 1.0.0e
- * Date: 18th March 2010
+ * Version: 1.1.0
+ * Date: 26th March 2010
  *
  * FlashVars expected:
  *	id:	(URL Encoded) Id of container <div> tag of Flash
@@ -17,7 +17,7 @@
  *	vol:	(Number) Sets the initial volume
  *
  * MTASC Compiler:
- * mtasc Jplayer.as -swf Jplayer.swf -main -header 0:0:40 -v -version 8 -group
+ * mtasc Jplayer.as -swf Jplayer.swf -main -header 120:20:40 -v -version 8 -group
  */
 
 import flash.external.ExternalInterface;
@@ -25,6 +25,9 @@ import flash.external.ExternalInterface;
 class Jplayer {
 	
 	static var app:Jplayer;
+
+	private var jPlayerVersion:String = "1.1.0";
+	private var txVersion:TextField;
 	
 	private var mySound:Sound;
 	private var jQuery:String;
@@ -54,6 +57,16 @@ class Jplayer {
 		this.jQuery = "jQuery(\"#" + scope.id + "\").jPlayer";
 		this.vol = Number(scope.vol);
 		
+		// Display the jPlayer version so the SWF may be viewed directly to confirm that the JavaScript and SWF versions are compatible.
+		var txFormat:TextFormat = new TextFormat();
+		txFormat.align = "center";
+		this.txVersion = scope.createTextField("txVersion", scope.getNextHighestDepth(), 0, 0, 120, 20);
+		this.txVersion.border = true;
+		this.txVersion.background = true;
+		this.txVersion.backgroundColor = 0xEEEEFF;
+		this.txVersion.text = "jPlayer " + this.jPlayerVersion;
+		this.txVersion.setTextFormat(txFormat);
+		
 		// Delay init() because Firefox 3.5.7+ developed a bug with local testing.
 		clearInterval(this.init_id);
 		this.init_id = setInterval(this, "init", 100);
@@ -61,7 +74,7 @@ class Jplayer {
 	
 	function init():Void {
 		clearInterval(this.init_id);
-		
+
 		ExternalInterface.addCallback("fl_setFile_mp3", this, this.setFile_mp3);
 		ExternalInterface.addCallback("fl_clearFile_mp3", this, this.clearFile_mp3);
 		ExternalInterface.addCallback("fl_play_mp3", this, this.play_mp3);
@@ -72,7 +85,7 @@ class Jplayer {
 		ExternalInterface.addCallback("fl_volume_mp3", this, this.volume_mp3);
 
 		ExternalInterface.call(this.jQuery, "jPlayerVolume", this.vol);
-		ExternalInterface.call(this.jQuery, "jPlayerReady");
+		ExternalInterface.call(this.jQuery, "jPlayerReady", this.jPlayerVersion);
 	}
 	
 	function newMP3( f:String ):Void {

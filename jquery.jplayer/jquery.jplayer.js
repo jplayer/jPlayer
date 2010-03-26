@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 1.0.6
- * Date: 25th March 2010
+ * Version: 1.1.0
+ * Date: 26th March 2010
  */
 
 (function($) {
@@ -85,6 +85,9 @@
 	};
 
 	$.jPlayer._config = {
+		version: "1.1.0",
+		swfVersionRequired: "1.1.0",
+		swfVersion: "unknown",
 		jPlayerControllerId: undefined,
 		delayedCommandId: undefined,
 		isWaitingForPlay:false,
@@ -166,7 +169,7 @@
 
 			if(this.config.ready != undefined) {
 				if($.isFunction(this.config.ready)) {
-					this.jPlayerReady = this.config.ready;
+					this.jPlayerReadyCustom = this.config.ready;
 				} else {
 					this._warning("Constructor's ready option is not a function.");
 				}
@@ -448,7 +451,18 @@
 				}, 100);
 			}
 		},
-		jPlayerReady: function() { // Called from Flash / HTML5 interval
+		jPlayerReady: function(swfVersion) { // Called from Flash / HTML5 interval
+			if(this.config.usingFlash) {
+				this.config.swfVersion = swfVersion;
+				if(this.config.swfVersionRequired != this.config.swfVersion) {
+					this._error("jPlayer's JavaScript / SWF version mismatch!\n\nJavaScript requires SWF : " + this.config.swfVersionRequired + "\nThe Jplayer.swf used is : " + this.config.swfVersion);
+				}
+			} else {
+				this.config.swfVersion = "n/a";
+			}
+			this.jPlayerReadyCustom();
+		},
+		jPlayerReadyCustom: function() {
 			// Replaced by ready function from options in _init()
 		},
 		setFile: function(mp3, ogg) {
@@ -670,7 +684,7 @@
 			}
 		},
 		_alert: function(msg) {
-			alert("jPlayer : id='" + this.config.id +"' : " + msg);
+			alert("jPlayer " + this.config.version + " : id='" + this.config.id +"' : " + msg);
 		}
 	};
 })(jQuery);
