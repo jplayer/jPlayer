@@ -9,12 +9,15 @@ jPlayer is a jQuery plugin that allows you to:
  * play and control audio files in your webpage
  * create and style an audio player using just HTML and CSS
  * add sound effects to your jQuery projects
- * stream faster using HTML5 and alternative ogg format support
+ * support more devices using HTML5
 
 All of this with HTML5 <audio> support for compliant browsers that allow mp3 or ogg format, while supporting other browsers using mp3 format with no visible Flash.
 
 Dual licensed under the MIT and GPL licenses.
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/copyleft/gpl.html
+
+Developer Guide:
+http://www.happyworm.com/jquery/jplayer/latest/developer-guide.htm
 
 Author: Mark J Panaghiston
