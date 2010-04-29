@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 1.1.0
- * Date: 26th March 2010
+ * Version: 1.1.1
+ * Date: 29th April 2010
  */
 
 (function($) {
@@ -85,7 +85,7 @@
 	};
 
 	$.jPlayer._config = {
-		version: "1.1.0",
+		version: "1.1.1",
 		swfVersionRequired: "1.1.0",
 		swfVersion: "unknown",
 		jPlayerControllerId: undefined,
@@ -501,6 +501,7 @@
 					this.config.cssSelector[fn] = $("#"+id);
 					this.config.clickHandler[fn] = function(e) {
 						self[fn](e);
+						$(this).blur();
 						return false;
 					}
 					this.config.cssSelector[fn].click(this.config.clickHandler[fn]);
