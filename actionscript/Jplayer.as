@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 1.1.0
- * Date: 26th March 2010
+ * Version: 1.1.2
+ * Date: 12th May 2010
  *
  * FlashVars expected:
  *	id:	(URL Encoded) Id of container <div> tag of Flash
@@ -26,7 +26,7 @@ class Jplayer {
 	
 	static var app:Jplayer;
 
-	private var jPlayerVersion:String = "1.1.0";
+	private var jPlayerVersion:String = "1.1.2";
 	private var txVersion:TextField;
 	
 	private var mySound:Sound;
@@ -53,6 +53,7 @@ class Jplayer {
 	private var progressBroker_id:Number;
 	
 	function Jplayer( scope:MovieClip ) {
+		System.security.allowDomain("*");
 		scope._soundbuftime = 0;
 		this.jQuery = "jQuery(\"#" + scope.id + "\").jPlayer";
 		this.vol = Number(scope.vol);
