@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 1.1.2
- * Date: 12th May 2010
+ * Version: 1.1.3
+ * Date: 13th May 2010
  */
 
 (function($) {
@@ -85,7 +85,7 @@
 	};
 
 	$.jPlayer._config = {
-		version: "1.1.2",
+		version: "1.1.3",
 		swfVersionRequired: "1.1.2",
 		swfVersion: "unknown",
 		jPlayerControllerId: undefined,
@@ -505,9 +505,15 @@
 						return false;
 					}
 					this.config.cssSelector[fn].click(this.config.clickHandler[fn]);
-					this.config.cssDisplay[fn] = this.config.cssSelector[fn].css("display");
-					if(fn == "pause") {
-						this.config.cssSelector[fn].css("display", "none");
+					var display = this.config.cssSelector[fn].css("display");
+					if(fn == "play") {
+						this.config.cssDisplay["pause"] = display;
+					}
+					if(!(fn == "pause" && display == "none")) {
+						this.config.cssDisplay[fn] = display;
+						if(fn == "pause") {
+							this.config.cssSelector[fn].css("display", "none");
+						}
 					}
 				} else {
 					this._warning("Unknown/Illegal function in cssId\n\njPlayer('cssId', '"+fn+"', '"+id+"')");
