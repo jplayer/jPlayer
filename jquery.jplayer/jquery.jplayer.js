@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 1.1.4
+ * Version: 1.1.5
  * Date: 17th May 2010
  */
 
@@ -86,7 +86,7 @@
 	};
 
 	$.jPlayer._config = {
-		version: "1.1.4",
+		version: "1.1.5",
 		swfVersionRequired: "1.1.4",
 		swfVersion: "unknown",
 		jPlayerControllerId: undefined,
@@ -179,8 +179,6 @@
 			try {
 				this.config.audio = new Audio();
 				this.config.audio.id = this.config.aid;
-				this.config.audio.autobuffer = this.config.preload; // TEST TO SEE IT AFFECTS FUTURE INSTANCES
-				this.config.audio.preload = this.config.preload; // TEST TO SEE IT AFFECTS FUTURE INSTANCES
 				this.element.append(this.config.audio);
 			} catch(err) {
 				this.config.audio = {};
@@ -381,14 +379,16 @@
 				playHead: function(e, p) {
 					if(self.config.isFileSet) {
 						try {
+							element.trigger("jPlayer.play");
 							if((typeof self.config.audio.buffered == "object") && (self.config.audio.buffered.length > 0)) {
 								self.config.audio.currentTime = p * self.config.audio.buffered.end(self.config.audio.buffered.length-1) / 100;
-							} else {
+							} else if(self.config.audio.duration > 0 && !isNaN(self.config.audio.duration)) {
 								self.config.audio.currentTime = p * self.config.audio.duration / 100;
+							} else {
+								throw "e";
 							}
-							element.trigger("jPlayer.play");
 						} catch(err) {
-							clearInterval(self.config.delayedCommandId);
+							element.trigger("jPlayer.pause"); // Also clears delayedCommandId interval.
 							self.config.delayedCommandId = window.setTimeout(function() {
 								self.playHead(p);
 							}, 100);
@@ -398,10 +398,10 @@
 				playHeadTime: function(e, t) {
 					if(self.config.isFileSet) {
 						try {
-							self.config.audio.currentTime = t/1000;
 							element.trigger("jPlayer.play");
+							self.config.audio.currentTime = t/1000;
 						} catch(err) {
-							clearInterval(self.config.delayedCommandId);
+							element.trigger("jPlayer.pause"); // Also clears delayedCommandId interval.
 							self.config.delayedCommandId = window.setTimeout(function() {
 								self.playHeadTime(t);
 							}, 100);
