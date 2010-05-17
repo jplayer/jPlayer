@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 1.1.2
- * Date: 12th May 2010
+ * Version: 1.1.4
+ * Date: 17th May 2010
  *
  * FlashVars expected:
  *	id:	(URL Encoded) Id of container <div> tag of Flash
@@ -26,7 +26,7 @@ class Jplayer {
 	
 	static var app:Jplayer;
 
-	private var jPlayerVersion:String = "1.1.2";
+	private var jPlayerVersion:String = "1.1.4";
 	private var txVersion:TextField;
 	
 	private var mySound:Sound;
@@ -78,6 +78,7 @@ class Jplayer {
 
 		ExternalInterface.addCallback("fl_setFile_mp3", this, this.setFile_mp3);
 		ExternalInterface.addCallback("fl_clearFile_mp3", this, this.clearFile_mp3);
+		ExternalInterface.addCallback("fl_load_mp3", this, this.load_mp3);
 		ExternalInterface.addCallback("fl_play_mp3", this, this.play_mp3);
 		ExternalInterface.addCallback("fl_pause_mp3", this, this.pause_mp3);
 		ExternalInterface.addCallback("fl_stop_mp3", this, this.stop_mp3);
@@ -123,7 +124,7 @@ class Jplayer {
 		this.isReady = false;
 	}
 	
-	function play_mp3():Boolean {
+	function load_mp3():Boolean {
 		if (this.isReady && !this.isLoading && !this.isLoaded) {
 			this.mySound.loadSound(this.filename, true); // Autoplays when streaming!
 			this.mySound.setVolume(this.vol); // Has to go here, after loadSound(), otherwise a zero screws thing up.
@@ -135,8 +136,16 @@ class Jplayer {
 			this.isLoading = true;
 			
 			clearInterval(this.progressBroker_id);
-			clearInterval(this.bufferProgress_id);
 			this.progressBroker_id = setInterval(this, "progressBroker", 100);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	function play_mp3():Boolean {
+		if (this.load_mp3()) {
+			clearInterval(this.bufferProgress_id);
 			this.bufferProgress_id = setInterval(this, "bufferProgress", 100);
 			return true;
 		
@@ -211,7 +220,6 @@ class Jplayer {
 		var playedTime:Number = (this.isPlaying) ? this.mySound.position : this.playPosition;
 		var timeRelativeBuffer:Number = (this.mySound.duration - playedTime) / 1000;
 
-		var jsResponse:String = "n/a";
 		if (load_complete || timeRelativeBuffer > this.timeBufferMP3 || (this.isNewPlayHead && timeRelativeBuffer > this.timeBufferMP3_min)) {
 			if (!this.isPlaying) {
 				// Start playing!
