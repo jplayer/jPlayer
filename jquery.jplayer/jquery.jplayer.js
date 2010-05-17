@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 1.1.5
+ * Version: 1.1.6
  * Date: 17th May 2010
  */
 
@@ -86,7 +86,7 @@
 	};
 
 	$.jPlayer._config = {
-		version: "1.1.5",
+		version: "1.1.6",
 		swfVersionRequired: "1.1.4",
 		swfVersion: "unknown",
 		jPlayerControllerId: undefined,
@@ -314,7 +314,8 @@
 						}, 100);
 					}
 					self.config.audio.addEventListener("canplay", function() {
-						self.config.audio.volume = self.config.volume/100; // Fix for Chrome 4: Event solves initial volume not being set correctly.
+						var fix = (self.config.volume < 50) ? 0.1 : -0.1; // Fix for Chrome 4: Solves volume change before play bug. (When new vol == old vol Chrome 4 does nothing!)
+						self.config.audio.volume = (self.config.volume + fix)/100; // Fix for Chrome 4: Event solves initial volume not being set correctly.
 					}, false);
 					clearInterval(self.config.delayedCommandId);
 				},
