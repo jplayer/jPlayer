@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 1.1.6
- * Date: 17th May 2010
+ * Version: 1.1.7
+ * Date: 19th May 2010
  */
 
 (function($) {
@@ -71,7 +71,7 @@
 		volume: 80,
 		oggSupport: false,
 		nativeSupport: true,
-		preload: false,
+		preload: 'none',
 		customCssIds: false,
 		graphicsFix: true,
 		errorAlerts: false,
@@ -86,7 +86,7 @@
 	};
 
 	$.jPlayer._config = {
-		version: "1.1.6",
+		version: "1.1.7",
 		swfVersionRequired: "1.1.4",
 		swfVersion: "unknown",
 		jPlayerControllerId: undefined,
@@ -163,7 +163,8 @@
 				aid: this.config.cssPrefix + "_audio_" + $.jPlayer.count,
 				hid: this.config.cssPrefix + "_force_" + $.jPlayer.count,
 				i: $.jPlayer.count,
-				volume: this._limitValue(this.config.volume, 0, 100)
+				volume: this._limitValue(this.config.volume, 0, 100),
+				autobuffer: this.config.preload != 'none'
 			});
 
 			$.jPlayer.count++;
@@ -222,7 +223,7 @@
 				setFile: function(e, mp3, ogg) {
 					try {
 						self._getMovie().fl_setFile_mp3(mp3);
-						if(self.config.preload) {
+						if(self.config.autobuffer) {
 							element.trigger("jPlayer.load");
 						}
 						self.config.diag.src = mp3;
@@ -295,9 +296,9 @@
 					}
 					self.config.audio = new Audio();
 					self.config.audio.id = self.config.aid;
-					self.config.audio.autobuffer = self.config.preload;
+					self.config.audio.autobuffer = self.config.autobuffer;
 					self.config.audio.preload = self.config.preload;
-					if(self.config.preload) {
+					if(self.config.autobuffer) {
 						self.config.audio.src = self.config.diag.src;
 					} else {
 						self.config.isWaitingForPlay = true;
@@ -308,13 +309,14 @@
 					element.trigger("jPlayer.setButtons", false);
 					self.jPlayerOnProgressChange(0, 0, 0, 0, 0);
 					clearInterval(self.config.jPlayerControllerId);
-					if(self.config.preload) {
+					if(self.config.autobuffer) {
 						self.config.jPlayerControllerId = window.setInterval( function() {
 							self.jPlayerController(false);
 						}, 100);
 					}
 					self.config.audio.addEventListener("canplay", function() {
-						var fix = (self.config.volume < 50) ? 0.1 : -0.1; // Fix for Chrome 4: Solves volume change before play bug. (When new vol == old vol Chrome 4 does nothing!)
+						var rnd = 0.1 * Math.random(); // Fix for Chrome 4: Fix volume being set multiple times before playing bug.
+						var fix = (self.config.volume < 50) ? rnd : -rnd; // Fix for Chrome 4: Solves volume change before play bug. (When new vol == old vol Chrome 4 does nothing!)
 						self.config.audio.volume = (self.config.volume + fix)/100; // Fix for Chrome 4: Event solves initial volume not being set correctly.
 					}, false);
 					clearInterval(self.config.delayedCommandId);
@@ -327,7 +329,7 @@
 				load: function(e) {
 					if(self.config.isFileSet) {
 						self.config.audio.autobuffer = true;
-						self.config.audio.preload = true;
+						self.config.audio.preload = 'auto';
 						if(self.config.isWaitingForPlay) {
 							self.config.audio.src = self.config.diag.src;
 							self.config.isWaitingForPlay = false;
