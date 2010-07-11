@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 1.1.4
- * Date: 17th May 2010
+ * Version: 1.2.0
+ * Date: 11th July 2010
  *
  * FlashVars expected:
  *	id:	(URL Encoded) Id of container <div> tag of Flash
@@ -26,7 +26,7 @@ class Jplayer {
 	
 	static var app:Jplayer;
 
-	private var jPlayerVersion:String = "1.1.4";
+	private var jPlayerVersion:String = "1.2.0";
 	private var txVersion:TextField;
 	
 	private var mySound:Sound;
