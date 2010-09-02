@@ -199,6 +199,7 @@
 			var events = {
 				setButtons: function(e, playing) {
 					self.config.diag.isPlaying = playing;
+          self.jPlayerOnPlayingChanged(playing);
 					if(self.config.cssId.play != undefined && self.config.cssId.pause != undefined) {
 						if(playing) {
 							self.config.cssSelector.play.css("display", "none");
@@ -594,9 +595,19 @@
 				this._warning("onProgressChange parameter is not a function.");
 			}
 		},
+    onPlayingChanged: function(fn) {
+      if($.isFunction(fn)) {
+        this.onPlayingChangedCustom = fn;
+      } else {
+        this._warning("onPlayingChanged parameter is not a function.");
+      }
+    },
 		onProgressChangeCustom: function() {
 			// Replaced in onProgressChange()
 		},
+    onPlayingChangedCustom: function() {
+      // Replaced in onPlayingChanged()
+    },
 		jPlayerOnProgressChange: function(lp, ppr, ppa, pt, tt) { // Called from Flash / HTML5 interval
 			this.config.diag.loadPercent = lp;
 			this.config.diag.playedPercentRelative = ppr;
@@ -614,6 +625,9 @@
 			this.onProgressChangeCustom(lp, ppr, ppa, pt, tt);
 			this._forceUpdate();
 		},
+    jPlayerOnPlayingChanged: function(state) {
+      this.onPlayingChangedCustom(state);
+    },
     jPlayerOnFlashFailure: function() { // Called from Flash when it detects a failure to play
       alert('flash failed'); // TODO
     },
