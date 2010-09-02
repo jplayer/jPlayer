@@ -614,6 +614,9 @@
 			this.onProgressChangeCustom(lp, ppr, ppa, pt, tt);
 			this._forceUpdate();
 		},
+    jPlayerOnFlashFailure: function() { // Called from Flash when it detects a failure to play
+      alert('flash failed'); // TODO
+    },
 		jPlayerController: function(override) { // The HTML5 interval function.
 			var pt = 0, tt = 0, ppa = 0, lp = 0, ppr = 0;
 			if(this.config.audio.readyState >= 1) {

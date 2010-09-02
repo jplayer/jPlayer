@@ -164,6 +164,10 @@ class Jplayer {
 	}
 
 	function auto_play_mp3():Void {
+    if (this.playPosition == 0) {
+      setTimeout(this, "checkIfPlaying", 300);
+    }
+    
 		this.mySound.start(this.playPosition/1000);
 		this.isPlaying = true;
 		this.isNewPlayHead = false;
@@ -283,6 +287,13 @@ class Jplayer {
 			clearInterval(this.progressBroker_id);
 		}
 	}
+  
+  function checkIfPlaying():Void {
+    if(this.isPlaying && this.mySound.position == 0) {
+      ExternalInterface.call(this.jQuery, "jPlayerOnFlashFailure");
+      stop_mp3();
+    }
+  }
 
 	function play_head_mp3( played_percent:Number ):Boolean {
 	
