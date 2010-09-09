@@ -71,6 +71,7 @@
 		volume: 80,
 		oggSupport: false,
 		nativeSupport: true,
+    formatPreferences: ['native-mp3', 'flash-mp3'],
 		preload: 'none',
 		customCssIds: false,
 		graphicsFix: true,
@@ -146,6 +147,17 @@
 		_init: function() {
 			var self = this;
 			var element = this.element;
+      
+      // Try to figure out whether the user used the old API with the
+      // oggSupport and/or nativeSupport options, or the new
+      // formatPreferences array.
+      var mustSetArray = (
+        typeof this.options.oggSupport    != 'undefined' ||
+        typeof this.options.nativeSupport != 'undefined'
+      ) && (
+        !$.isArray(this.options.formatPreferences) ||
+        !this.options.formatPreferences.length
+      );
 			
 			this.config = $.extend({}, $.jPlayer.defaults, this.options, $.jPlayer._config);
 			this.config.diag = $.extend({}, $.jPlayer._diag);
@@ -153,6 +165,20 @@
 			this.config.cssSelector = {};
 			this.config.cssDisplay = {};
 			this.config.clickHandler = {};
+      
+      if(mustSetArray) {
+        this.config.formatPreferences = [];
+        // If enabled, ogg support used to come first by default.
+        if(this.config.oggSupport) {
+          this.config.formatPreferences.push('native-ogg');
+        }
+        if(this.config.nativeSupport) {
+          this.config.formatPreferences.push('native-mp3');
+        }
+        // As far as I can tell, there was no way to tell the player
+        // NOT to use Flash.
+        this.config.formatPreferences.push('flash-mp3');
+      }
 			
 			this.element.data("jPlayer.config", this.config);
 
@@ -176,27 +202,47 @@
 					this._warning("Constructor's ready option is not a function.");
 				}
 			}
-			
+      
 			this.config.audio = document.createElement('audio');
 			this.config.audio.id = this.config.aid;
 			// The audio element is added to the page further down with the defaults.
-			
+      
 			$.extend(this.config, {
 				canPlayMP3: !!((this.config.audio.canPlayType) ? (("" != this.config.audio.canPlayType("audio/mpeg")) && ("no" != this.config.audio.canPlayType("audio/mpeg"))) : false),
 				canPlayOGG: !!((this.config.audio.canPlayType) ? (("" != this.config.audio.canPlayType("audio/ogg")) && ("no" != this.config.audio.canPlayType("audio/ogg"))) : false),
 				aSel: $("#" + this.config.aid)
 			});
+      
+      var formatPreferencesNew = [];
+      $.extend(this.config, {
+        firstNativeFormat: '',
+        usingHTML5: false
+      });
+      for(var i = 0; i < this.config.formatPreferences.length; i++) {
+        var fmt = this.config.formatPreferences[i];
+        if(fmt == 'flash-mp3' && this._checkForFlash(8)
+        || fmt == 'native-mp3' && this.config.canPlayMP3
+        || fmt == 'native-ogg' && this.config.canPlayOGG) {
+          if(/^native/.test(fmt)) {
+            if(!this.config.firstNativeFormat) {
+              this.config.firstNativeFormat = fmt.replace(/^native-/, '');
+            }
+            this.config.usingHTML5 = true;
+          }
+          formatPreferencesNew.push(fmt);
+        }
+      }
+      if(!formatPreferencesNew.length) {
+        this._noFormats();
+      }
+      this.config.formatPreferences = formatPreferencesNew;
 
 			$.extend(this.config, {
-				html5: !!((this.config.oggSupport) ? ((this.config.canPlayOGG) ? true : this.config.canPlayMP3) : this.config.canPlayMP3)
+				usingFlash: (this.config.formatPreferences[0] == 'flash-mp3'),
+				usingMP3: (this.config.firstNativeFormat == 'mp3')
 			});
 
-			$.extend(this.config, {
-				usingFlash: !(this.config.html5 && this.config.nativeSupport),
-				usingMP3: !(this.config.oggSupport && this.config.canPlayOGG && this.config.nativeSupport)
-			});
-
-			var events = {
+			this.events = {
 				setButtons: function(e, playing) {
 					self.config.diag.isPlaying = playing;
           self.jPlayerOnPlayingChanged(playing);
@@ -216,17 +262,19 @@
 				}
 			};
 
-			var eventsForFlash = {
+			this.eventsForFlash = {
 				setFile: function(e, mp3, ogg) {
 					try {
 						self._getMovie().fl_setFile_mp3(mp3);
 						if(self.config.autobuffer) {
 							element.trigger("jPlayer.load");
 						}
+            self.config.currentMP3 = mp3;
+            self.config.currentOGG = ogg;
 						self.config.diag.src = mp3;
 						self.config.isFileSet = true; // Set here for conformity, but the flash handles this internally and through return values.
 						element.trigger("jPlayer.setButtons", false);
-					} catch(err) { self._flashError(err); }
+					} catch(err) { self._flashError(err, 'setFile', mp3, ogg); }
 				},
 				clearFile: function(e) {
 					try {
@@ -234,12 +282,12 @@
 						self._getMovie().fl_clearFile_mp3();
 						self.config.diag.src = "";
 						self.config.isFileSet = false;
-					} catch(err) { self._flashError(err); }
+					} catch(err) { self._flashError(err, 'clearFile'); }
 				},
 				load: function(e) {
 					try {
 						self._getMovie().fl_load_mp3();
-					} catch(err) { self._flashError(err); }
+					} catch(err) { self._flashError(err, 'load'); }
 				},
 				play: function(e) {
 					try {
@@ -253,39 +301,41 @@
 						if(self._getMovie().fl_pause_mp3()) {
 							element.trigger("jPlayer.setButtons", false);
 						}
-					} catch(err) { self._flashError(err); }
+					} catch(err) { self._flashError(err, 'pause'); }
 				},
 				stop: function(e) {
 					try {
 						if(self._getMovie().fl_stop_mp3()) {
 							element.trigger("jPlayer.setButtons", false);
 						}
-					} catch(err) { self._flashError(err); }
+					} catch(err) { self._flashError(err, 'stop'); }
 				},
 				playHead: function(e, p) {
 					try {
 						if(self._getMovie().fl_play_head_mp3(p)) {
 							element.trigger("jPlayer.setButtons", true);
 						}
-					} catch(err) { self._flashError(err); }
+					} catch(err) { self._flashError(err, 'playHead', p); }
 				},
 				playHeadTime: function(e, t) {
 					try {
 						if(self._getMovie().fl_play_head_time_mp3(t)) {
 							element.trigger("jPlayer.setButtons", true);
 						}
-					} catch(err) { self._flashError(err); }
+					} catch(err) { self._flashError(err, 'playHeadTime', t); }
 				},
 				volume: function(e, v) {
 					self.config.volume = v;
 					try {
 						self._getMovie().fl_volume_mp3(v);
-					} catch(err) { self._flashError(err); }
+					} catch(err) { self._flashError(err, 'volume', v); }
 				}
 			};
 
-			var eventsForHtmlAudio = {
+			this.eventsForHtmlAudio = {
 				setFile: function(e, mp3, ogg) {
+          self.config.currentMP3 = mp3;
+          self.config.currentOGG = ogg;
 					if(self.config.usingMP3) {
 						self.config.diag.src = mp3;
 					} else { 
@@ -416,52 +466,48 @@
 			};
 
 			if(this.config.usingFlash) {
-				$.extend(events, eventsForFlash);
+				$.extend(this.events, this.eventsForFlash);
 			} else {
-				$.extend(events, eventsForHtmlAudio);
+				$.extend(this.events, this.eventsForHtmlAudio);
 			}
 			
-			for(var event in events) {
+			for(var event in this.events) {
 				var e = "jPlayer." + event;
 				this.element.unbind(e);
-				this.element.bind(e, events[event]);
+				this.element.bind(e, this.events[event]);
 			}
 
 			if(this.config.usingFlash) {
-				if(this._checkForFlash(8)) {
-					if($.browser.msie) {
-						var html_obj = '<object id="' + this.config.fid + '"';
-						html_obj += ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"';
-						html_obj += ' codebase="' + document.URL.substring(0,document.URL.indexOf(':')) + '://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab"'; // Fixed IE non secured element warning.
-						html_obj += ' type="application/x-shockwave-flash"';
-						html_obj += ' width="' + this.config.width + '" height="' + this.config.height + '">';
-						html_obj += '</object>';
-			
-						var obj_param = new Array();
-						obj_param[0] = '<param name="movie" value="' + this.config.swf + '" />';
-						obj_param[1] = '<param name="quality" value="high" />';
-						obj_param[2] = '<param name="FlashVars" value="id=' + escape(this.config.id) + '&fid=' + escape(this.config.fid) + '&vol=' + this.config.volume + '" />';
-						obj_param[3] = '<param name="allowScriptAccess" value="always" />';
-						obj_param[4] = '<param name="bgcolor" value="' + this.config.bgcolor + '" />';
-				
-						var ie_dom = document.createElement(html_obj);
-						for(var i=0; i < obj_param.length; i++) {
-							ie_dom.appendChild(document.createElement(obj_param[i]));
-						}
-						this.element.html(ie_dom);
-					} else {
-						var html_embed = '<embed name="' + this.config.fid + '" id="' + this.config.fid + '" src="' + this.config.swf + '"';
-						html_embed += ' width="' + this.config.width + '" height="' + this.config.height + '" bgcolor="' + this.config.bgcolor + '"';
-						html_embed += ' quality="high" FlashVars="id=' + escape(this.config.id) + '&fid=' + escape(this.config.fid) + '&vol=' + this.config.volume + '"';
-						html_embed += ' allowScriptAccess="always"';
-						html_embed += ' type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />';
-						this.element.html(html_embed);
-					}
-			
-				} else {
-					this.element.html("<p>Flash 8 or above is not installed. <a href='http://get.adobe.com/flashplayer'>Get Flash!</a></p>");
-				}
-			} else {
+        if($.browser.msie) {
+          var html_obj = '<object id="' + this.config.fid + '"';
+          html_obj += ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"';
+          html_obj += ' codebase="' + document.URL.substring(0,document.URL.indexOf(':')) + '://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab"'; // Fixed IE non secured element warning.
+          html_obj += ' type="application/x-shockwave-flash"';
+          html_obj += ' width="' + this.config.width + '" height="' + this.config.height + '">';
+          html_obj += '</object>';
+    
+          var obj_param = new Array();
+          obj_param[0] = '<param name="movie" value="' + this.config.swf + '" />';
+          obj_param[1] = '<param name="quality" value="high" />';
+          obj_param[2] = '<param name="FlashVars" value="id=' + escape(this.config.id) + '&fid=' + escape(this.config.fid) + '&vol=' + this.config.volume + '" />';
+          obj_param[3] = '<param name="allowScriptAccess" value="always" />';
+          obj_param[4] = '<param name="bgcolor" value="' + this.config.bgcolor + '" />';
+      
+          var ie_dom = document.createElement(html_obj);
+          for(var i=0; i < obj_param.length; i++) {
+            ie_dom.appendChild(document.createElement(obj_param[i]));
+          }
+          this.element.html(ie_dom);
+        } else {
+          var html_embed = '<embed name="' + this.config.fid + '" id="' + this.config.fid + '" src="' + this.config.swf + '"';
+          html_embed += ' width="' + this.config.width + '" height="' + this.config.height + '" bgcolor="' + this.config.bgcolor + '"';
+          html_embed += ' quality="high" FlashVars="id=' + escape(this.config.id) + '&fid=' + escape(this.config.fid) + '&vol=' + this.config.volume + '"';
+          html_embed += ' allowScriptAccess="always"';
+          html_embed += ' type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />';
+          this.element.html(html_embed);
+        }
+			}
+      if(this.config.usingHTML5) {
 				this.config.audio.autobuffer = this.config.autobuffer;
 				this.config.audio.preload = this.config.preload;
 				this.config.audio.addEventListener("canplay", function() {
@@ -629,7 +675,10 @@
       this.onPlayingChangedCustom(state);
     },
     jPlayerOnFlashFailure: function() { // Called from Flash when it detects a failure to play
-      alert('flash failed'); // TODO
+      this.element.trigger('jPlayer.stop');
+      this._flashError({
+        message: 'Flash loaded but failed to play any sound.'
+      });
     },
 		jPlayerController: function(override) { // The HTML5 interval function.
 			var pt = 0, tt = 0, ppa = 0, lp = 0, ppr = 0;
@@ -691,6 +740,17 @@
 		onSoundCompleteCustom: function() {
 			// Replaced in onSoundComplete()
 		},
+    onFormatSet: function(fn) {
+      if($.isFunction(fn)) {
+        this.onFormatSetCustom = fn;
+        fn(this.config.formatPreferences[0], false);
+      } else {
+        this._warning('onFormatSet parameter is not a function.');
+      }
+    },
+    onFormatSetCustom: function(fmt, setDueToError) {
+      // Replaced in onFormatSet()
+    },
 		jPlayerOnSoundComplete: function() { // Called from Flash / HTML5 interval
 			this.element.trigger("jPlayer.setButtons", false);
 			this.onSoundCompleteCustom();
@@ -744,8 +804,27 @@
 		_limitValue: function(value, min, max) {
 			return (value < min) ? min : ((value > max) ? max : value);
 		},
-		_flashError: function(e) {
-			this._error("Problem with Flash component.\n\nCheck the swfPath points at the Jplayer.swf path.\n\nswfPath = " + this.config.swfPath + "\nurl: " + this.config.swf + "\n\nError: " + e.message);
+		_flashError: function(e, fn) {
+      // We know this.config.formatPreferences[0] == 'flash-mp3'
+      this.config.formatPreferences.shift();
+      if(this.config.formatPreferences.length) {
+        // Now try a native format
+        $.extend(this.events, this.eventsForHtmlAudio);
+        for(var event in this.events) {
+          var e = "jPlayer." + event;
+          this.element.unbind(e);
+          this.element.bind(e, this.events[event]);
+        }
+        this.element.trigger('jPlayer.setFile',
+          [this.config.currentMP3, this.config.currentOGG]);
+        var args = Array.prototype.slice.call(arguments, 2);
+        if(fn) {
+          this.element.trigger('jPlayer.' + fn, args);
+        }
+        this.onFormatSetCustom(this.config.formatPreferences[0], true);
+      } else {
+        this._noFormats("Flash error - check settings.  Error message:  " + e.message);
+      }
 		},
 		_error: function(msg) {
 			if(this.config.errorAlerts) {
@@ -759,6 +838,13 @@
 		},
 		_alert: function(msg) {
 			alert("jPlayer " + this.config.version + " : id='" + this.config.id +"' : " + msg);
-		}
+		},
+    _noFormats: function(msg) {
+      msg = "Cannot play audio using any of the given formats ('"
+        + this.config.formatPreferences.join("', '") + "').  Valid "
+        + "formats are 'native-mp3', 'native-ogg', and 'flash-mp3'.";
+        + (msg ? "\n\nError:" + msg : '');
+      throw new Error(msg);
+    }
 	};
 })(jQuery);
