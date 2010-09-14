@@ -42,6 +42,7 @@ class Jplayer {
 	private var isPlaying:Boolean = false;
 	private var isNewPlayHead:Boolean = false;
 	private var hasEnded:Boolean = false; // Flag raised in Sound.onSoundComplete() and captured in progressBroker()
+  private var failIfNotPlaying:Boolean = false;
 	
 	private var playPosition:Number = 0;
 	
@@ -289,10 +290,19 @@ class Jplayer {
 	}
   
   function checkIfPlaying():Void {
-    if(this.isPlaying && this.mySound.position == 0) {
-      ExternalInterface.call(this.jQuery, "jPlayerOnFlashFailure");
-      stop_mp3();
-    }
+		if (this.isPlaying && this.mySound.position == 0) {
+      if (!this.isLoaded) {
+        setTimeout(this, "checkIfPlaying", 300);
+      } else if (this.isPlaying && this.mySound.position == 0) {
+        if (this.failIfNotPlaying) {
+          ExternalInterface.call(this.jQuery, "jPlayerOnFlashFailure");
+          stop_mp3();
+        } else {
+          this.failIfNotPlaying = true;
+          setTimeout(this, "checkIfPlaying", 300);
+        }
+      }
+		}
   }
 
 	function play_head_mp3( played_percent:Number ):Boolean {
