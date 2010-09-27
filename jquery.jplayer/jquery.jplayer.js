@@ -294,7 +294,7 @@
 						if(self._getMovie().fl_play_mp3()) {
 							element.trigger("jPlayer.setButtons", true);
 						}
-					} catch(err) { self._flashError(err); }
+					} catch(err) { self._flashError(err, 'play'); }
 				},
 				pause: function(e) {
 					try {
@@ -678,7 +678,7 @@
       this.element.trigger('jPlayer.stop');
       this._flashError({
         message: 'Flash loaded but failed to play any sound.'
-      });
+      }, 'play');
     },
 		jPlayerController: function(override) { // The HTML5 interval function.
 			var pt = 0, tt = 0, ppa = 0, lp = 0, ppr = 0;
@@ -748,8 +748,11 @@
         this._warning('onFormatSet parameter is not a function.');
       }
     },
-    onFormatSetCustom: function(fmt, setDueToError) {
+    onFormatSetCustom: function(fmt, errorDuringOperation) {
       // Replaced in onFormatSet()
+      // If format was set normally (e.g. on player load),
+      // errorDuringOperation will be false.  Otherwise, it will
+      // be the operation that caused the error ('play', 'setFile', ...)
     },
 		jPlayerOnSoundComplete: function() { // Called from Flash / HTML5 interval
 			this.element.trigger("jPlayer.setButtons", false);
@@ -821,7 +824,7 @@
         if(fn) {
           this.element.trigger('jPlayer.' + fn, args);
         }
-        this.onFormatSetCustom(this.config.formatPreferences[0], true);
+        this.onFormatSetCustom(this.config.formatPreferences[0], fn || true);
       } else {
         this._noFormats("Flash error - check settings.  Error message:  " + e.message);
       }
