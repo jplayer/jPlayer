@@ -166,6 +166,7 @@ class Jplayer {
 
 	function auto_play_mp3():Void {
     if (this.playPosition == 0) {
+			this.failIfNotPlaying = false;
       setTimeout(this, "checkIfPlaying", 300);
     }
     
@@ -299,7 +300,7 @@ class Jplayer {
           stop_mp3();
         } else {
           this.failIfNotPlaying = true;
-          setTimeout(this, "checkIfPlaying", 300);
+          setTimeout(this, "checkIfPlaying", 5000);
         }
       }
 		}
