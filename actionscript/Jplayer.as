@@ -1,4 +1,4 @@
-/*
+﻿/*
  * jPlayer Plugin for jQuery JavaScript Library
  * http://www.happyworm.com/jquery/jplayer
  *
@@ -8,315 +8,373 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 1.2.0
- * Date: 11th July 2010
+ * Version: 2.0.0
+ * Date: 20th December 2010
  *
- * FlashVars expected:
- *	id:	(URL Encoded) Id of container <div> tag of Flash
- *	fid:	(URL Encoded) Id of of this Flash Movie
+ * FlashVars expected: (AS3 property of: loaderInfo.parameters)
+ *	id: 	(URL Encoded) Id of jPlayer instance
  *	vol:	(Number) Sets the initial volume
+ *	muted:	(Boolean) Sets the initial muted state
  *
- * MTASC Compiler:
- * mtasc Jplayer.as -swf Jplayer.swf -main -header 120:20:40 -v -version 8 -group
+ * Compiled using: Adobe Flash CS4 Professional
+ * Jplayer.fla
  */
 
-import flash.external.ExternalInterface;
+package {
+	import flash.system.Security;
+	import flash.external.ExternalInterface;
 
-class Jplayer {
+	import flash.utils.Timer;
+	import flash.events.TimerEvent;
 	
-	static var app:Jplayer;
+	import flash.text.TextField;
+	import flash.text.TextFormat;
 
-	private var jPlayerVersion:String = "1.2.0";
-	private var txVersion:TextField;
-	
-	private var mySound:Sound;
-	private var jQuery:String;
-	private var filename:String;
-	
-	private var vol:Number;
-	
-	private var isReady:Boolean = false;
-	private var isLoading:Boolean = false; // true while loading
-	private var isLoaded:Boolean = false; // true when completely downloaded
-	private var isBuffering:Boolean = false; // true while buffering
-	private var isPlaying:Boolean = false;
-	private var isNewPlayHead:Boolean = false;
-	private var hasEnded:Boolean = false; // Flag raised in Sound.onSoundComplete() and captured in progressBroker()
-	
-	private var playPosition:Number = 0;
-	
-	private var timeBufferMP3:Number = 10; // Auto play if buffer is greater than this time in seconds
-	private var timeBufferMP3_min:Number = 1; // Auto pause if buffer drops below this time in seconds
-	
-	private var init_id:Number;
-	private var bufferProgress_id:Number;
-	private var progressBroker_id:Number;
-	
-	function Jplayer( scope:MovieClip ) {
-		System.security.allowDomain("*");
-		scope._soundbuftime = 0;
-		this.jQuery = "jQuery(\"#" + scope.id + "\").jPlayer";
-		this.vol = Number(scope.vol);
-		
-		// Display the jPlayer version so the SWF may be viewed directly to confirm that the JavaScript and SWF versions are compatible.
-		var txFormat:TextFormat = new TextFormat();
-		txFormat.align = "center";
-		this.txVersion = scope.createTextField("txVersion", scope.getNextHighestDepth(), 0, 0, 120, 20);
-		this.txVersion.border = true;
-		this.txVersion.background = true;
-		this.txVersion.backgroundColor = 0xEEEEFF;
-		this.txVersion.text = "jPlayer " + this.jPlayerVersion;
-		this.txVersion.setTextFormat(txFormat);
-		
-		// Delay init() because Firefox 3.5.7+ developed a bug with local testing.
-		clearInterval(this.init_id);
-		this.init_id = setInterval(this, "init", 100);
-	}
-	
-	function init():Void {
-		clearInterval(this.init_id);
+	import flash.events.KeyboardEvent;
 
-		ExternalInterface.addCallback("fl_setFile_mp3", this, this.setFile_mp3);
-		ExternalInterface.addCallback("fl_clearFile_mp3", this, this.clearFile_mp3);
-		ExternalInterface.addCallback("fl_load_mp3", this, this.load_mp3);
-		ExternalInterface.addCallback("fl_play_mp3", this, this.play_mp3);
-		ExternalInterface.addCallback("fl_pause_mp3", this, this.pause_mp3);
-		ExternalInterface.addCallback("fl_stop_mp3", this, this.stop_mp3);
-		ExternalInterface.addCallback("fl_play_head_mp3", this, this.play_head_mp3);
-		ExternalInterface.addCallback("fl_play_head_time_mp3", this, this.play_head_time_mp3);
-		ExternalInterface.addCallback("fl_volume_mp3", this, this.volume_mp3);
+	import flash.display.Sprite;
+	import happyworm.jPlayer.*;
 
-		ExternalInterface.call(this.jQuery, "jPlayerVolume", this.vol);
-		ExternalInterface.call(this.jQuery, "jPlayerReady", this.jPlayerVersion);
-	}
-	
-	function newMP3( f:String ):Void {
-		if (this.isPlaying) {
-			this.mySound.stop();
-		}
-		delete(this.mySound);
-		this.mySound = new Sound();
-		this.playPosition = 0;
-		this.filename = f;
-		this.isReady = true;
-		this.isLoading = false;
-		this.isLoaded = false;
-		this.isPlaying = false;
-		this.hasEnded = false;
-	}
-	
-	function setFile_mp3( f:String ):Boolean {
-		if (f != null) {
-			clearInterval(this.progressBroker_id);
-			clearInterval(this.bufferProgress_id);
+	import flash.display.StageAlign;
+	import flash.display.StageScaleMode;
+	import flash.events.Event;
+
+	public class Jplayer extends Sprite {
+		private var jQuery:String;
+		private var sentNumberFractionDigits:uint = 2;
+
+		public var commonStatus:JplayerStatus = new JplayerStatus(); // Used for inital ready event so volume is correct.
+
+		private var myInitTimer:Timer = new Timer(100, 0);
+
+		private var myMp3Player:JplayerMp3;
+		private var myMp4Player:JplayerMp4;
+
+		private var isMp3:Boolean = false;
+		private var isVideo:Boolean = false;
+
+		private var txLog:TextField;
+		private var debug:Boolean = false; // Set debug to false for release compile!
+
+		public function Jplayer() {
+			flash.system.Security.allowDomain("*");
+
+			jQuery = "jQuery('#" + loaderInfo.parameters.id + "').jPlayer";
+			commonStatus.volume = Number(loaderInfo.parameters.vol);
+			commonStatus.muted = Boolean(loaderInfo.parameters.muted);
+			commonStatus.muted = loaderInfo.parameters.muted == "true";
+
+			stage.scaleMode = StageScaleMode.NO_SCALE;
+			stage.align = StageAlign.TOP_LEFT;
+			stage.addEventListener(Event.RESIZE, resizeHandler);
+
+			var initialVolume:Number = commonStatus.volume;
+			if(commonStatus.muted) {
+				initialVolume = 0;
+			}
+			myMp3Player = new JplayerMp3(initialVolume);
+			addChild(myMp3Player);
+
+			myMp4Player = new JplayerMp4(initialVolume);
+			addChild(myMp4Player);
+
+			setupListeners(!isMp3, isMp3); // Set up the listeners to the default isMp3 state.
 			
-			this.newMP3(f);
-			ExternalInterface.call(this.jQuery, "jPlayerOnProgressChange", 0, 0, 0, 0, 0);
-			
-			return true;
-		} else {
-			return false;
+			// Log console for dev compile option: debug
+			if(debug) {
+				txLog = new TextField();
+				txLog.x = 5;
+				txLog.y = 5;
+				txLog.width = 540;
+				txLog.height = 390;
+				txLog.border = true;
+				txLog.background = true;
+				txLog.backgroundColor = 0xEEEEFF;
+				txLog.multiline = true;
+				txLog.text = "jPlayer " + JplayerStatus.VERSION;
+				txLog.visible = false;
+				this.addChild(txLog);
+				this.stage.addEventListener(KeyboardEvent.KEY_UP, keyboardHandler);
+
+				myMp3Player.addEventListener(JplayerEvent.DEBUG_MSG, debugMsgHandler);
+				myMp4Player.addEventListener(JplayerEvent.DEBUG_MSG, debugMsgHandler);
+			}
+
+			// Delay init() because Firefox 3.5.7+ developed a bug with local testing in Firebug.
+			myInitTimer.addEventListener(TimerEvent.TIMER, init);
+			myInitTimer.start();
 		}
-	}
-	
-	function clearFile_mp3():Void {
-		this.setFile_mp3("");
-		this.isReady = false;
-	}
-	
-	function load_mp3():Boolean {
-		if (this.isReady && !this.isLoading && !this.isLoaded) {
-			this.mySound.loadSound(this.filename, true); // Autoplays when streaming!
-			this.mySound.setVolume(this.vol); // Has to go here, after loadSound(), otherwise a zero screws thing up.
-			var self = this;
-			this.mySound.onSoundComplete = function() {
-				self.hasEnded = true;
+		
+		private function init(e:TimerEvent):void {
+			myInitTimer.stop();
+			if(ExternalInterface.available) {
+				ExternalInterface.addCallback("fl_setAudio_mp3", fl_setAudio_mp3);
+				ExternalInterface.addCallback("fl_setAudio_m4a", fl_setAudio_m4a);
+				ExternalInterface.addCallback("fl_setVideo_m4v", fl_setVideo_m4v);
+				ExternalInterface.addCallback("fl_clearMedia", fl_clearMedia);
+				ExternalInterface.addCallback("fl_load", fl_load);
+				ExternalInterface.addCallback("fl_play", fl_play);
+				ExternalInterface.addCallback("fl_pause", fl_pause);
+				ExternalInterface.addCallback("fl_play_head", fl_play_head);
+				ExternalInterface.addCallback("fl_volume", fl_volume);
+				ExternalInterface.addCallback("fl_mute", fl_mute);
+
+				ExternalInterface.call(jQuery, "jPlayerFlashEvent", JplayerEvent.JPLAYER_READY, extractStatusData(commonStatus)); // See JplayerStatus() class for version number.
+			}
+		}
+		private function setupListeners(oldMP3:Boolean, newMP3:Boolean):void {
+			if(oldMP3 != newMP3) {
+				if(newMP3) {
+					listenToMp3(true);
+					listenToMp4(false);
+				} else {
+					listenToMp3(false);
+					listenToMp4(true);
+				}
+			}
+		}
+		private function listenToMp3(active:Boolean):void {
+			if(active) {
+				myMp3Player.addEventListener(JplayerEvent.JPLAYER_ERROR, jPlayerFlashEvent);
+				myMp3Player.addEventListener(JplayerEvent.JPLAYER_PROGRESS, jPlayerFlashEvent);
+				myMp3Player.addEventListener(JplayerEvent.JPLAYER_TIMEUPDATE, jPlayerFlashEvent);
+				myMp3Player.addEventListener(JplayerEvent.JPLAYER_ENDED, jPlayerFlashEvent);
+				
+				myMp3Player.addEventListener(JplayerEvent.JPLAYER_PLAY, jPlayerFlashEvent);
+				myMp3Player.addEventListener(JplayerEvent.JPLAYER_PAUSE, jPlayerFlashEvent);
+				myMp3Player.addEventListener(JplayerEvent.JPLAYER_LOADSTART, jPlayerFlashEvent);
+
+				myMp3Player.addEventListener(JplayerEvent.JPLAYER_SEEKING, jPlayerFlashEvent);
+				myMp3Player.addEventListener(JplayerEvent.JPLAYER_SEEKED, jPlayerFlashEvent);
+			} else {
+				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_ERROR, jPlayerFlashEvent);
+				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_PROGRESS, jPlayerFlashEvent);
+				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_TIMEUPDATE, jPlayerFlashEvent);
+				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_ENDED, jPlayerFlashEvent);
+				
+				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_PLAY, jPlayerFlashEvent);
+				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_PAUSE, jPlayerFlashEvent);
+				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_LOADSTART, jPlayerFlashEvent);
+
+				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_SEEKING, jPlayerFlashEvent);
+				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_SEEKED, jPlayerFlashEvent);
+			}
+		}
+		private function listenToMp4(active:Boolean):void {
+			if(active) {
+				myMp4Player.addEventListener(JplayerEvent.JPLAYER_ERROR, jPlayerFlashEvent);
+				myMp4Player.addEventListener(JplayerEvent.JPLAYER_PROGRESS, jPlayerFlashEvent);
+				myMp4Player.addEventListener(JplayerEvent.JPLAYER_TIMEUPDATE, jPlayerFlashEvent);
+				myMp4Player.addEventListener(JplayerEvent.JPLAYER_ENDED, jPlayerFlashEvent);
+
+				myMp4Player.addEventListener(JplayerEvent.JPLAYER_PLAY, jPlayerFlashEvent);
+				myMp4Player.addEventListener(JplayerEvent.JPLAYER_PAUSE, jPlayerFlashEvent);
+				myMp4Player.addEventListener(JplayerEvent.JPLAYER_LOADSTART, jPlayerFlashEvent);
+
+				myMp4Player.addEventListener(JplayerEvent.JPLAYER_SEEKING, jPlayerFlashEvent);
+				myMp4Player.addEventListener(JplayerEvent.JPLAYER_SEEKED, jPlayerFlashEvent);
+
+				myMp4Player.addEventListener(JplayerEvent.JPLAYER_LOADEDMETADATA, jPlayerMetaDataHandler); // Note the unique handler
+			} else {
+				myMp4Player.removeEventListener(JplayerEvent.JPLAYER_ERROR, jPlayerFlashEvent);
+				myMp4Player.removeEventListener(JplayerEvent.JPLAYER_PROGRESS, jPlayerFlashEvent);
+				myMp4Player.removeEventListener(JplayerEvent.JPLAYER_TIMEUPDATE, jPlayerFlashEvent);
+				myMp4Player.removeEventListener(JplayerEvent.JPLAYER_ENDED, jPlayerFlashEvent);
+
+				myMp4Player.removeEventListener(JplayerEvent.JPLAYER_PLAY, jPlayerFlashEvent);
+				myMp4Player.removeEventListener(JplayerEvent.JPLAYER_PAUSE, jPlayerFlashEvent);
+				myMp4Player.removeEventListener(JplayerEvent.JPLAYER_LOADSTART, jPlayerFlashEvent);
+
+				myMp4Player.removeEventListener(JplayerEvent.JPLAYER_SEEKING, jPlayerFlashEvent);
+				myMp4Player.removeEventListener(JplayerEvent.JPLAYER_SEEKED, jPlayerFlashEvent);
+
+				myMp4Player.removeEventListener(JplayerEvent.JPLAYER_LOADEDMETADATA, jPlayerMetaDataHandler); // Note the unique handler
+			}
+		}
+		private function fl_setAudio_mp3(src:String):Boolean {
+			if (src != null) {
+				log("fl_setAudio_mp3: "+src);
+				setupListeners(isMp3, true);
+				isMp3 = true;
+				isVideo = false;
+				myMp4Player.clearFile();
+				myMp3Player.setFile(src);
+				return true;
+			} else {
+				log("fl_setAudio_mp3: null");
+				return false;
+			}
+		}
+		private function fl_setAudio_m4a(src:String):Boolean {
+			if (src != null) {
+				log("fl_setAudio_m4a: "+src);
+				setupListeners(isMp3, false);
+				isMp3 = false;
+				isVideo = false;
+				myMp3Player.clearFile();
+				myMp4Player.setFile(src);
+				return true;
+			} else {
+				log("fl_setAudio_m4a: null");
+				return false;
+			}
+		}
+		private function fl_setVideo_m4v(src:String):Boolean {
+			if (src != null) {
+				log("fl_setVideo_m4v: "+src);
+				setupListeners(isMp3, false);
+				isMp3 = false;
+				isVideo = true;
+				myMp3Player.clearFile();
+				myMp4Player.setFile(src);
+				return true;
+			} else {
+				log("fl_setVideo_m4v: null");
+				return false;
+			}
+		}
+		private function fl_clearMedia():void {
+			log("clearMedia.");
+			myMp3Player.clearFile();
+			myMp4Player.clearFile();
+		}
+		private function fl_load():Boolean {
+			log("load.");
+			if(isMp3) {
+				return myMp3Player.load();
+			} else {
+				return myMp4Player.load();
+			}
+		}
+		private function fl_play(time:Number = NaN):Boolean {
+			log("play: time = " + time);
+			if(isMp3) {
+				return myMp3Player.play(time * 1000); // Flash uses milliseconds
+			} else {
+				return myMp4Player.play(time * 1000); // Flash uses milliseconds
+			}
+		}
+		private function fl_pause(time:Number = NaN):Boolean {
+			log("pause: time = " + time);
+			if(isMp3) {
+				return myMp3Player.pause(time * 1000); // Flash uses milliseconds
+			} else {
+				return myMp4Player.pause(time * 1000); // Flash uses milliseconds
+			}
+		}
+		private function fl_play_head(percent:Number):Boolean {
+			log("play_head: "+percent+"%");
+			if(isMp3) {
+				return myMp3Player.playHead(percent);
+			} else {
+				return myMp4Player.playHead(percent);
+			}
+		}
+		private function fl_volume(v:Number):void {
+			log("volume: "+v);
+			commonStatus.volume = v;
+			if(!commonStatus.muted) {
+				myMp3Player.setVolume(v);
+				myMp4Player.setVolume(v);
+			}
+		}
+		private function fl_mute(mute:Boolean):void {
+			log("mute: "+mute);
+			commonStatus.muted = mute;
+			if(mute) {
+				myMp3Player.setVolume(0);
+				myMp4Player.setVolume(0);
+			} else {
+				myMp3Player.setVolume(commonStatus.volume);
+				myMp4Player.setVolume(commonStatus.volume);
+			}
+		}
+		private function jPlayerFlashEvent(e:JplayerEvent):void {
+			log("jPlayer Flash Event: " + e.type + ": " + e.target);
+			if(ExternalInterface.available) {
+				ExternalInterface.call(jQuery, "jPlayerFlashEvent", e.type, extractStatusData(e.data));
+			}
+		}
+		private function extractStatusData(data:JplayerStatus):Object {
+			var myStatus = {
+				version: JplayerStatus.VERSION,
+				src: data.src,
+				paused: !data.isPlaying, // Changing this name requires inverting all assignments and conditional statements.
+				srcSet: data.srcSet,
+				seekPercent: data.seekPercent,
+				currentPercentRelative: data.currentPercentRelative,
+				currentPercentAbsolute: data.currentPercentAbsolute,
+				currentTime: data.currentTime / 1000, // JavaScript uses seconds
+				duration: data.duration / 1000, // JavaScript uses seconds
+				volume: commonStatus.volume,
+				muted: commonStatus.muted
 			};
-			this.mySound.stop();
-			this.isLoading = true;
-			
-			clearInterval(this.progressBroker_id);
-			this.progressBroker_id = setInterval(this, "progressBroker", 100);
-			return true;
-		} else {
-			return false;
+			log("extractStatusData: sp="+myStatus.seekPercent+" cpr="+myStatus.currentPercentRelative+" cpa="+myStatus.currentPercentAbsolute+" ct="+myStatus.currentTime+" d="+myStatus.duration);
+			return myStatus;
 		}
-	}
-	
-	function play_mp3():Boolean {
-		if (this.load_mp3()) {
-			clearInterval(this.bufferProgress_id);
-			this.bufferProgress_id = setInterval(this, "bufferProgress", 100);
-			return true;
-		
-		} else if (!this.isPlaying && this.isReady) {
-			clearInterval(this.progressBroker_id);
-			clearInterval(this.bufferProgress_id);
-			this.progressBroker_id = setInterval(this, "progressBroker", 100);
-			this.bufferProgress_id = setInterval(this, "bufferProgress", 100);
-			return true;
-		
-		} else if (this.isPlaying && this.isReady) {
-			return false;
-		} else {
-			return false;
-		}
-	}
-
-	function auto_play_mp3():Void {
-		this.mySound.start(this.playPosition/1000);
-		this.isPlaying = true;
-		this.isNewPlayHead = false;
-
-		clearInterval(this.progressBroker_id);
-		this.progressBroker_id = setInterval( this, "progressBroker", 100);
-	}
-
-	function auto_pause_mp3():Void {
-		this.playPosition = this.mySound.position;
-		this.isPlaying = false;
-		this.mySound.stop();
-	}
-
-	function pause_mp3():Boolean {
-		if (this.isReady && (this.isPlaying || this.isBuffering)) {
-			clearInterval(this.bufferProgress_id);
-			this.isPlaying = false;
-			this.playPosition = this.mySound.position;
-			this.mySound.stop();
-	
-			this.isBuffering = false;
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	function stop_mp3():Boolean {
-		if (this.isReady) {
-			clearInterval(this.bufferProgress_id);
-			this.playPosition = 0;
-			if (this.isPlaying) {
-				this.mySound.stop();
-				this.isPlaying = false;
-			} else {
-				this.progressBroker();
+		private function jPlayerMetaDataHandler(e:JplayerEvent):void {
+			log("jPlayerMetaDataHandler:" + e.target);
+			if(ExternalInterface.available) {
+				resizeHandler(new Event(Event.RESIZE));
+				ExternalInterface.call(jQuery, "jPlayerFlashEvent", e.type, extractStatusData(e.data));
 			}
-
-			this.isBuffering = false;
-			return true;
-		} else {
-			return false;
 		}
-	}
+		private function resizeHandler(e:Event):void {
+			log("resizeHandler: stageWidth = " + stage.stageWidth + " | stageHeight = " + stage.stageHeight);
 
+			var mediaX:Number = 0;
+			var mediaY:Number = 0;
+			var mediaWidth:Number = 0;
+			var mediaHeight:Number = 0;
 
-	function bufferProgress():Void {
-		var load_complete:Boolean = false;
-		if (this.mySound.getBytesTotal() > 100) {
-			load_complete = (this.mySound.getBytesLoaded() == this.mySound.getBytesTotal());
-		}
-
-		var playedTime:Number = (this.isPlaying) ? this.mySound.position : this.playPosition;
-		var timeRelativeBuffer:Number = (this.mySound.duration - playedTime) / 1000;
-
-		if (load_complete || timeRelativeBuffer > this.timeBufferMP3 || (this.isNewPlayHead && timeRelativeBuffer > this.timeBufferMP3_min)) {
-			if (!this.isPlaying) {
-				// Start playing!
-				this.auto_play_mp3();
-				this.isBuffering = false;
-			}
-		} else {
-			if (this.isPlaying) {
-				if (timeRelativeBuffer < this.timeBufferMP3_min) {
-					// Pause!
-					this.auto_pause_mp3();
+			if(stage.stageWidth > 0 && stage.stageHeight > 0 && myMp4Player.myVideo.width > 0 && myMp4Player.myVideo.height > 0) {
+				var aspectRatioStage:Number = stage.stageWidth / stage.stageHeight;
+				var aspectRatioVideo:Number = myMp4Player.myVideo.width / myMp4Player.myVideo.height;
+				if(aspectRatioStage < aspectRatioVideo) {
+					mediaWidth = stage.stageWidth;
+					mediaHeight = stage.stageWidth / aspectRatioVideo;
+					mediaX = 0;
+					mediaY = (stage.stageHeight - mediaHeight) / 2;
+				} else {
+					mediaWidth = stage.stageHeight * aspectRatioVideo;
+					mediaHeight = stage.stageHeight;
+					mediaX = (stage.stageWidth - mediaWidth) / 2;
+					mediaY = 0;
 				}
-			} else {
-				if (!this.isBuffering) {
-					this.isBuffering = true;
-				}
+				resizeEntity(myMp4Player, mediaX, mediaY, mediaWidth, mediaHeight);
+			}
+			if(debug && stage.stageWidth > 20 && stage.stageHeight > 20) {
+				txLog.width = stage.stageWidth - 10;
+				txLog.height = stage.stageHeight - 10;
 			}
 		}
-	
-		if (load_complete) {
-			clearInterval(this.bufferProgress_id);
+		private function resizeEntity(entity:Sprite, mediaX:Number, mediaY:Number, mediaWidth:Number, mediaHeight:Number):void {
+			entity.x = mediaX;
+			entity.y = mediaY;
+			entity.width = mediaWidth;
+			entity.height = mediaHeight;
 		}
-	}
-
-	function loadProgress():Number {
-		var loaded_percent:Number = 0;
-		if (this.mySound.getBytesTotal() > 100) {
-			loaded_percent = Math.floor(10000 * this.mySound.getBytesLoaded() / this.mySound.getBytesTotal()) / 100;
-			if (this.mySound.getBytesLoaded() == this.mySound.getBytesTotal()) {
-				this.isLoading = false;
-				this.isLoaded = true;
+		private function log(t):void {
+			if(debug) {
+				txLog.text = t + "\n" + txLog.text;
 			}
 		}
-		return loaded_percent;
-	}
-
-	function progressBroker():Void {
-		var loadPercent:Number = this.loadProgress();
-		var playedTime:Number = Math.round((this.isPlaying || this.isBuffering) ? this.mySound.position : this.playPosition);
-		var playedPercentRelative:Number = (this.mySound.duration > 0) ? Math.round(10000 * playedTime / this.mySound.duration) / 100 : 0;
-		var playedPercentAbsolute:Number = playedPercentRelative * (loadPercent / 100);
-		var totalTime:Number = (this.mySound.duration > 0) ? this.mySound.duration : 0;
-	
-		if (this.hasEnded) {
-			this.hasEnded = false; // Reset the flag after capturing it.
-			
-			this.playPosition = 0;
-			this.isPlaying = false;
-			
-			// Clean up the values affected by inaccurate Sound.position
-			playedTime = totalTime;
-			playedPercentRelative = 100;
-			playedPercentAbsolute = 100;
-			
-			ExternalInterface.call(this.jQuery, "jPlayerOnSoundComplete");
+		private function debugMsgHandler(e:JplayerEvent):void {
+			log(e.msg);
 		}
-		
-		ExternalInterface.call(this.jQuery, "jPlayerOnProgressChange", loadPercent, playedPercentRelative, playedPercentAbsolute, playedTime, totalTime);
-
-		if (this.isLoaded && !this.isPlaying) {
-			clearInterval(this.progressBroker_id);
-		}
-	}
-
-	function play_head_mp3( played_percent:Number ):Boolean {
-	
-		var playPosition:Number = (this.mySound.duration != null) ? (played_percent/100) * this.mySound.duration : 0;
-		return this.change_play_head(playPosition);
-	}
-
-	function play_head_time_mp3( played_time:Number ):Boolean {
-	
-		return this.change_play_head(played_time);
-	}
-
-	function change_play_head( playPosition:Number ):Boolean {
-		if (this.isReady) {
-			if (this.isPlaying) {
-				this.mySound.stop();
+		private function keyboardHandler(e:KeyboardEvent):void {
+			log("keyboardHandler: e.keyCode = " + e.keyCode);
+			switch(e.keyCode) {
+				case 68 : // d
+					txLog.visible = !txLog.visible;
+					log("Toggled log display: " + txLog.visible);
+					break;
+				case 76 : // l
+					if(e.ctrlKey && e.shiftKey) {
+						txLog.text = "Cleared log.";
+					}
+					break;
 			}
-			this.isPlaying = false;
-			this.isNewPlayHead = true;
-			this.playPosition = playPosition;
-		
-			return this.play_mp3();
-		} else {
-			return false;
 		}
-	}
-
-	function volume_mp3(v:Number):Void {
-		this.vol = v;
-		this.mySound.setVolume(this.vol);
-		ExternalInterface.call(this.jQuery, "jPlayerVolume", this.vol);
-	}
-	
-	static function main(mc:MovieClip) {
-		app = new Jplayer(_root);
 	}
 }
