@@ -440,8 +440,10 @@
 			this.flash.canPlay = {};
 			$.each(this.formats, function(priority, format) {
 				var codecAvailable = false;
-				for (var i = 0; i < self.format[format].codec.length; i++)
-					codecAvailable |= self.htmlElement[self.format[format].media].canPlayType(self.format[format].codec[i]) !== "";
+				for (var i = 0; i < self.format[format].codec.length; i++) {
+					var cur_elem = self.htmlElement[self.format[format].media];
+					codecAvailable |= cur_elem.canPlayType !== undefined && cur_elem.canPlayType(self.format[format].codec[i]) !== "";
+				}
 				self.html.canPlay[format] = self.html[self.format[format].media].available && codecAvailable;
 				self.flash.canPlay[format] = self.format[format].flashCanPlay && self.flash.available;
 			});
