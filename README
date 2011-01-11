@@ -10,10 +10,10 @@ jPlayer is a jQuery plugin that allows you to:
  * create and style a media player using just HTML and CSS
  * add audio and video to your jQuery projects
  * support more devices using HTML5
- * support older browsers using a Flash Fallback</li>
- * control media on your website using a JavaScript API</li>
+ * support older browsers using a Flash Fallback
+ * control media on your website using a JavaScript API
 
-jPlayer supports:</p>
+jPlayer supports:
  * HTML5: mp3, m4a (AAC), m4v (H.264), ogv*, oga*, wav*, webm*
  * Flash: mp3, m4a (AAC), m4v (H.264)
 (*) Optional counterpart formats to increase HTML5 x-browser support.
