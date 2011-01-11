@@ -1,6 +1,6 @@
-jPlayer : the CSS styleable jQuery media player plugin
+jPlayer : HTML5 Audio & Video for jQuery
 
-http://www.happyworm.com/jquery/jplayer
+http://www.jplayer.org/
 
 What is jPlayer?
 
@@ -22,7 +22,10 @@ Dual licensed under the MIT and GPL licenses.
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/copyleft/gpl.html
 
-Developer Guide:
-http://www.happyworm.com/jquery/jplayer/latest/developer-guide.htm
+Quick Start Guide:
+http://www.jplayer.org/latest/quick-start-guide/
+
+Developer Guide and API Reference:
+http://www.jplayer.org/latest/developer-guide/
 
 Author: Mark J Panaghiston
