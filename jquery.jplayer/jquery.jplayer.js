@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.1
+ * Version: 2.0.2
  * Date: 13th January 2010
  */
 
@@ -192,7 +192,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.0",
+			script: "2.0.2",
 			needFlash: "2.0.0",
 			flash: "unknown"
 		},
@@ -845,6 +845,10 @@
 					case $.jPlayer.event.seeked:
 						this._seeked();
 						this._trigger(eventType);
+						break;
+					case $.jPlayer.event.ready:
+						// The ready event is handled outside the switch statement.
+						// Captured here otherwise 2 ready events would be generated if the ready event handler used setMedia.
 						break;
 					default:
 						this._trigger(eventType);
