@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.0
- * Date: 20th December 2010
+ * Version: 2.0.1
+ * Date: 13th January 2010
  */
 
 (function($, undefined) {
@@ -481,6 +481,18 @@
 				});
 			});
 
+			// Init solution active state and the event gates to false.
+			this.html.active = false;
+			this.html.audio.gate = false;
+			this.html.video.gate = false;
+			this.flash.active = false;
+			this.flash.gate = false;
+
+			// Set up the css selectors for the control and feedback entities.
+			$.each(this.options.cssSelector, function(fn, cssSel) {
+				self._cssSelector(fn, cssSel);
+			});
+
 			// If neither html nor flash are being used by this browser, then media playback is not possible. Trigger an error event.
 			if(!(this.html.used || this.flash.used)) {
 				this._error( {
@@ -490,13 +502,6 @@
 					hint: $.jPlayer.errorHint.NO_SOLUTION
 				});
 			}
-
-			// Init solution active state and the event gates to false.
-			this.html.active = false;
-			this.html.audio.gate = false;
-			this.html.video.gate = false;
-			this.flash.active = false;
-			this.flash.gate = false;
 
 			// Add the flash solution if it is being used.
 			if(this.flash.used) {
@@ -560,11 +565,6 @@
 					self._trigger($.jPlayer.event.ready);
 				}, 100);
 			}
-
-			// Set up the css selectors for the control and feedback entities.
-			$.each(this.options.cssSelector, function(fn, cssSel) {
-				self._cssSelector(fn, cssSel);
-			});
 
 			this._updateInterface();
 			this._updateButtons(false);
@@ -1709,7 +1709,7 @@
 		},
 		_warning: function(warning) {
 			this._trigger($.jPlayer.event.warning, undefined, warning);
-			if(this.options.errorAlerts) {
+			if(this.options.warningAlerts) {
 				this._alert("Warning!" + (warning.message ? "\n\n" + warning.message : "") + (warning.hint ? "\n\n" + warning.hint : "") + "\n\nContext: " + warning.context);
 			}
 		},
