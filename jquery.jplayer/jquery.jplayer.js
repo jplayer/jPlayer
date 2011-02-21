@@ -1,6 +1,6 @@
 /*
  * jPlayer Plugin for jQuery JavaScript Library
- * http://www.happyworm.com/jquery/jplayer
+ * http://www.jplayer.org
  *
  * Copyright (c) 2009 - 2010 Happyworm Ltd
  * Dual licensed under the MIT and GPL licenses.
@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.2
- * Date: 13th January 2010
+ * Version: 2.0.3
+ * Date: 21st February 2011
  */
 
 (function($, undefined) {
@@ -46,7 +46,7 @@
 			this.each(function() {
 				var instance = $.data( this, name );
 				if ( instance ) {
-					instance.option( options || {} )._init(); // Orig jquery.ui.widget.js code: Not recommend for jPlayer. ie., Applying new options to an existing instance (via the jPlayer constructor) and performing the _init(). The _init() is what concerns me. It would leave a lot of event handlers acting on jPlayer instance and the interface.
+					// instance.option( options || {} )._init(); // Orig jquery.ui.widget.js code: Not recommend for jPlayer. ie., Applying new options to an existing instance (via the jPlayer constructor) and performing the _init(). The _init() is what concerns me. It would leave a lot of event handlers acting on jPlayer instance and the interface.
 					instance.option( options || {} ); // The new constructor only changes the options. Changing options only has basic support atm.
 				} else {
 					$.data( this, name, new $.jPlayer( options, this ) );
@@ -192,7 +192,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.2",
+			script: "2.0.3",
 			needFlash: "2.0.0",
 			flash: "unknown"
 		},
@@ -204,9 +204,9 @@
 			volume: 0.8, // The volume. Number 0 to 1.
 			muted: false,
 			backgroundColor: "#000000", // To define the jPlayer div and Flash background color.
-			cssSelectorAncestor: "#jp_interface_1",
-			cssSelector: {
-				videoPlay: ".jp-video-play",
+			cssSelectorAncestor: "#jp_container_1",
+			cssSelector: { // * denotes properties that should only be required when video media type required. _cssSelector() would require changes to enable splitting these into Audio and Video defaults.
+				videoPlay: ".jp-video-play", // *
 				play: ".jp-play",
 				pause: ".jp-pause",
 				stop: ".jp-stop",
@@ -217,13 +217,40 @@
 				volumeBar: ".jp-volume-bar",
 				volumeBarValue: ".jp-volume-bar-value",
 				currentTime: ".jp-current-time",
-				duration: ".jp-duration"
+				duration: ".jp-duration",
+				fullScreen: ".jp-full-screen", // *
+				restoreScreen: ".jp-restore-screen" // *
 			},
+			fullScreen: false,
 			// globalVolume: false, // Not implemented: Set to make volume changes affect all jPlayer instances
 			// globalMute: false, // Not implemented: Set to make mute changes affect all jPlayer instances
 			idPrefix: "jp", // Prefix for the ids of html elements created by jPlayer. For flash, this must not include characters: . - + * / \
 			errorAlerts: false,
 			warningAlerts: false
+		},
+		optionsAudio: {
+			size: {
+				width: "0px",
+				height: "0px",
+				cssClass: ""
+			},
+			sizeFull: {
+				width: "0px",
+				height: "0px",
+				cssClass: ""
+			}
+		},
+		optionsVideo: {
+			size: {
+				width: "480px",
+				height: "270px",
+				cssClass: "jp-video-270p"
+			},
+			sizeFull: {
+				width: "100%",
+				height: "90%",
+				cssClass: "jp-video-full"
+			}
 		},
 		instances: {}, // Static Object
 		status: { // Instanced in _init()
@@ -245,8 +272,8 @@
 		_status: { // Instanced in _init(): These status values are persistent. ie., Are not affected by a status reset.
 			volume: undefined, // Set by constructor option/default.
 			muted: false, // Set by constructor option/default.
-			width: 0, // Read from CSS
-			height: 0 // Read from CSS
+			width: "0px", // Set by constructor option/default.
+			height: "0px" // Set by constructor option/default.
 		},
 		internal: { // Instanced in _init()
 			ready: false,
@@ -322,12 +349,10 @@
 			this.css.cs = {}; // Holds the css selector strings
 			this.css.jq = {}; // Holds jQuery selectors. ie., $(css.cs.method)
 
+			this.ancestorJq = this.options.cssSelectorAncestor ? $(this.options.cssSelectorAncestor) : []; // Would use $() instead of [], but it is only 1.4+
+
 			this.status.volume = this._limitValue(this.options.volume, 0, 1); // Set volume status from constructor option.
 			this.status.muted = this.options.muted; // Set muted status from constructor option.
-			this.status.width = this.element.css('width'); // Sets from CSS.
-			this.status.height = this.element.css('height'); // Sets from CSS.
-
-			this.element.css({'background-color': this.options.backgroundColor});
 
 			// Create the formats array, with prority based on the order of the supplied formats string
 			$.each(this.options.supplied.toLowerCase().split(","), function(index1, value1) {
@@ -400,7 +425,29 @@
 					self.options[eventName] = undefined; // Destroy the handler pointer copy on the options. Reason, events can be added/removed in other ways so this could be obsolete and misleading.
 				}
 			});
-			
+
+			// Determine if we require solutions for audio, video or both media types.
+			this.require.audio = false;
+			this.require.video = false;
+			$.each(this.formats, function(priority, format) {
+				self.require[self.format[format].media] = true;
+			});
+
+			// Now required types are known, finish the options default settings.
+			if(this.require.video) {
+				this.options = $.extend(true, {},
+					this.optionsVideo,
+					this.options
+				);
+			} else {
+				this.options = $.extend(true, {},
+					this.optionsAudio,
+					this.options
+				);
+			}
+			this._setSize(); // update status and jPlayer element size
+			this._addUiClass(); // update the ui class
+
 			// Create the poster image.
 			this.htmlElement.poster = document.createElement('img');
 			this.htmlElement.poster.id = this.internal.poster.id;
@@ -414,13 +461,7 @@
 			this.internal.poster.jq.css({'width': this.status.width, 'height': this.status.height});
 			this.internal.poster.jq.hide();
 			
-			// Determine if we require solutions for audio, video or both media types.
-			this.require.audio = false;
-			this.require.video = false;
-			$.each(this.formats, function(priority, format) {
-				self.require[self.format[format].media] = true;
-			});
-			
+			// Generate the required media elements
 			this.html.audio.available = false;
 			if(this.require.audio) { // If a supplied format is audio
 				this.htmlElement.audio = document.createElement('audio');
@@ -1205,6 +1246,8 @@
 			var fix = (v < 0.5) ? rnd : -rnd; // Fix for Chrome 4: Solves volume change before play bug. (When new vol == old vol Chrome 4 does nothing!)
 			return (v + fix); // Fix for Chrome 4: Event solves initial volume not being set correctly.
 		},
+		// MJP: The _cssSelectorAncestor() function is never used. See _setOption() and consider review.
+		// MJP: During review, consider warning event if ancestor not found.
 		_cssSelectorAncestor: function(ancestor, refresh) {
 			this.options.cssSelectorAncestor = ancestor;
 			if(refresh) {
@@ -1352,14 +1395,38 @@
 			switch(key) {
 				case "cssSelectorAncestor" :
 					this.options[key] = value;
+					this._removeUiClass();
+					this.ancestorJq = value ? $(value) : [];
+					this._addUiClass();
 					$.each(self.options.cssSelector, function(fn, cssSel) { // Refresh all associations for new ancestor.
 						self._cssSelector(fn, cssSel);
 					});
 					break;
 				case "cssSelector" :
 					$.each(value, function(fn, cssSel) {
-						self._cssSelector(fn, cssSel);
+						self._cssSelector(fn, cssSel); // NB: The option is set inside this function, after further validity checks.
 					});
+					break;
+				case "fullScreen" :
+					if(this.options[key] !== value) { // if changed
+						this._removeUiClass();
+						this.options[key] = value;
+						this._refreshSize();
+					}
+					break;
+				case "size" :
+					if(!this.options.fullScreen && this.options[key].cssClass !== value.cssClass) {
+						this._removeUiClass();
+					}
+					this.options[key] = $.extend({}, this.options[key], value); // store a merged copy of it, incase not all properties changed.
+					this._refreshSize();
+					break;
+				case "sizeFull" :
+					if(this.options.fullScreen && this.options[key].cssClass !== value.cssClass) {
+						this._removeUiClass();
+					}
+					this.options[key] = $.extend({}, this.options[key], value); // store a merged copy of it, incase not all properties changed.
+					this._refreshSize();
 					break;
 			}
 
@@ -1367,28 +1434,55 @@
 		},
 		// End of: (Options code adapted from ui.widget.js)
 
-		// The resize() set of functions are not implemented yet.
-		// Basically are currently used to allow Flash debugging without too much hassle.
-		resize: function(css) {
-			// MJP: Want to run some checks on dim {} first.
-			if(this.html.active) {
-				this._resizeHtml(css);
+		_refreshSize: function() {
+			this._setSize(); // update status and jPlayer element size
+			this._addUiClass(); // update the ui class
+			this._updateSize(); // update internal sizes
+		},
+		_setSize: function() {
+			// Determine the current size from the options
+			if(this.options.fullScreen) {
+				this.status.width = this.options.sizeFull.width;
+				this.status.height = this.options.sizeFull.height;
+				this.status.cssClass = this.options.sizeFull.cssClass;
+			} else {
+				this.status.width = this.options.size.width;
+				this.status.height = this.options.size.height;
+				this.status.cssClass = this.options.size.cssClass;
 			}
-			if(this.flash.active) {
-				this._resizeFlash(css);
-			}
-			this._trigger($.jPlayer.event.resize);
-		},
-		_resizePoster: function(css) {
-			// Not implemented yet
-		},
-		_resizeHtml: function(css) {
-			// Not implemented yet
-		},
-		_resizeFlash: function(css) {
-			this.internal.flash.jq.css({'width':css.width, 'height':css.height});
-		},
 
+			// Set the size of the jPlayer area.
+			this.element.css({'width': this.status.width, 'height': this.status.height});
+		},
+		_addUiClass: function() {
+			if(this.ancestorJq.length) {
+				this.ancestorJq.addClass(this.status.cssClass);
+			}
+		},
+		_removeUiClass: function() {
+			if(this.ancestorJq.length) {
+				this.ancestorJq.removeClass(this.status.cssClass);
+			}
+		},
+		_updateSize: function() {
+			// The poster uses show/hide so can simply resize it.
+			this.internal.poster.jq.css({'width': this.status.width, 'height': this.status.height});
+
+			// Video html or flash resized if necessary at this time.
+			if(!this.status.waitForPlay) {
+				if(this.html.active && this.html.video.available) {
+					this.internal.video.jq.css({'width': this.status.width, 'height': this.status.height});
+				} else if(this.flash.active) {
+					this.internal.flash.jq.css({'width': this.status.width, 'height': this.status.height});
+				}
+			}
+		},
+		fullScreen: function() {
+			this._setOption("fullScreen", true);
+		},
+		restoreScreen: function() {
+			this._setOption("fullScreen", false);
+		},
 		_html_initMedia: function() {
 			if(this.status.srcSet  && !this.status.waitForPlay) {
 				this.htmlElement.media.pause();
