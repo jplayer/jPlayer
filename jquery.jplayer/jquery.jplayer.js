@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.3
- * Date: 21st February 2011
+ * Version: 2.0.4
+ * Date: 3rd March 2011
  */
 
 (function($, undefined) {
@@ -192,7 +192,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.3",
+			script: "2.0.4",
 			needFlash: "2.0.0",
 			flash: "unknown"
 		},
@@ -349,7 +349,7 @@
 			this.css.cs = {}; // Holds the css selector strings
 			this.css.jq = {}; // Holds jQuery selectors. ie., $(css.cs.method)
 
-			this.ancestorJq = this.options.cssSelectorAncestor ? $(this.options.cssSelectorAncestor) : []; // Would use $() instead of [], but it is only 1.4+
+			this.ancestorJq = []; // Holds jQuery selector of cssSelectorAncestor. Init would use $() instead of [], but it is only 1.4+
 
 			this.status.volume = this._limitValue(this.options.volume, 0, 1); // Set volume status from constructor option.
 			this.status.muted = this.options.muted; // Set muted status from constructor option.
@@ -446,7 +446,6 @@
 				);
 			}
 			this._setSize(); // update status and jPlayer element size
-			this._addUiClass(); // update the ui class
 
 			// Create the poster image.
 			this.htmlElement.poster = document.createElement('img');
@@ -530,10 +529,8 @@
 			this.flash.gate = false;
 
 			// Set up the css selectors for the control and feedback entities.
-			$.each(this.options.cssSelector, function(fn, cssSel) {
-				self._cssSelector(fn, cssSel);
-			});
-
+			this._cssSelectorAncestor(this.options.cssSelectorAncestor);
+			
 			// If neither html nor flash are being used by this browser, then media playback is not possible. Trigger an error event.
 			if(!(this.html.used || this.flash.used)) {
 				this._error( {
@@ -1246,15 +1243,23 @@
 			var fix = (v < 0.5) ? rnd : -rnd; // Fix for Chrome 4: Solves volume change before play bug. (When new vol == old vol Chrome 4 does nothing!)
 			return (v + fix); // Fix for Chrome 4: Event solves initial volume not being set correctly.
 		},
-		// MJP: The _cssSelectorAncestor() function is never used. See _setOption() and consider review.
-		// MJP: During review, consider warning event if ancestor not found.
-		_cssSelectorAncestor: function(ancestor, refresh) {
+		_cssSelectorAncestor: function(ancestor) {
+			var self = this;
 			this.options.cssSelectorAncestor = ancestor;
-			if(refresh) {
-				$.each(this.options.cssSelector, function(fn, cssSel) {
-					self._cssSelector(fn, cssSel);
+			this._removeUiClass();
+			this.ancestorJq = ancestor ? $(ancestor) : []; // Would use $() instead of [], but it is only 1.4+
+			if(ancestor && this.ancestorJq.length !== 1) { // So empty strings do not generate the warning.
+				this._warning( {
+					type: $.jPlayer.warning.CSS_SELECTOR_COUNT,
+					context: ancestor,
+					message: $.jPlayer.warningMsg.CSS_SELECTOR_COUNT + this.ancestorJq.length + " found for cssSelectorAncestor.",
+					hint: $.jPlayer.warningHint.CSS_SELECTOR_COUNT
 				});
 			}
+			this._addUiClass();
+			$.each(this.options.cssSelector, function(fn, cssSel) {
+				self._cssSelector(fn, cssSel);
+			});
 		},
 		_cssSelector: function(fn, cssSel) {
 			var self = this;
@@ -1394,13 +1399,7 @@
 
 			switch(key) {
 				case "cssSelectorAncestor" :
-					this.options[key] = value;
-					this._removeUiClass();
-					this.ancestorJq = value ? $(value) : [];
-					this._addUiClass();
-					$.each(self.options.cssSelector, function(fn, cssSel) { // Refresh all associations for new ancestor.
-						self._cssSelector(fn, cssSel);
-					});
+					this._cssSelectorAncestor(value); // Set and refresh all associations for the new ancestor.
 					break;
 				case "cssSelector" :
 					$.each(value, function(fn, cssSel) {
@@ -1851,7 +1850,7 @@
 	};
 
 	$.jPlayer.warningMsg = {
-		CSS_SELECTOR_COUNT: "The number of methodCssSelectors found did not equal one: ",
+		CSS_SELECTOR_COUNT: "The number of css selectors found did not equal one: ",
 		CSS_SELECTOR_METHOD: "The methodName given in jPlayer('cssSelector') is not a valid jPlayer method.",
 		CSS_SELECTOR_STRING: "The methodCssSelector given in jPlayer('cssSelector') is not a String or is empty.",
 		OPTION_KEY: "The option requested in jPlayer('option') is undefined."
