@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.4
- * Date: 3rd March 2011
+ * Version: 2.0.5
+ * Date: 4th March 2011
  */
 
 (function($, undefined) {
@@ -192,7 +192,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.4",
+			script: "2.0.5",
 			needFlash: "2.0.0",
 			flash: "unknown"
 		},
@@ -269,12 +269,11 @@
 			currentTime: 0,
 			duration: 0
 		},
-		_status: { // Instanced in _init(): These status values are persistent. ie., Are not affected by a status reset.
-			volume: undefined, // Set by constructor option/default.
-			muted: false, // Set by constructor option/default.
-			width: "0px", // Set by constructor option/default.
-			height: "0px" // Set by constructor option/default.
-		},
+/*		Persistant status properties created dynamically at _init():
+			width
+			height
+			cssClass
+*/		
 		internal: { // Instanced in _init()
 			ready: false,
 			instance: undefined,
@@ -332,7 +331,7 @@
 			
 			this.element.empty();
 			
-			this.status = $.extend({}, this.status, this._status); // Copy static to unique instance. Adds the status propeties that persist through a reset. NB: Might want to use $.jPlayer.prototype.status instead once options completely implmented and _init() returned to $.fn.jPlayer plugin. 
+			this.status = $.extend({}, this.status); // Copy static to unique instance.
 			this.internal = $.extend({}, this.internal); // Copy static to unique instance.
 
 			this.formats = []; // Array based on supplied string option. Order defines priority.
@@ -351,8 +350,7 @@
 
 			this.ancestorJq = []; // Holds jQuery selector of cssSelectorAncestor. Init would use $() instead of [], but it is only 1.4+
 
-			this.status.volume = this._limitValue(this.options.volume, 0, 1); // Set volume status from constructor option.
-			this.status.muted = this.options.muted; // Set muted status from constructor option.
+			this.options.volume = this._limitValue(this.options.volume, 0, 1); // Limit volume value's bounds.
 
 			// Create the formats array, with prority based on the order of the supplied formats string
 			$.each(this.options.supplied.toLowerCase().split(","), function(index1, value1) {
@@ -543,7 +541,7 @@
 
 			// Add the flash solution if it is being used.
 			if(this.flash.used) {
-				var flashVars = 'id=' + escape(this.internal.self.id) + '&vol=' + this.status.volume + '&muted=' + this.status.muted;
+				var flashVars = 'id=' + escape(this.internal.self.id) + '&vol=' + this.options.volume + '&muted=' + this.options.muted;
 
 				if($.browser.msie && Number($.browser.version) <= 8) {
 					var html_obj = '<object id="' + this.internal.flash.id + '"';
@@ -606,8 +604,8 @@
 
 			this._updateInterface();
 			this._updateButtons(false);
-			this._updateVolume(this.status.volume);
-			this._updateMute(this.status.muted);
+			this._updateVolume(this.options.volume);
+			this._updateMute(this.options.muted);
 			if(this.css.jq.videoPlay.length) {
 				this.css.jq.videoPlay.hide();
 			}
@@ -649,6 +647,7 @@
 			var self = this;
 			mediaElement.preload = this.options.preload;
 			mediaElement.muted = this.options.muted;
+			mediaElement.volume = this.options.volume;
 
 			// Create the event listeners
 			// Only want the active entity to affect jPlayer and bubble events.
@@ -703,7 +702,7 @@
 			}, false);
 			mediaElement.addEventListener("canplay", function() {
 				if(entity.gate && !self.status.waitForLoad) {
-					mediaElement.volume = self._volumeFix(self.status.volume);
+					mediaElement.volume = self._volumeFix(self.options.volume);
 					self._trigger($.jPlayer.event.canplay);
 				}
 			}, false);
@@ -798,14 +797,13 @@
 			this.status.currentTime = ct;
 		},
 		_resetStatus: function() {
-			var self = this;
-			this.status = $.extend({}, this.status, $.jPlayer.prototype.status); // Maintains the status properties that persist through a reset. ie., The properties of this._status, contained in the current this.status.
-
+			this.status = $.extend({}, this.status, $.jPlayer.prototype.status); // Maintains the status properties that persist through a reset.
 		},
 		_trigger: function(eventType, error, warning) { // eventType always valid as called using $.jPlayer.event.eventType
 			var event = $.Event(eventType);
 			event.jPlayer = {};
 			event.jPlayer.version = $.extend({}, this.version);
+			event.jPlayer.options = $.extend(true, {}, this.options); // Deep copy
 			event.jPlayer.status = $.extend(true, {}, this.status); // Deep copy
 			event.jPlayer.html = $.extend(true, {}, this.html); // Deep copy
 			event.jPlayer.flash = $.extend(true, {}, this.flash); // Deep copy
@@ -1171,29 +1169,25 @@
 				this._urlNotSetError("playHead");
 			}
 		},
-		mute: function() {
-			this.status.muted = true;
+		_muted: function(muted) {
+			this.options.muted = muted;
 			if(this.html.used) {
-				this._html_mute(true);
+				this._html_mute(muted);
 			}
 			if(this.flash.used) {
-				this._flash_mute(true);
+				this._flash_mute(muted);
 			}
-			this._updateMute(true);
-			this._updateVolume(0);
+			this._updateMute(muted);
+			this._updateVolume(this.options.volume);
 			this._trigger($.jPlayer.event.volumechange);
 		},
-		unmute: function() {
-			this.status.muted = false;
-			if(this.html.used) {
-				this._html_mute(false);
-			}
-			if(this.flash.used) {
-				this._flash_mute(false);
-			}
-			this._updateMute(false);
-			this._updateVolume(this.status.volume);
-			this._trigger($.jPlayer.event.volumechange);
+		mute: function(mute) { // mute is either: undefined (true), an event object (true) or a boolean (muted).
+			mute = mute === undefined ? true : !!mute;
+			this._muted(mute);
+		},
+		unmute: function(unmute) { // unmute is either: undefined (true), an event object (true) or a boolean (!muted).
+			unmute = unmute === undefined ? true : !!unmute;
+			this._muted(!unmute);
 		},
 		_updateMute: function(mute) {
 			if(this.css.jq.mute.length && this.css.jq.unmute.length) {
@@ -1208,7 +1202,7 @@
 		},
 		volume: function(v) {
 			v = this._limitValue(v, 0, 1);
-			this.status.volume = v;
+			this.options.volume = v;
 
 			if(this.html.used) {
 				this._html_volume(v);
@@ -1216,13 +1210,11 @@
 			if(this.flash.used) {
 				this._flash_volume(v);
 			}
-			if(!this.status.muted) {
-				this._updateVolume(v);
-			}
+			this._updateVolume(v);
 			this._trigger($.jPlayer.event.volumechange);
 		},
 		volumeBar: function(e) { // Handles clicks on the volumeBar
-			if(!this.status.muted && this.css.jq.volumeBar) { // Ignore clicks when muted
+			if(!this.options.muted && this.css.jq.volumeBar.length) { // Ignore clicks when muted
 				var offset = this.css.jq.volumeBar.offset();
 				var x = e.pageX - offset.left;
 				var w = this.css.jq.volumeBar.width();
@@ -1234,6 +1226,7 @@
 			this.volumeBar(e);
 		},
 		_updateVolume: function(v) {
+			v = this.options.muted ? 0 : v;
 			if(this.css.jq.volumeBarValue.length) {
 				this.css.jq.volumeBarValue.width((v*100)+"%");
 			}
@@ -1398,6 +1391,12 @@
 			// The ability to set options is limited at this time.
 
 			switch(key) {
+				case "volume" :
+					this.volume(value);
+					break;
+				case "muted" :
+					this._muted(value);
+					break;
 				case "cssSelectorAncestor" :
 					this._cssSelectorAncestor(value); // Set and refresh all associations for the new ancestor.
 					break;
