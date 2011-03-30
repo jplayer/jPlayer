@@ -7,7 +7,7 @@
  *  - http://www.opensource.org/licenses/mit-license.php
  *  - http://www.gnu.org/copyleft/gpl.html
  *
- * Author: Mark J Panaghiston
+ * Author: Mark J Panaghiston, Georgi Momchilov
  * Version: 2.0.5
  * Date: 4th March 2011
  */
