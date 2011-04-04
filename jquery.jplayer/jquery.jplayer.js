@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.5
- * Date: 4th March 2011
+ * Version: 2.0.6
+ * Date: 4th April 2011
  */
 
 (function($, undefined) {
@@ -192,7 +192,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.5",
+			script: "2.0.6",
 			needFlash: "2.0.0",
 			flash: "unknown"
 		},
@@ -203,6 +203,7 @@
 			preload: 'metadata',  // HTML5 Spec values: none, metadata, auto.
 			volume: 0.8, // The volume. Number 0 to 1.
 			muted: false,
+			wmode: "window", // Default Flash wmode is: window.  Valid wmode: transparent, opaque, direct, gpu
 			backgroundColor: "#000000", // To define the jPlayer div and Flash background color.
 			cssSelectorAncestor: "#jp_container_1",
 			cssSelector: { // * denotes properties that should only be required when video media type required. _cssSelector() would require changes to enable splitting these into Audio and Video defaults.
@@ -541,38 +542,51 @@
 
 			// Add the flash solution if it is being used.
 			if(this.flash.used) {
-				var flashVars = 'id=' + escape(this.internal.self.id) + '&vol=' + this.options.volume + '&muted=' + this.options.muted;
+				var htmlObj, flashVars = 'id=' + escape(this.internal.self.id) + '&vol=' + this.options.volume + '&muted=' + this.options.muted;
+
+				// Code influenced by SWFObject 2.2: http://code.google.com/p/swfobject/
+				// Non IE browsers have an initial Flash size of 1 by 1 otherwise the wmode affected the Flash ready event. 
 
 				if($.browser.msie && Number($.browser.version) <= 8) {
-					var html_obj = '<object id="' + this.internal.flash.id + '"';
-					html_obj += ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"';
-					html_obj += ' codebase="' + document.URL.substring(0,document.URL.indexOf(':')) + '://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab"'; // Fixed IE non secured element warning.
-					html_obj += ' type="application/x-shockwave-flash"';
-					html_obj += ' width="0" height="0">';
-					html_obj += '</object>';
+					var objStr = '<object id="' + this.internal.flash.id + '"'
+					+ ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"'
+					+ ' width="0" height="0">'
+					+ '</object>';
 
-					var obj_param = [];
-					obj_param[0] = '<param name="movie" value="' + this.internal.flash.swf + '" />';
-					obj_param[1] = '<param name="quality" value="high" />';
-					obj_param[2] = '<param name="FlashVars" value="' + flashVars + '" />';
-					obj_param[3] = '<param name="allowScriptAccess" value="always" />';
-					obj_param[4] = '<param name="bgcolor" value="' + this.options.backgroundColor + '" />';
+					var paramStr = [
+						'<param name="movie" value="' + this.internal.flash.swf + '" />',
+						'<param name="FlashVars" value="' + flashVars + '" />',
+						'<param name="allowScriptAccess" value="always" />',
+						'<param name="bgcolor" value="' + this.options.backgroundColor + '" />',
+						'<param name="wmode" value="' + this.options.wmode + '" />'
+					];
 
-					var ie_dom = document.createElement(html_obj);
-					for(var i=0; i < obj_param.length; i++) {
-						ie_dom.appendChild(document.createElement(obj_param[i]));
+					htmlObj = document.createElement(objStr);
+					for(var i=0; i < paramStr.length; i++) {
+						htmlObj.appendChild(document.createElement(paramStr[i]));
 					}
-					this.element.append(ie_dom);
 				} else {
-					var html_embed = '<embed name="' + this.internal.flash.id + '" id="' + this.internal.flash.id + '" src="' + this.internal.flash.swf + '"';
-					html_embed += ' width="0" height="0" bgcolor="' + this.options.backgroundColor + '"';
-					html_embed += ' quality="high" FlashVars="' + flashVars + '"';
-					html_embed += ' allowScriptAccess="always"';
-					html_embed += ' type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />';
-					this.element.append(html_embed);
+					var createParam = function(el, n, v) {
+						var p = document.createElement("param");
+						p.setAttribute("name", n);	
+						p.setAttribute("value", v);
+						el.appendChild(p);
+					};
+
+					htmlObj = document.createElement("object");
+					htmlObj.setAttribute("id", this.internal.flash.id);
+					htmlObj.setAttribute("data", this.internal.flash.swf);
+					htmlObj.setAttribute("type", "application/x-shockwave-flash");
+					htmlObj.setAttribute("width", "1"); // Non-zero
+					htmlObj.setAttribute("height", "1"); // Non-zero
+					createParam(htmlObj, "flashvars", flashVars);
+					createParam(htmlObj, "allowscriptaccess", "always");
+					createParam(htmlObj, "bgcolor", this.options.backgroundColor);
+					createParam(htmlObj, "wmode", this.options.wmode);
 				}
-				this.internal.flash.jq = $("#" + this.internal.flash.id);
-				this.internal.flash.jq.css({'width':'0px', 'height':'0px'}); // Must do via CSS as setting attr() to zero causes a jQuery error in IE.
+
+				this.element.append(htmlObj);
+				this.internal.flash.jq = $(htmlObj);
 			}
 			
 			// Add the HTML solution if being used.
@@ -814,6 +828,8 @@
 		jPlayerFlashEvent: function(eventType, status) { // Called from Flash
 			if(eventType === $.jPlayer.event.ready && !this.internal.ready) {
 				this.internal.ready = true;
+				this.internal.flash.jq.css({'width':'0px', 'height':'0px'}); // Once Flash generates the ready event, minimise to zero as it is not affected by wmode anymore.
+
 				this.version.flash = status.version;
 				if(this.version.needFlash !== this.version.flash) {
 					this._error( {
@@ -1468,9 +1484,10 @@
 
 			// Video html or flash resized if necessary at this time.
 			if(!this.status.waitForPlay) {
-				if(this.html.active && this.html.video.available) {
+				if(this.html.active && this.status.video) { // Only if video media
 					this.internal.video.jq.css({'width': this.status.width, 'height': this.status.height});
-				} else if(this.flash.active) {
+				}
+				else if(this.flash.active) {
 					this.internal.flash.jq.css({'width': this.status.width, 'height': this.status.height});
 				}
 			}
