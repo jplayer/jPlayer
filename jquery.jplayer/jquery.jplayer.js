@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.7
- * Date: 4th April 2011
+ * Version: 2.0.8
+ * Date: 5th April 2011
  */
 
 (function($, undefined) {
@@ -192,7 +192,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.7",
+			script: "2.0.8",
 			needFlash: "2.0.0",
 			flash: "unknown"
 		},
@@ -473,7 +473,7 @@
 				this.html.video.available = !!this.htmlElement.video.canPlayType;
 			}
 
-			this.flash.available = this._checkForFlash(10); // IE9 forced to false due to ExternalInterface problem.
+			this.flash.available = this._checkForFlash(10);
 
 			this.html.canPlay = {};
 			this.flash.canPlay = {};
@@ -1545,19 +1545,14 @@
 				}
 				this.htmlElement.media.pause();
 				this.htmlElement.media.src = "";
-
-				if(!($.browser.msie && Number($.browser.version) >= 9)) { // IE9 Bug: media.load() on broken src causes an exception. In try/catch IE9 generates the error event too, but it is delayed and corrupts jPlayer's event masking.
-					this.htmlElement.media.load(); // Stops an old, "in progress" download from continuing the download. Triggers the loadstart, error and emptied events, due to the empty src. Also an abort event if a download was in progress.
-				}
+				this.htmlElement.media.load(); // Stops an old, "in progress" download from continuing the download. Triggers the loadstart, error and emptied events, due to the empty src. Also an abort event if a download was in progress.
 			}
 		},
 		_html_load: function() {
 			if(this.status.waitForLoad) {
 				this.status.waitForLoad = false;
 				this.htmlElement.media.src = this.status.src;
-				try {
-					this.htmlElement.media.load(); // IE9 Beta throws an exception here on broken links. Review again later as IE9 Beta matures
-				} catch(err) {}
+				this.htmlElement.media.load();
 			}
 			clearTimeout(this.internal.htmlDlyCmdId);
 		},
@@ -1789,11 +1784,7 @@
 					}
 				}
 			}
-			if($.browser.msie && Number($.browser.version) >= 9) { // IE9 does not work with external interface. With dynamic Flash insertion like jPlayer uses.
-				return false;
-			} else {
-				return flashIsInstalled;
-			}
+			return flashIsInstalled;
 		},
 		_validString: function(url) {
 			return (url && typeof url === "string"); // Empty strings return false
