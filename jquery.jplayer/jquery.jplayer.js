@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.6
+ * Version: 2.0.7
  * Date: 4th April 2011
  */
 
@@ -192,7 +192,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.6",
+			script: "2.0.7",
 			needFlash: "2.0.0",
 			flash: "unknown"
 		},
@@ -788,7 +788,10 @@
 		},
 		_getHtmlStatus: function(media, override) {
 			var ct = 0, d = 0, cpa = 0, sp = 0, cpr = 0;
-			
+
+			if(media.duration) { // Fixes the duration bug in iOS, where the durationchange event occurs when media.duration is not always correct.
+				this.status.duration = media.duration;
+			}
 			ct = media.currentTime;
 			cpa = (this.status.duration > 0) ? 100 * ct / this.status.duration : 0;
 			if((typeof media.seekable === "object") && (media.seekable.length > 0)) {
