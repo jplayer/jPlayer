@@ -31,6 +31,7 @@ package {
 	import flash.text.TextFormat;
 
 	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
 
 	import flash.display.Sprite;
 	import happyworm.jPlayer.*;
@@ -146,6 +147,11 @@ package {
 
 				myMp3Player.addEventListener(JplayerEvent.JPLAYER_SEEKING, jPlayerFlashEvent);
 				myMp3Player.addEventListener(JplayerEvent.JPLAYER_SEEKED, jPlayerFlashEvent);
+
+				myMp3Player.addEventListener(MouseEvent.CLICK, mouseClickHandler);
+				myMp3Player.addEventListener(MouseEvent.DOUBLE_CLICK, mouseDoubleClickHandler);
+
+				myMp3Player.doubleClickEnabled = true;
 			} else {
 				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_ERROR, jPlayerFlashEvent);
 				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_PROGRESS, jPlayerFlashEvent);
@@ -158,6 +164,9 @@ package {
 
 				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_SEEKING, jPlayerFlashEvent);
 				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_SEEKED, jPlayerFlashEvent);
+
+				myMp3Player.removeEventListener(MouseEvent.CLICK, mouseClickHandler);
+				myMp3Player.removeEventListener(MouseEvent.DOUBLE_CLICK, mouseDoubleClickHandler);
 			}
 		}
 		private function listenToMp4(active:Boolean):void {
@@ -175,6 +184,11 @@ package {
 				myMp4Player.addEventListener(JplayerEvent.JPLAYER_SEEKED, jPlayerFlashEvent);
 
 				myMp4Player.addEventListener(JplayerEvent.JPLAYER_LOADEDMETADATA, jPlayerMetaDataHandler); // Note the unique handler
+
+				myMp4Player.addEventListener(MouseEvent.CLICK, mouseClickHandler);
+				myMp4Player.addEventListener(MouseEvent.DOUBLE_CLICK, mouseDoubleClickHandler);
+
+				myMp4Player.doubleClickEnabled = true;
 			} else {
 				myMp4Player.removeEventListener(JplayerEvent.JPLAYER_ERROR, jPlayerFlashEvent);
 				myMp4Player.removeEventListener(JplayerEvent.JPLAYER_PROGRESS, jPlayerFlashEvent);
@@ -189,6 +203,9 @@ package {
 				myMp4Player.removeEventListener(JplayerEvent.JPLAYER_SEEKED, jPlayerFlashEvent);
 
 				myMp4Player.removeEventListener(JplayerEvent.JPLAYER_LOADEDMETADATA, jPlayerMetaDataHandler); // Note the unique handler
+
+				myMp4Player.removeEventListener(MouseEvent.CLICK, mouseClickHandler);
+				myMp4Player.removeEventListener(MouseEvent.DOUBLE_CLICK, mouseDoubleClickHandler);
 			}
 		}
 		private function fl_setAudio_mp3(src:String):Boolean {
@@ -296,7 +313,7 @@ package {
 			}
 		}
 		private function extractStatusData(data:JplayerStatus):Object {
-			var myStatus = {
+			var myStatus:Object = {
 				version: JplayerStatus.VERSION,
 				src: data.src,
 				paused: !data.isPlaying, // Changing this name requires inverting all assignments and conditional statements.
@@ -354,7 +371,7 @@ package {
 			entity.width = mediaWidth;
 			entity.height = mediaHeight;
 		}
-		private function log(t):void {
+		private function log(t:String):void {
 			if(debug) {
 				txLog.text = t + "\n" + txLog.text;
 			}
@@ -375,6 +392,30 @@ package {
 					}
 					break;
 			}
+		}
+		private function mouseClickHandler(e:MouseEvent):void {
+			var isPlaying:Boolean = false;
+			if(isMp3) {
+				isPlaying = myMp3Player.myStatus.isPlaying;
+			} else {
+				isPlaying = myMp4Player.myStatus.isPlaying;
+			}
+			if(isPlaying) {
+				fl_pause();
+			} else {
+				fl_play();
+			}
+		}
+
+		private function mouseDoubleClickHandler(e:MouseEvent):void {
+			if (stage.displayState == "normal") {
+				stage.displayState = "fullScreen";
+			} else {
+				stage.displayState = "normal";
+			}
+			// right before this we received a CLICK event
+			// fire it again to toggle back again
+			mouseClickHandler(e);
 		}
 	}
 }

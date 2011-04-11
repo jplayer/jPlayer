@@ -558,7 +558,8 @@
 						'<param name="FlashVars" value="' + flashVars + '" />',
 						'<param name="allowScriptAccess" value="always" />',
 						'<param name="bgcolor" value="' + this.options.backgroundColor + '" />',
-						'<param name="wmode" value="' + this.options.wmode + '" />'
+						'<param name="wmode" value="' + this.options.wmode + '" />',
+						'<param name="allowFullScreen" value="true" />'
 					];
 
 					htmlObj = document.createElement(objStr);
@@ -583,6 +584,7 @@
 					createParam(htmlObj, "allowscriptaccess", "always");
 					createParam(htmlObj, "bgcolor", this.options.backgroundColor);
 					createParam(htmlObj, "wmode", this.options.wmode);
+					createParam(htmlObj, "allowFullScreen", "true");
 				}
 
 				this.element.append(htmlObj);
