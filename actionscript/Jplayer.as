@@ -2,19 +2,20 @@
  * jPlayer Plugin for jQuery JavaScript Library
  * http://www.happyworm.com/jquery/jplayer
  *
- * Copyright (c) 2009 - 2010 Happyworm Ltd
+ * Copyright (c) 2009 - 2011 Happyworm Ltd
  * Dual licensed under the MIT and GPL licenses.
  *  - http://www.opensource.org/licenses/mit-license.php
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.0
- * Date: 20th December 2010
+ * Version: 2.0.9
+ * Date: 13th April 2011
  *
  * FlashVars expected: (AS3 property of: loaderInfo.parameters)
- *	id: 	(URL Encoded) Id of jPlayer instance
+ *	id: 	(URL Encoded: String) Id of jPlayer instance
  *	vol:	(Number) Sets the initial volume
- *	muted:	(Boolean) Sets the initial muted state
+ *	muted:	(Boolean in a String) Sets the initial muted state
+ *	jQuery:	(URL Encoded: String) Sets the jQuery var name. Used with: someVar = jQuery.noConflict(true);
  *
  * Compiled using: Adobe Flash CS4 Professional
  * Jplayer.fla
@@ -59,9 +60,8 @@ package {
 		public function Jplayer() {
 			flash.system.Security.allowDomain("*");
 
-			jQuery = "jQuery('#" + loaderInfo.parameters.id + "').jPlayer";
+			jQuery = loaderInfo.parameters.jQuery + "('#" + loaderInfo.parameters.id + "').jPlayer";
 			commonStatus.volume = Number(loaderInfo.parameters.vol);
-			commonStatus.muted = Boolean(loaderInfo.parameters.muted);
 			commonStatus.muted = loaderInfo.parameters.muted == "true";
 
 			stage.scaleMode = StageScaleMode.NO_SCALE;

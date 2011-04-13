@@ -2,14 +2,14 @@
  * jPlayer Plugin for jQuery JavaScript Library
  * http://www.jplayer.org
  *
- * Copyright (c) 2009 - 2010 Happyworm Ltd
+ * Copyright (c) 2009 - 2011 Happyworm Ltd
  * Dual licensed under the MIT and GPL licenses.
  *  - http://www.opensource.org/licenses/mit-license.php
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.8
- * Date: 5th April 2011
+ * Version: 2.0.9
+ * Date: 13th April 2011
  */
 
 (function($, undefined) {
@@ -192,8 +192,8 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.8",
-			needFlash: "2.0.0",
+			script: "2.0.9",
+			needFlash: "2.0.9",
 			flash: "unknown"
 		},
 		options: { // Instanced in $.jPlayer() constructor
@@ -226,6 +226,7 @@
 			// globalVolume: false, // Not implemented: Set to make volume changes affect all jPlayer instances
 			// globalMute: false, // Not implemented: Set to make mute changes affect all jPlayer instances
 			idPrefix: "jp", // Prefix for the ids of html elements created by jPlayer. For flash, this must not include characters: . - + * / \
+			noConflict: "jQuery",
 			errorAlerts: false,
 			warningAlerts: false
 		},
@@ -542,7 +543,12 @@
 
 			// Add the flash solution if it is being used.
 			if(this.flash.used) {
-				var htmlObj, flashVars = 'id=' + escape(this.internal.self.id) + '&vol=' + this.options.volume + '&muted=' + this.options.muted;
+				var htmlObj,
+				flashVars =
+				'jQuery=' + encodeURI(this.options.noConflict)
+				+ '&id=' + encodeURI(this.internal.self.id)
+				+ '&vol=' + this.options.volume
+				+ '&muted=' + this.options.muted;
 
 				// Code influenced by SWFObject 2.2: http://code.google.com/p/swfobject/
 				// Non IE browsers have an initial Flash size of 1 by 1 otherwise the wmode affected the Flash ready event. 
