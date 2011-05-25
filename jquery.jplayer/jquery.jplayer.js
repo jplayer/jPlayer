@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.10
- * Date: 24th May 2011
+ * Version: 2.0.11
+ * Date: 25th May 2011
  */
 
 (function($, undefined) {
@@ -201,7 +201,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.10",
+			script: "2.0.11",
 			needFlash: "2.0.9",
 			flash: "unknown"
 		},
@@ -673,7 +673,7 @@
 				this.pause(); // Pauses the media and clears any delayed commands used in the HTML solution.
 			}
 			$.each(this.css.jq, function(fn, jq) { // Remove any bindings from the interface controls.
-				jq.unbind(".jPlayer");
+				jq.length && jq.unbind(".jPlayer"); // Check selector is valid before trying to execute method.
 			});
 			if( this.options.emulateHtml ) {
 				this._destroyHtmlBridge();
