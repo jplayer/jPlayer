@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.11
+ * Version: 2.0.12
  * Date: 25th May 2011
  */
 
@@ -201,7 +201,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.11",
+			script: "2.0.12",
 			needFlash: "2.0.9",
 			flash: "unknown"
 		},
@@ -790,6 +790,7 @@
 					self._updateButtons(false);
 					self._seeked();
 					if(self.status.srcSet) { // Deals with case of clearMedia() causing an error event.
+						clearTimeout(self.internal.htmlDlyCmdId); // Clears any delayed commands used in the HTML solution.
 						self.status.waitForLoad = true; // Allows the load operation to try again.
 						self.status.waitForPlay = true; // Reset since a play was captured.
 						if(self.status.video) {
