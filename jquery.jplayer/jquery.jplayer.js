@@ -673,7 +673,9 @@
 				this.pause(); // Pauses the media and clears any delayed commands used in the HTML solution.
 			}
 			$.each(this.css.jq, function(fn, jq) { // Remove any bindings from the interface controls.
-				jq.unbind(".jPlayer");
+				if (jq.unbind) {
+					jq.unbind(".jPlayer");
+				}
 			});
 			if( this.options.emulateHtml ) {
 				this._destroyHtmlBridge();
