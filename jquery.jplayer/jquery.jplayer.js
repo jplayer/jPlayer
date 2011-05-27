@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.12
- * Date: 25th May 2011
+ * Version: 2.0.13
+ * Date: 27th May 2011
  */
 
 (function($, undefined) {
@@ -201,7 +201,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.12",
+			script: "2.0.13",
 			needFlash: "2.0.9",
 			flash: "unknown"
 		},
@@ -329,6 +329,11 @@
 				flashCanPlay: false,
 				media: 'audio'
 			},
+			fla: { // FLV / F4A
+				codec: 'audio/x-flv',
+				flashCanPlay: true,
+				media: 'audio'
+			},
 			m4v: { // H.264 / MP4
 				codec: 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"',
 				flashCanPlay: true,
@@ -342,6 +347,11 @@
 			webmv: { // WEBM
 				codec: 'video/webm; codecs="vorbis, vp8"',
 				flashCanPlay: false,
+				media: 'video'
+			},
+			flv: { // FLV / F4V
+				codec: 'video/x-flv',
+				flashCanPlay: true,
 				media: 'video'
 			}
 		},
@@ -1712,6 +1722,7 @@
 					if(self.flash.support[format] && media[format]) {
 						switch (format) {
 							case "m4a" :
+							case "fla" :
 								self._getMovie().fl_setAudio_m4a(media[format]);
 								break;
 							case "mp3" :
@@ -1739,6 +1750,7 @@
 					if(self.flash.support[format] && media[format]) {
 						switch (format) {
 							case "m4v" :
+							case "flv" :
 								self._getMovie().fl_setVideo_m4v(media[format]);
 								break;
 						}
