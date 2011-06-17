@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.13
- * Date: 27th May 2011
+ * Version: 2.0.14
+ * Date: 17th June 2011
  */
 
 (function($, undefined) {
@@ -171,7 +171,7 @@
 	};
 
 	// Adapting jQuery 1.4.4 code for jQuery.browser. Required since jQuery 1.3.2 does not detect Chrome as webkit.
-	$.jPlayer.uaMatch = function( ua ) {
+	$.jPlayer.uaBrowser = function( ua ) {
 		var ua = ua.toLowerCase();
 
 		// Useragent RegExp
@@ -189,13 +189,39 @@
 		return { browser: match[1] || "", version: match[2] || "0" };
 	};
 
-	$.jPlayer.browser = {
+	// Platform sniffer for detecting mobile devices
+	$.jPlayer.uaPlatform = function( ua ) {
+		var ua = ua.toLowerCase();
+
+		// Useragent RegExp
+		var rplatform = /(ipad|iphone|ipod|android|blackberry|playbook|windows ce|webos)/;
+		var rtablet = /(ipad|playbook)/;
+		var randroid = /(android)/;
+		var rmobile = /(mobile)/;
+
+		var platform = rplatform.exec( ua ) || [];
+		var tablet = rtablet.exec( ua ) ||
+			!rmobile.exec( ua ) && randroid.exec( ua ) ||
+			[];
+
+		return { platform: platform[1] || "", tablet: tablet[1] || "" };
 	};
 
-	var browserMatch = $.jPlayer.uaMatch(navigator.userAgent);
+	$.jPlayer.browser = {
+	};
+	$.jPlayer.platform = {
+	};
+
+	var browserMatch = $.jPlayer.uaBrowser(navigator.userAgent);
 	if ( browserMatch.browser ) {
 		$.jPlayer.browser[ browserMatch.browser ] = true;
 		$.jPlayer.browser.version = browserMatch.version;
+	}
+	var platformMatch = $.jPlayer.uaPlatform(navigator.userAgent);
+	if ( platformMatch.platform ) {
+		$.jPlayer.platform[ platformMatch.platform ] = true;
+		$.jPlayer.platform.mobile = !platformMatch.tablet;
+		$.jPlayer.platform.tablet = !!platformMatch.tablet;
 	}
 
 	$.jPlayer.prototype = {
