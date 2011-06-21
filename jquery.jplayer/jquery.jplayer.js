@@ -8,9 +8,13 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.14
- * Date: 17th June 2011
+ * Version: 2.0.15
+ * Date: 21th June 2011
  */
+
+/* Code verified using http://www.jshint.com/ */
+/*jshint asi:false, bitwise:false, boss:false, browser:true, curly:true, debug:false, eqeqeq:true, eqnull:false, evil:false, forin:false, immed:false, jquery:true, laxbreak:false, newcap:true, noarg:true, noempty:true, nonew:true, nomem:false, onevar:false, passfail:false, plusplus:false, regexp:false, undef:true, sub:false, strict:false, white:false */
+/*global jQuery:false, ActiveXObject:false, alert:false */
 
 (function($, undefined) {
 
@@ -159,8 +163,8 @@
 		sepSec: ""
 	};
 
-	$.jPlayer.convertTime = function(sec) {
-		var myTime = new Date(sec * 1000);
+	$.jPlayer.convertTime = function(s) {
+		var myTime = new Date(s * 1000);
 		var hour = myTime.getUTCHours();
 		var min = myTime.getUTCMinutes();
 		var sec = myTime.getUTCSeconds();
@@ -171,8 +175,8 @@
 	};
 
 	// Adapting jQuery 1.4.4 code for jQuery.browser. Required since jQuery 1.3.2 does not detect Chrome as webkit.
-	$.jPlayer.uaBrowser = function( ua ) {
-		var ua = ua.toLowerCase();
+	$.jPlayer.uaBrowser = function( userAgent ) {
+		var ua = userAgent.toLowerCase();
 
 		// Useragent RegExp
 		var rwebkit = /(webkit)[ \/]([\w.]+)/;
@@ -190,8 +194,8 @@
 	};
 
 	// Platform sniffer for detecting mobile devices
-	$.jPlayer.uaPlatform = function( ua ) {
-		var ua = ua.toLowerCase();
+	$.jPlayer.uaPlatform = function( userAgent ) {
+		var ua = userAgent.toLowerCase();
 
 		// Useragent RegExp
 		var rplatform = /(ipad|iphone|ipod|android|blackberry|playbook|windows ce|webos)/;
@@ -227,7 +231,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.13",
+			script: "2.0.15",
 			needFlash: "2.0.9",
 			flash: "unknown"
 		},
@@ -599,20 +603,13 @@
 			// Add the flash solution if it is being used.
 			if(this.flash.used) {
 				var htmlObj,
-				flashVars =
-				'jQuery=' + encodeURI(this.options.noConflict)
-				+ '&id=' + encodeURI(this.internal.self.id)
-				+ '&vol=' + this.options.volume
-				+ '&muted=' + this.options.muted;
+				flashVars = 'jQuery=' + encodeURI(this.options.noConflict) + '&id=' + encodeURI(this.internal.self.id) + '&vol=' + this.options.volume + '&muted=' + this.options.muted;
 
 				// Code influenced by SWFObject 2.2: http://code.google.com/p/swfobject/
 				// Non IE browsers have an initial Flash size of 1 by 1 otherwise the wmode affected the Flash ready event. 
 
 				if($.browser.msie && Number($.browser.version) <= 8) {
-					var objStr = '<object id="' + this.internal.flash.id + '"'
-					+ ' classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"'
-					+ ' width="0" height="0">'
-					+ '</object>';
+					var objStr = '<object id="' + this.internal.flash.id + '" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="0" height="0"></object>';
 
 					var paramStr = [
 						'<param name="movie" value="' + this.internal.flash.swf + '" />',
@@ -709,7 +706,10 @@
 				this.pause(); // Pauses the media and clears any delayed commands used in the HTML solution.
 			}
 			$.each(this.css.jq, function(fn, jq) { // Remove any bindings from the interface controls.
-				jq.length && jq.unbind(".jPlayer"); // Check selector is valid before trying to execute method.
+				// Check selector is valid before trying to execute method.
+				if(jq.length) {
+					jq.unbind(".jPlayer");
+				}
 			});
 			if( this.options.emulateHtml ) {
 				this._destroyHtmlBridge();
@@ -899,8 +899,12 @@
 			event.jPlayer.status = $.extend(true, {}, this.status); // Deep copy
 			event.jPlayer.html = $.extend(true, {}, this.html); // Deep copy
 			event.jPlayer.flash = $.extend(true, {}, this.flash); // Deep copy
-			if(error) event.jPlayer.error = $.extend({}, error);
-			if(warning) event.jPlayer.warning = $.extend({}, warning);
+			if(error) {
+				event.jPlayer.error = $.extend({}, error);
+			}
+			if(warning) {
+				event.jPlayer.warning = $.extend({}, warning);
+			}
 			this.element.trigger(event);
 		},
 		jPlayerFlashEvent: function(eventType, status) { // Called from Flash
@@ -1375,7 +1379,7 @@
 							self[fn](e);
 							$(this).blur();
 							return false;
-						}
+						};
 						this.css.jq[fn].bind("click.jPlayer", handler); // Using jPlayer namespace
 					}
 
@@ -1459,14 +1463,14 @@
 				 // Enables use: options("someOptionObject.someOption", someValue).  Creates: {someOptionObject:{someOption:someValue}}
 
 				options = {};
-				var opt = options;
+				var opts = options;
 
-				for(var i = 0; i < keys.length; i++) {
-					if(i < keys.length - 1) {
-						opt[keys[i]] = {};
-						opt = opt[keys[i]];
+				for(var j = 0; j < keys.length; j++) {
+					if(j < keys.length - 1) {
+						opts[keys[j]] = {};
+						opts = opts[keys[j]];
 					} else {
-						opt[keys[i]] = value;
+						opts[keys[j]] = value;
 					}
 				}
 			}
@@ -1823,7 +1827,7 @@
 		},
 		_flash_playHead: function(p) {
 			try {
-				this._getMovie().fl_play_head(p)
+				this._getMovie().fl_play_head(p);
 			} catch(err) { this._flashError(err); }
 			if(!this.status.waitForLoad) {
 				this._flash_checkWaitForPlay();
@@ -1933,7 +1937,8 @@
 				var nativeEvent = true;
 				$.each( $.jPlayer.reservedEvent.split(/\s+/g), function(i, name) {
 					if(name === eventName) {
-						return nativeEvent = false;
+						nativeEvent = false;
+						return false;
 					}
 				});
 				if(nativeEvent) {
@@ -1960,6 +1965,8 @@
 			});
 		},
 		_destroyHtmlBridge: function() {
+			var self = this;
+
 			// Bridge event handlers are also removed by destroy() through .jPlayer namespace.
 			this.element.unbind(".jPlayerHtml"); // Remove all event handlers created by the jPlayer bridge. So you can change the emulateHtml option.
 
