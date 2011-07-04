@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.15
- * Date: 21th June 2011
+ * Version: 2.0.16
+ * Date: 7th July 2011
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -231,7 +231,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.15",
+			script: "2.0.16",
 			needFlash: "2.0.9",
 			flash: "unknown"
 		},
@@ -1004,14 +1004,25 @@
 			this.status.ended = false; // status.ended;
 		},
 		_updateButtons: function(playing) {
-			this.status.paused = !playing;
-			if(this.css.jq.play.length && this.css.jq.pause.length) {
-				if(playing) {
-					this.css.jq.play.hide();
-					this.css.jq.pause.show();
+			if(playing !== undefined) {
+				this.status.paused = !playing;
+				if(this.css.jq.play.length && this.css.jq.pause.length) {
+					if(playing) {
+						this.css.jq.play.hide();
+						this.css.jq.pause.show();
+					} else {
+						this.css.jq.play.show();
+						this.css.jq.pause.hide();
+					}
+				}
+			}
+			if(this.css.jq.restoreScreen.length && this.css.jq.fullScreen.length) {
+				if(this.options.fullScreen) {
+					this.css.jq.fullScreen.hide();
+					this.css.jq.restoreScreen.show();
 				} else {
-					this.css.jq.play.show();
-					this.css.jq.pause.hide();
+					this.css.jq.fullScreen.show();
+					this.css.jq.restoreScreen.hide();
 				}
 			}
 		},
@@ -1550,6 +1561,7 @@
 			this._setSize(); // update status and jPlayer element size
 			this._addUiClass(); // update the ui class
 			this._updateSize(); // update internal sizes
+			this._updateButtons();
 		},
 		_setSize: function() {
 			// Determine the current size from the options
