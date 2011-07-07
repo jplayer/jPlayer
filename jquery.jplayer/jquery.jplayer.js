@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.18
- * Date: 6th July 2011
+ * Version: 2.0.19
+ * Date: 7th July 2011
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -90,7 +90,7 @@
 	$.jPlayer.event = {
 		ready: "jPlayer_ready",
 		flashreset: "jPlayer_flashreset", // Similar to the ready event if the Flash solution is set to display:none and then shown again or if it's reloaded for another reason by the browser. For example, using CSS position:fixed on Firefox for the full screen feature.
-		resize: "jPlayer_resize", // Not implemented.
+		resize: "jPlayer_resize", // Occurs when the size changes through a full/restore screen operation or if the size/sizeFull options are changed.
 		error: "jPlayer_error", // Event error code in event.jPlayer.error.type. See $.jPlayer.error
 		warning: "jPlayer_warning", // Event warning code in event.jPlayer.warning.type. See $.jPlayer.warning
 
@@ -232,7 +232,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.18",
+			script: "2.0.19",
 			needFlash: "2.0.9",
 			flash: "unknown"
 		},
@@ -243,7 +243,7 @@
 			preload: 'metadata',  // HTML5 Spec values: none, metadata, auto.
 			volume: 0.8, // The volume. Number 0 to 1.
 			muted: false,
-			wmode: "window", // Default Flash wmode is: window.  Valid wmode: transparent, opaque, direct, gpu
+			wmode: "opaque", // Valid wmode: window, transparent, opaque, direct, gpu. 
 			backgroundColor: "#000000", // To define the jPlayer div and Flash background color.
 			cssSelectorAncestor: "#jp_container_1",
 			cssSelector: { // * denotes properties that should only be required when video media type required. _cssSelector() would require changes to enable splitting these into Audio and Video defaults.
@@ -261,9 +261,17 @@
 				currentTime: ".jp-current-time",
 				duration: ".jp-duration",
 				fullScreen: ".jp-full-screen", // *
-				restoreScreen: ".jp-restore-screen" // *
+				restoreScreen: ".jp-restore-screen", // *
+				interface: ".jp-interface" // The interface used with autohide feature.
 			},
 			fullScreen: false,
+			autohide: {
+				restored: false, // Controls the interface autohide feature.
+				full: true, // Controls the interface autohide feature.
+				fadeIn: 200, // Milliseconds. The period of the fadeIn anim.
+				fadeOut: 600, // Milliseconds. The period of the fadeOut anim.
+				hold: 1000 // Milliseconds. The period of the pause before autohide beings.
+			},
 			// globalVolume: false, // Not implemented: Set to make volume changes affect all jPlayer instances
 			// globalMute: false, // Not implemented: Set to make mute changes affect all jPlayer instances
 			idPrefix: "jp", // Prefix for the ids of html elements created by jPlayer. For flash, this must not include characters: . - + * / \
@@ -292,7 +300,7 @@
 			},
 			sizeFull: {
 				width: "100%",
-				height: "90%",
+				height: "100%",
 				cssClass: "jp-video-full"
 			}
 		},
@@ -329,6 +337,7 @@
 			// instance: undefined,
 			// domNode: undefined,
 			// htmlDlyCmdId: undefined
+			// autohideId: undefined
 		},
 		solution: { // Static Object: Defines the solutions built in jPlayer.
 			html: true,
@@ -683,6 +692,7 @@
 
 			this._updateInterface();
 			this._updateButtons(false);
+			this._updateAutohide();
 			this._updateVolume(this.options.volume);
 			this._updateMute(this.options.muted);
 			if(this.css.jq.videoPlay.length) {
@@ -1484,12 +1494,19 @@
 		playBar: function(e) { // Handles clicks on the playBar
 			this.seekBar(e);
 		},
+
+		// Plan to review the cssSelector method to cope with missing associated functions accordingly.
+
 		currentTime: function(e) { // Handles clicks on the text
 			// Added to avoid errors using cssSelector system for the text
 		},
 		duration: function(e) { // Handles clicks on the text
 			// Added to avoid errors using cssSelector system for the text
 		},
+		interface: function(e) { // Handles clicks on the interface
+			// Added to avoid errors using cssSelector system for the interface
+		},
+
 		// Options code adapted from ui.widget.js (1.8.7).  Made changes so the key can use dot notation. To match previous getData solution in jPlayer 1.
 		option: function(key, value) {
 			var options = key;
@@ -1594,6 +1611,10 @@
 					this.options[key] = $.extend({}, this.options[key], value); // store a merged copy of it, incase not all properties changed.
 					this._refreshSize();
 					break;
+				case "autohide" :
+					this.options[key] = $.extend({}, this.options[key], value); // store a merged copy of it, incase not all properties changed.
+					this._updateAutohide();
+					break;
 				case "emulateHtml" :
 					if(this.options[key] !== value) { // To avoid multiple event handlers being created, if true already.
 						this.options[key] = value;
@@ -1615,6 +1636,8 @@
 			this._addUiClass(); // update the ui class
 			this._updateSize(); // update internal sizes
 			this._updateButtons();
+			this._updateAutohide();
+			this._trigger($.jPlayer.event.resize);
 		},
 		_setSize: function() {
 			// Determine the current size from the options
@@ -1652,6 +1675,33 @@
 				}
 				else if(this.flash.active) {
 					this.internal.flash.jq.css({'width': this.status.width, 'height': this.status.height});
+				}
+			}
+		},
+		_updateAutohide: function() {
+			var	self = this,
+				event = "mousemove.jPlayer",
+				namespace = ".jPlayerAutohide",
+				eventType = event + namespace,
+				handler = function() {
+					self.css.jq.interface.fadeIn(self.options.autohide.fadeIn, function() {
+						clearTimeout(self.internal.autohideId);
+						self.internal.autohideId = setTimeout( function() {
+							self.css.jq.interface.fadeOut(self.options.autohide.fadeOut);
+						}, self.options.autohide.hold);
+					});
+				};
+
+			clearTimeout(this.internal.autohideId);
+			this.element.unbind(namespace);
+			if(this.css.jq.interface.length) {
+				this.css.jq.interface.unbind(namespace);
+				if(this.options.fullScreen && this.options.autohide.full || !this.options.fullScreen && this.options.autohide.restored) {
+					this.element.bind(eventType, handler);
+					this.css.jq.interface.bind(eventType, handler);
+					this.css.jq.interface.hide();
+				} else {
+					this.css.jq.interface.show();
 				}
 			}
 		},
