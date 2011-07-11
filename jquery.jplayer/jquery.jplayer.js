@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.20
- * Date: 9th July 2011
+ * Version: 2.0.21
+ * Date: 11th July 2011
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -233,7 +233,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.20",
+			script: "2.0.21",
 			needFlash: "2.0.9",
 			flash: "unknown"
 		},
@@ -475,7 +475,7 @@
 			this.instances[this.internal.instance] = this.element;
 
 			// Check the jPlayer div has an id and create one if required. Important for Flash to know the unique id for comms.
-			if(this.element.attr("id") === "") {
+			if(!this.element.attr("id")) {
 				this.element.attr("id", this.options.idPrefix + "_jplayer_" + this.count);
 			}
 
