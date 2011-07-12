@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.21
+ * Version: 2.0.22
  * Date: 11th July 2011
  */
 
@@ -742,6 +742,7 @@
 			if( this.options.emulateHtml ) {
 				this._destroyHtmlBridge();
 			}
+			this._html_clearMedia(); // Stops the browser downloading any more of the file.
 			this.element.removeData("jPlayer"); // Remove jPlayer data
 			this.element.unbind(".jPlayer"); // Remove all event handlers created by the jPlayer constructor
 			this.element.empty(); // Remove the inserted child elements
