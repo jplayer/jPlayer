@@ -10,6 +10,9 @@
  * Author: Mark J Panaghiston
  * Version: 2.0.21
  * Date: 11th July 2011
+ * Modified for basic rtmp support
+ * Author: Robert M. Hall
+ * Date: 12th July 2011
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -358,6 +361,11 @@
 		},
 		// 'MPEG-4 support' : canPlayType('video/mp4; codecs="mp4v.20.8"')
 		format: { // Static Object
+			rtmp: { // RTMP
+				codec: 'audio/rtmp; codecs="rtmp"',
+				flashCanPlay: true,
+				media: 'audio'
+			},
 			mp3: {
 				codec: 'audio/mpeg; codecs="mp3"',
 				flashCanPlay: true,
@@ -1915,6 +1923,8 @@
 							case "mp3" :
 								self._getMovie().fl_setAudio_mp3(media[format]);
 								break;
+							case "rtmp":
+								self._getMovie().fl_setAudio_rtmp(media[format]);	
 						}
 						self.status.src = media[format];
 						self.status.format[format] = true;
