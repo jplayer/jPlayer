@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.21
- * Date: 11th July 2011
+ * Version: 2.0.22
+ * Date: 13th July 2011
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -233,7 +233,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.21",
+			script: "2.0.22",
 			needFlash: "2.0.9",
 			flash: "unknown"
 		},
@@ -1743,7 +1743,7 @@
 					this.css.jq.gui.bind(eventType, handler);
 					this.css.jq.gui.hide();
 				} else {
-					this.css.jq.gui.show();
+					this.css.jq.gui.stop(true, true).show(); // Need the stop() otherwise a change screen mode during the GUI fade out hides the GUI in the other mode.
 				}
 			}
 		},
