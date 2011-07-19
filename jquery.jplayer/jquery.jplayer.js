@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.22
- * Date: 13th July 2011
+ * Version: 2.0.23
+ * Date: 19th July 2011
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -145,7 +145,6 @@
 	];
 
 	$.jPlayer.pause = function() {
-		// $.each($.jPlayer.instances, function(i, element) {
 		$.each($.jPlayer.prototype.instances, function(i, element) {
 			if(element.data("jPlayer").status.srcSet) { // Check that media is set otherwise would cause error event.
 				element.jPlayer("pause");
@@ -233,7 +232,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.22",
+			script: "2.0.23",
 			needFlash: "2.0.9",
 			flash: "unknown"
 		},
@@ -746,7 +745,7 @@
 			this.element.unbind(".jPlayer"); // Remove all event handlers created by the jPlayer constructor
 			this.element.empty(); // Remove the inserted child elements
 			
-			this.instances[this.internal.instance] = undefined; // Clear the instance on the static instance object
+			delete this.instances[this.internal.instance]; // Clear the instance on the static instance object
 		},
 		enable: function() { // Plan to implement
 			// options.disabled = false
