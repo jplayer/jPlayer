@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.24
+ * Version: 2.0.25
  * Date: 6th August 2011
  */
 
@@ -232,7 +232,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.23",
+			script: "2.0.25",
 			needFlash: "2.0.9",
 			flash: "unknown"
 		},
@@ -584,13 +584,13 @@
 			if(this.require.audio) { // If a supplied format is audio
 				this.htmlElement.audio = document.createElement('audio');
 				this.htmlElement.audio.id = this.internal.audio.id;
-				this.html.audio.available = !!this.htmlElement.audio.canPlayType;
+				this.html.audio.available = !!this.htmlElement.audio.canPlayType && this._testCanPlayType(this.htmlElement.audio); // Test is for IE9 on Win Server 2008.
 			}
 			this.html.video.available = false;
 			if(this.require.video) { // If a supplied format is video
 				this.htmlElement.video = document.createElement('video');
 				this.htmlElement.video.id = this.internal.video.id;
-				this.html.video.available = !!this.htmlElement.video.canPlayType;
+				this.html.video.available = !!this.htmlElement.video.canPlayType && this._testCanPlayType(this.htmlElement.video); // Test is for IE9 on Win Server 2008.
 			}
 
 			this.flash.available = this._checkForFlash(10);
@@ -794,7 +794,15 @@
 		disable: function () { // Plan to implement
 			// options.disabled = true
 		},
-
+		_testCanPlayType: function(elem) {
+			// IE9 on Win Server 2008 did not implement canPlayType(), but it has the property.
+			try {
+				elem.canPlayType(this.format.mp3.codec); // The type is irrelevant.
+				return true;
+			} catch(err) {
+				return false;
+			}
+		},
 		_uaBlocklist: function(list) {
 			// list : object with properties that are all regular expressions. Property names are irrelevant.
 			// Returns true if the user agent is matched in list.
