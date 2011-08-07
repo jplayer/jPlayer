@@ -1,0 +1,34 @@
+Author: Robert M. Hall - www.impossibilities.com
+
+This fork of Jplayer adds in basic support for RTMP based audio and video (video is currently beind tested).
+
+We are working to get it merged in with the master respository and branch that the author Mark J Panaghiston maintains here on GitHub.
+
+Basic support and functionality is in place and working well - additional features listed below will come over time. Please feel free to try this out and post any notes/issues here in the forks issues section.
+
+Thanks!
+Rob
+
+USAGE NOTES:
+
+1. Initial focus is on Audio streams both ondemand and live (video should be functioning properly, but has not been fully tested as of yet). 
+
+2. URL parsing of RTMP sources (which may need to be customized per usage, or extended/modified based on implementation needs) is located in the new ActionScript class files: JplayerRTMP.as - the relevant function is: parseRTMPsrcConnect(string) - this is where you should make accomodations for your FMS instance name, media location path, etc. Also currently its defaulting to mp3 audio files over RTMP, if you want to use FLV based audio files, or MP4 based audio files, you'll need to adjust this same area to handle your RTMP source URLs appropriately.
+
+3. The changes to jquery.jplayer.js are very minor, the majority of the big changes are in the Jplayer.as to allow for the new RTMP format and to import a new JplayerRTMP.as class file which adds the bulk of the RTMP support.
+
+TODO Future Features List:
+
+1. Automatic Multiple port/protocol negotiation support (right now its only the standard connection attempts on the default protocol/port you pass in as the source RTMP string via setMedia) - should be adjusted to an array of configureable ports/protocols and timeout attempts, latching onto first to respond in order for more robust support in enterprise/firewalled networks.
+
+2. Bandwidth detection. Currently no bandwidth detection is being used. Could leverage old style onBwDone one time check, but ideal situations would be to add in support for AS3 based NetStreamInfo QOS metric properties to allow dynamic/multibitrate switching on the fly - auto determine other bitrates, etc. Possibly support for basic SMIL sources.
+
+3. Additional error/status messages for the various NetConnection/NetStream status codes returned by FMS for RTMP streaming, and pass through to JPlayer. Bare minimum currently.
+
+4. Add in indeterminate progress/waiting event similar to seeking, specifically for RTMP connection negotiation and buffering.
+
+5. Additional buffering parameters - perhaps dual threshold buffering, but at least additional config options
+
+6. LIVE stream GUI adjustments, change scrub/seek bar to Indeterminate animating progress bar and change current time/duration time from numeric values to "LIVE". Right now this should all be handled in JavaScript on per app basis, based on knowing when you are passing in a LIVE source and adjusting HTML/CSS. Rather keep this separate from player.
+
+7. Explore support for DVR live feature of FMS, and additional formats like HLS/Chunked F4V/HTTP Dynamic Streaming, etc.
