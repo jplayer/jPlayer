@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.25
- * Date: 6th August 2011
+ * Version: 2.0.26
+ * Date: 7th August 2011
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -232,8 +232,8 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.25",
-			needFlash: "2.0.9",
+			script: "2.0.26",
+			needFlash: "2.0.26",
 			flash: "unknown"
 		},
 		options: { // Instanced in $.jPlayer() constructor

@@ -2,13 +2,13 @@
  * jPlayer Plugin for jQuery JavaScript Library
  * http://www.happyworm.com/jquery/jplayer
  *
- * Copyright (c) 2009 - 2010 Happyworm Ltd
+ * Copyright (c) 2009 - 2011 Happyworm Ltd
  * Dual licensed under the MIT and GPL licenses.
  *  - http://www.opensource.org/licenses/mit-license.php
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Date: 20th December 2010
+ * Date: 7th August 2011
  */
 
 package happyworm.jPlayer {
@@ -19,8 +19,11 @@ package happyworm.jPlayer {
 		// The event strings must match those in the JavaScript's $.jPlayer.event object
 
 		public static const JPLAYER_READY:String = "jPlayer_ready";
-		public static const JPLAYER_RESIZE:String = "jPlayer_resize"; // Not applicable
+		public static const JPLAYER_FLASHRESET:String = "jPlayer_flashreset"; // Handled in JavaScript
+		public static const JPLAYER_RESIZE:String = "jPlayer_resize"; // Handled in JavaScript
+		public static const JPLAYER_REPEAT:String = "jPlayer_repeat"; // Handled in JavaScript
 		public static const JPLAYER_ERROR:String = "jPlayer_error";
+		public static const JPLAYER_WARNING:String = "jPlayer_warning"; // Currently not used by the flash solution
 
 		public static const JPLAYER_LOADSTART:String = "jPlayer_loadstart";
 		public static const JPLAYER_PROGRESS:String = "jPlayer_progress";

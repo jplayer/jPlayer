@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.9
- * Date: 13th April 2011
+ * Version: 2.0.26
+ * Date: 7th August 2011
  *
  * FlashVars expected: (AS3 property of: loaderInfo.parameters)
  *	id: 	(URL Encoded: String) Id of jPlayer instance
@@ -79,7 +79,7 @@ package {
 			addChild(myMp4Player);
 
 			setupListeners(!isMp3, isMp3); // Set up the listeners to the default isMp3 state.
-			
+
 			// Log console for dev compile option: debug
 			if(debug) {
 				txLog = new TextField();
