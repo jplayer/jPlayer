@@ -2,13 +2,13 @@
  * jPlayer Plugin for jQuery JavaScript Library
  * http://www.happyworm.com/jquery/jplayer
  *
- * Copyright (c) 2009 - 2010 Happyworm Ltd
+ * Copyright (c) 2009 - 2011 Happyworm Ltd
  * Dual licensed under the MIT and GPL licenses.
  *  - http://www.opensource.org/licenses/mit-license.php
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Robert M. Hall
- * Date: 12th July 2011
+ * Date: 7th August 2011
  * Based on JplayerMp4.as with modifications for rtmp
  */
 
@@ -23,15 +23,14 @@ package happyworm.jPlayer {
 	import flash.net.Responder; 
 
 	import flash.utils.Timer;
+	import flash.utils.getTimer;
 
 	import flash.events.NetStatusEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.events.TimerEvent;
 
 	public class JplayerRtmp extends Sprite {
-		
-		trace("RTMP CLASS");
-		
+				
 		public var myVideo:Video = new Video();
 		private var myConnection:NetConnection;
 		private var myStream:NetStream;
@@ -40,13 +39,15 @@ package happyworm.jPlayer {
 		
 		private var streamName:String;
 		
+		private var firstTime:Boolean=false;
+		
 		private var myTransform:SoundTransform = new SoundTransform();
 
 		public var myStatus:JplayerStatus = new JplayerStatus();
 		
-		private var timeUpdateTimer:Timer = new Timer(100, 0);
-		private var progressTimer:Timer = new Timer(100, 0);
-		private var seekingTimer:Timer = new Timer(100, 0);
+		private var timeUpdateTimer:Timer = new Timer(250, 0); // Matched to HTML event freq
+		private var progressTimer:Timer = new Timer(250, 0); // Matched to HTML event freq
+		private var seekingTimer:Timer = new Timer(100, 0); // Internal: How often seeking is checked to see if it is over.
 
 		public function JplayerRtmp(volume:Number) {
 			trace("JplayerRtmp VOL:"+volume);
@@ -55,6 +56,7 @@ package happyworm.jPlayer {
 			
 			myConnection.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
 			myConnection.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+			myVideo.smoothing = true;
 			this.addChild(myVideo);
 			
 			timeUpdateTimer.addEventListener(TimerEvent.TIMER, timeUpdateHandler);
@@ -138,7 +140,6 @@ package happyworm.jPlayer {
 			this.dispatchEvent(new JplayerEvent(JplayerEvent.JPLAYER_SEEKED, myStatus));
 		}
 		
-		private var firstTime:Boolean=false;
 		
 		private function netStatusHandler(e:NetStatusEvent):void {
 			trace("netStatusHandler: "+e.info.code);
@@ -200,7 +201,6 @@ package happyworm.jPlayer {
 			if(wasPlaying) {
 				this.dispatchEvent(new JplayerEvent(JplayerEvent.JPLAYER_ENDED, myStatus));
 			}
-
 		}
 		private function securityErrorHandler(event:SecurityErrorEvent):void {
 			this.dispatchEvent(new JplayerEvent(JplayerEvent.DEBUG_MSG, myStatus, "securityErrorHandler."));
@@ -411,6 +411,12 @@ package happyworm.jPlayer {
 
 			var wasPlaying:Boolean = myStatus.isPlaying;
 
+			// To avoid possible loops with timeupdate and pause(time). A pause() does not have the problem.
+			var alreadyPausedAtTime:Boolean = false;
+			if(!isNaN(time) && myStatus.pausePosition == time) {
+				alreadyPausedAtTime = true;
+			}
+
 			// Need to wait for metadata to load before ever issuing a pause. The metadata handler will call this function if needed, when ready.
 			if(myStream != null && myStatus.metaDataReady) { // myStream is a null until the 1st media is loaded. ie., The 1st ever setMedia being followed by a pause() or pause(t).
 				myStream.pause();
@@ -451,7 +457,11 @@ package happyworm.jPlayer {
 					}
 				}
 				timeUpdates(false);
-				timeUpdateEvent();
+				// Need to be careful with timeupdate event, otherwise a pause in a timeupdate event can cause a loop.
+				// Neither pause() nor pause(time) will cause a timeupdate loop.
+				if(wasPlaying || !isNaN(time) && !alreadyPausedAtTime) {
+					timeUpdateEvent();
+				}
 				return true;
 			} else {
 				return false;
@@ -526,7 +536,6 @@ package happyworm.jPlayer {
 				return 1;
 			}
 		}
-		import flash.utils.getTimer;
 		public function onPlayStatusHandler(infoObject:Object):void {
 			trace("OnPlayStatusHandler called: ("+getTimer()+" ms)");
    			 for (var prop in infoObject) {
@@ -539,7 +548,6 @@ package happyworm.jPlayer {
 		
 		public function onMetaDataHandler(info:Object):void { // Used in connectStream() in myStream.client object.
 			// This event occurs when jumping to the start of static files! ie., seek(0) will cause this event to occur.
-			trace("METADATA EVENT FIRED!");
 			if(!myStatus.metaDataReady) {
 				this.dispatchEvent(new JplayerEvent(JplayerEvent.DEBUG_MSG, myStatus, "onMetaDataHandler: " + info.duration + " | " + info.width + "x" + info.height));
 

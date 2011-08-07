@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.25
- * Date: 6th August 2011
+ * Version: 2.0.28
+ * Date: 7th August 2011
  * Modified for basic audio rtmp support 
  * Author: Robert M. Hall
  * Date: 6th August 2011
@@ -235,8 +235,8 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.25",
-			needFlash: "2.0.9",
+			script: "2.0.28",
+			needFlash: "2.0.26",
 			flash: "unknown"
 		},
 		options: { // Instanced in $.jPlayer() constructor
@@ -530,7 +530,7 @@
 			this.internal.flash = $.extend({}, {
 				id: this.options.idPrefix + "_flash_" + this.count,
 				jq: undefined,
-				swf: this.options.swfPath + ((this.options.swfPath !== "" && this.options.swfPath.slice(-1) !== "/") ? "/" : "") + "Jplayer.swf"
+				swf: this.options.swfPath + (this.options.swfPath.toLowerCase().slice(-4) !== ".swf" ? (this.options.swfPath && this.options.swfPath.slice(-1) !== "/" ? "/" : "") + "Jplayer.swf" : "")
 			});
 			this.internal.poster = $.extend({}, {
 				id: this.options.idPrefix + "_poster_" + this.count,
@@ -766,28 +766,26 @@
 			// MJP: The background change remains. Would need to store the original to restore it correctly.
 			// MJP: The jPlayer element's size change remains.
 
-			// Reset the interface, remove seeking effect and times.
-			this._resetStatus();
-			this._updateInterface();
-			this._seeked();
+			// Clear the media to reset the GUI and stop any downloads. Streams on some browsers had persited. (Chrome)
+			this.clearMedia();
+			// Remove the size/sizeFull cssClass from the cssSelectorAncestor
 			this._removeUiClass();
+			// Remove the times from the GUI
 			if(this.css.jq.currentTime.length) {
 				this.css.jq.currentTime.text("");
 			}
 			if(this.css.jq.duration.length) {
 				this.css.jq.duration.text("");
 			}
-
-			if(this.status.srcSet) { // Or you get a bogus error event
-				this.pause(); // Pauses the media and clears any delayed commands used in the HTML solution.
-			}
-			$.each(this.css.jq, function(fn, jq) { // Remove any bindings from the interface controls.
+			// Remove any bindings from the interface controls.
+			$.each(this.css.jq, function(fn, jq) {
 				// Check selector is valid before trying to execute method.
 				if(jq.length) {
 					jq.unbind(".jPlayer");
 				}
 			});
-			if( this.options.emulateHtml ) {
+			// Destroy the HTML bridge.
+			if(this.options.emulateHtml) {
 				this._destroyHtmlBridge();
 			}
 			this.element.removeData("jPlayer"); // Remove jPlayer data
@@ -1241,18 +1239,15 @@
 			var	self = this,
 				supported = false;
 
-			this._seeked();
-			clearTimeout(this.internal.htmlDlyCmdId); // Clears any delayed commands used in the HTML solution.
+			this._resetMedia();
+			this._resetGate();
+			this._resetActive();
 
 			$.each(this.formats, function(formatPriority, format) {
 				var isVideo = self.format[format].media === 'video';
 				$.each(self.solutions, function(solutionPriority, solution) {
 					if(self[solution].support[format] && self._validString(media[format])) { // Format supported in solution and url given for format.
 						var isHtml = solution === 'html';
-
-						self._resetMedia();
-						self._resetGate();
-						self._resetActive();
 
 						if(isVideo) {
 							if(isHtml) {
@@ -1312,9 +1307,6 @@
 				this._updateButtons(false);
 				this._updateInterface();
 			} else { // jPlayer cannot support any formats provided in this browser
-				this._resetMedia();
-				this._resetGate();
-				this._resetActive();
 				// Send an error event
 				this._error( {
 					type: $.jPlayer.error.NO_SUPPORT,
@@ -1328,6 +1320,7 @@
 			this._resetStatus();
 			this._updateButtons(false);
 			this._updateInterface();
+			this._seeked();
 			this.internal.poster.jq.hide();
 
 			clearTimeout(this.internal.htmlDlyCmdId);

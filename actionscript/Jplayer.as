@@ -8,12 +8,12 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.9
- * Date: 13th April 2011
+ * Version: 2.0.26
+ * Date: 7th August 2011
  *
  * Modifications for RTMP: Robert M. Hall
  * Version: 0.0.1
- * Date: 12th July 2011  
+ * Date: 7th August 2011  
  *
  * FlashVars expected: (AS3 property of: loaderInfo.parameters)
  *	id: 	(URL Encoded: String) Id of jPlayer instance
@@ -92,8 +92,6 @@ package {
 			addChild(myMp4Player);
 
 			switchType("rtmp"); // set default state to rtmp
-
-			//setupListeners(); // Set up the listeners to the default isMp3 state.
 			
 			// Log console for dev compile option: debug
 			if(debug) {
@@ -165,13 +163,8 @@ package {
 				ExternalInterface.call(jQuery, "jPlayerFlashEvent", JplayerEvent.JPLAYER_READY, extractStatusData(commonStatus)); // See JplayerStatus() class for version number.
 			}
 		}
-		private function setupListeners():void {
-			
-		}
-		
 		private function listenToMp3(active:Boolean):void {
 			if(active) {
-				trace("Listening to MP3");
 				myMp3Player.addEventListener(JplayerEvent.JPLAYER_ERROR, jPlayerFlashEvent);
 				myMp3Player.addEventListener(JplayerEvent.JPLAYER_PROGRESS, jPlayerFlashEvent);
 				myMp3Player.addEventListener(JplayerEvent.JPLAYER_TIMEUPDATE, jPlayerFlashEvent);
@@ -184,7 +177,6 @@ package {
 				myMp3Player.addEventListener(JplayerEvent.JPLAYER_SEEKING, jPlayerFlashEvent);
 				myMp3Player.addEventListener(JplayerEvent.JPLAYER_SEEKED, jPlayerFlashEvent);
 			} else {
-				trace("NOT Listening to MP3");
 				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_ERROR, jPlayerFlashEvent);
 				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_PROGRESS, jPlayerFlashEvent);
 				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_TIMEUPDATE, jPlayerFlashEvent);
@@ -200,7 +192,6 @@ package {
 		}
 		private function listenToMp4(active:Boolean):void {
 			if(active) {
-				trace("Listening to MP4");
 				myMp4Player.addEventListener(JplayerEvent.JPLAYER_ERROR, jPlayerFlashEvent);
 				myMp4Player.addEventListener(JplayerEvent.JPLAYER_PROGRESS, jPlayerFlashEvent);
 				myMp4Player.addEventListener(JplayerEvent.JPLAYER_TIMEUPDATE, jPlayerFlashEvent);
@@ -215,7 +206,6 @@ package {
 
 				myMp4Player.addEventListener(JplayerEvent.JPLAYER_LOADEDMETADATA, jPlayerMetaDataHandler); // Note the unique handler
 			} else {
-				trace("NOT Listening to MP4");
 				myMp4Player.removeEventListener(JplayerEvent.JPLAYER_ERROR, jPlayerFlashEvent);
 				myMp4Player.removeEventListener(JplayerEvent.JPLAYER_PROGRESS, jPlayerFlashEvent);
 				myMp4Player.removeEventListener(JplayerEvent.JPLAYER_TIMEUPDATE, jPlayerFlashEvent);
@@ -270,9 +260,6 @@ package {
 			if (src != null) {
 				log("fl_setAudio_mp3: "+src);
 				switchType("mp3");
-				//setupListeners(isMp3, true);
-				//isMp3 = true;
-				//isVideo = false;
 				myMp4Player.clearFile();
 				myRtmpPlayer.clearFile();
 				myMp3Player.setFile(src);
@@ -283,15 +270,11 @@ package {
 			}
 		}
 		
-		
 		private function fl_setAudio_rtmp(src:String):Boolean {
 			trace("SET RTMP: "+src);
 			if (src != null) {
 				log("fl_setAudio_rtmp: "+src);
 				switchType("rtmp")
-				// isRtmp = true;
-				// isMp3 = false;
-				// isVideo = false;
 				myMp4Player.clearFile();
 				myMp3Player.clearFile();
 				myRtmpPlayer.setFile(src);
@@ -306,9 +289,6 @@ package {
 			if (src != null) {
 				log("fl_setAudio_m4a: "+src);
 				switchType("mp4")
-				//isMp3 = false;
-				//isRtmp = false;
-				//isVideo = false;
 				myMp3Player.clearFile();
 				myRtmpPlayer.clearFile();
 				myMp4Player.setFile(src);
@@ -322,8 +302,6 @@ package {
 			if (src != null) {
 				log("fl_setVideo_m4v: "+src);
 				switchType("mp4v");
-				//isMp3 = false;
-				//isVideo = true;
 				myMp3Player.clearFile();
 				myRtmpPlayer.clearFile();
 				myMp4Player.setFile(src);
@@ -345,11 +323,9 @@ package {
 			if(isMp3) {
 				returnType=myMp3Player;
 			} 
-			
 			if(isRtmp) {
 				returnType=myRtmpPlayer;
 			}
-			
 			if(isMp4) {
 				returnType=myMp4Player;
 			}
@@ -357,7 +333,6 @@ package {
 		}
 		
 		private function fl_load():Boolean {
-			
 			log("load.");
 			var returnType=getType();
 			return returnType.load();
