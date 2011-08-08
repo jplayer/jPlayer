@@ -4,6 +4,9 @@ This fork of Jplayer adds in basic support for RTMP based audio and video (video
 
 We are working to get it merged in with the master respository and branch that the author Mark J Panaghiston maintains here on GitHub.
 
+As of now, the fork relies on version 2.0.21 of jquery.jplayer.js
+and 2.0.26 of the ActionScript source. Somewhere after 2.0.21 the changes to jquery.jplayer.js are causing issues with duration and current time updates, so we are going to freeze on that version until 2.1 is released and then revisit the changes.
+
 Basic support and functionality is in place and working well - additional features listed below will come over time. Please feel free to try this out and post any notes/issues here in the forks issues section.
 
 Thanks!
@@ -13,9 +16,12 @@ USAGE NOTES:
 
 1. Initial focus is on Audio streams both ondemand and live (video should be functioning properly, but has not been fully tested as of yet). 
 
-2. URL parsing of RTMP sources (which may need to be customized per usage, or extended/modified based on implementation needs) is located in the new ActionScript class files: JplayerRTMP.as - the relevant function is: parseRTMPsrcConnect(string) - this is where you should make accomodations for your FMS instance name, media location path, etc. Also currently its defaulting to mp3 audio files over RTMP, if you want to use FLV based audio files, or MP4 based audio files, you'll need to adjust this same area to handle your RTMP source URLs appropriately.
+2. Two new supplied media types for setMedia "rtmpa" and "rtmpv" - specify for rtmp audio streams and rtmp video streams. Example jPlayer("setMedia", {
+            rtmpa: "rtmp://cpcode.edgefcs.net/ondemand/mp3:/path_to_my_audio/some_audio_track.mp3"
 
-3. The changes to jquery.jplayer.js are very minor, the majority of the big changes are in the Jplayer.as to allow for the new RTMP format and to import a new JplayerRTMP.as class file which adds the bulk of the RTMP support.
+3. URL parsing of RTMP sources (which may need to be customized per usage, or extended/modified based on implementation needs) is located in the new ActionScript class files: JplayerRTMP.as - the relevant function is: parseRTMPsrcConnect(string) - this is where you should make accomodations for your FMS instance name, media location path, etc. Currently has basic support for parsing vod and live, but you may need to adjust this function to handle and parse your RTMP source URLs appropriately. Examples for splitting the host, appname and streamname are there, but if you have custom instances, or other needs, this is the place to edit/adjust.
+
+4. The changes to jquery.jplayer.js are very minor, the majority of the big changes are in the Jplayer.as to allow for the new RTMP formats "rtmpa" and "rtmpv" and to import a new JplayerRTMP.as class file which adds the bulk of the RTMP support.
 
 TODO Future Features List:
 
