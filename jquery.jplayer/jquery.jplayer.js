@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.29
+ * Version: 2.0.30
  * Date: 8th August 2011
  */
 
@@ -233,7 +233,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.29",
+			script: "2.0.30",
 			needFlash: "2.0.29",
 			flash: "unknown"
 		},
@@ -1822,7 +1822,7 @@
 			if(!this.status.waitForPlay && this.html.active && this.status.video || this.html.video.available && this.html.used && this.status.nativeVideoControls) {
 				this.internal.video.jq.css({'width': this.status.width, 'height': this.status.height});
 			}
-			else if(this.flash.active) {
+			else if(!this.status.waitForPlay && this.flash.active && this.status.video) {
 				this.internal.flash.jq.css({'width': this.status.width, 'height': this.status.height});
 			}
 		},
@@ -2188,7 +2188,9 @@
 				message: $.jPlayer.errorMsg[errorType] + error.message,
 				hint: $.jPlayer.errorHint[errorType]
 			});
-
+			// Allow the audio player to recover if display:none and then shown again, or with position:fixed on Firefox.
+			// This really only affects audio in a media player, as an audio player could easily move the jPlayer element away from such issues.
+			this.internal.flash.jq.css({'width':'1px', 'height':'1px'});
 		},
 		_error: function(error) {
 			this._trigger($.jPlayer.event.error, error);
