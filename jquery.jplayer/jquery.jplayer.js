@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.28
- * Date: 7th August 2011
+ * Version: 2.0.29
+ * Date: 8th August 2011
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -92,6 +92,7 @@
 		flashreset: "jPlayer_flashreset", // Similar to the ready event if the Flash solution is set to display:none and then shown again or if it's reloaded for another reason by the browser. For example, using CSS position:fixed on Firefox for the full screen feature.
 		resize: "jPlayer_resize", // Occurs when the size changes through a full/restore screen operation or if the size/sizeFull options are changed.
 		repeat: "jPlayer_repeat", // Occurs when the repeat status changes. Usually through clicks on the repeat button of the interface.
+		click: "jPlayer_click", // Occurs when the user clicks on one of the following: poster image, html video, flash video.
 		error: "jPlayer_error", // Event error code in event.jPlayer.error.type. See $.jPlayer.error
 		warning: "jPlayer_warning", // Event warning code in event.jPlayer.warning.type. See $.jPlayer.warning
 
@@ -232,8 +233,8 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.28",
-			needFlash: "2.0.26",
+			script: "2.0.29",
+			needFlash: "2.0.29",
 			flash: "unknown"
 		},
 		options: { // Instanced in $.jPlayer() constructor
@@ -578,6 +579,9 @@
 			this.internal.poster.jq = $("#" + this.internal.poster.id);
 			this.internal.poster.jq.css({'width': this.status.width, 'height': this.status.height});
 			this.internal.poster.jq.hide();
+			this.internal.poster.jq.bind("click.jPlayer", function() {
+				self._trigger($.jPlayer.event.click);
+			});
 			
 			// Generate the required media elements
 			this.html.audio.available = false;
@@ -724,6 +728,9 @@
 					} else {
 						this.internal.video.jq.css({'width':'0px', 'height':'0px'}); // Using size 0x0 since a .hide() causes issues in iOS
 					}
+					this.internal.video.jq.bind("click.jPlayer", function() {
+						self._trigger($.jPlayer.event.click);
+					});
 				}
 			}
 
@@ -776,6 +783,11 @@
 					jq.unbind(".jPlayer");
 				}
 			});
+			// Remove the click handlers for $.jPlayer.event.click
+			this.internal.poster.jq.unbind(".jPlayer");
+			if(this.internal.video.jq) {
+				this.internal.video.jq.unbind(".jPlayer");
+			}
 			// Destroy the HTML bridge.
 			if(this.options.emulateHtml) {
 				this._destroyHtmlBridge();
@@ -1095,6 +1107,9 @@
 					case $.jPlayer.event.ended:
 						this._updateButtons(false);
 						this._trigger(eventType);
+						break;
+					case $.jPlayer.event.click:
+						this._trigger(eventType); // This could be dealt with by the default
 						break;
 					case $.jPlayer.event.error:
 						this.status.waitForLoad = true; // Allows the load operation to try again.

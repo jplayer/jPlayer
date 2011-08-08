@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.26
- * Date: 7th August 2011
+ * Version: 2.0.29
+ * Date: 8th August 2011
  *
  * FlashVars expected: (AS3 property of: loaderInfo.parameters)
  *	id: 	(URL Encoded: String) Id of jPlayer instance
@@ -39,6 +39,7 @@ package {
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
+	import flash.events.MouseEvent;
 
 	public class Jplayer extends Sprite {
 		private var jQuery:String;
@@ -67,6 +68,7 @@ package {
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.RESIZE, resizeHandler);
+			stage.addEventListener(MouseEvent.CLICK, clickHandler);
 
 			var initialVolume:Number = commonStatus.volume;
 			if(commonStatus.muted) {
@@ -353,6 +355,13 @@ package {
 			entity.y = mediaY;
 			entity.width = mediaWidth;
 			entity.height = mediaHeight;
+		}
+		private function clickHandler(e:MouseEvent):void {
+			if(isMp3) {
+				jPlayerFlashEvent(new JplayerEvent(JplayerEvent.JPLAYER_CLICK, myMp3Player.myStatus, "click"))
+			} else {
+				jPlayerFlashEvent(new JplayerEvent(JplayerEvent.JPLAYER_CLICK, myMp4Player.myStatus, "click"))
+			}
 		}
 		private function log(t):void {
 			if(debug) {
