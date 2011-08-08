@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.30
+ * Version: 2.0.31
  * Date: 8th August 2011
  */
 
@@ -233,7 +233,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.30",
+			script: "2.0.31",
 			needFlash: "2.0.29",
 			flash: "unknown"
 		},
@@ -265,7 +265,8 @@
 				restoreScreen: ".jp-restore-screen", // *
 				repeat: ".jp-repeat",
 				repeatOff: ".jp-repeat-off",
-				gui: ".jp-gui" // The interface used with autohide feature.
+				gui: ".jp-gui", // The interface used with autohide feature.
+				noSolution: ".jp-no-solution" // For error feedback when jPlayer cannot find a solution.
 			},
 			fullScreen: false,
 			autohide: {
@@ -659,6 +660,13 @@
 					message: $.jPlayer.errorMsg.NO_SOLUTION,
 					hint: $.jPlayer.errorHint.NO_SOLUTION
 				});
+				if(this.css.jq.noSolution.length) {
+					this.css.jq.noSolution.show();
+				}
+			} else {
+				if(this.css.jq.noSolution.length) {
+					this.css.jq.noSolution.hide();
+				}
 			}
 
 			// Add the flash solution if it is being used.
@@ -1633,6 +1641,9 @@
 		},
 		gui: function(e) { // Handles clicks on the gui
 			// Added to avoid errors using cssSelector system for the gui
+		},
+		noSolution: function(e) { // Handles clicks on the error message
+			// Added to avoid errors using cssSelector system for no-solution
 		},
 
 		// Options code adapted from ui.widget.js (1.8.7).  Made changes so the key can use dot notation. To match previous getData solution in jPlayer 1.
