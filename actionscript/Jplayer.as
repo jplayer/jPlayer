@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.29
- * Date: 8th August 2011
+ * Version: 2.0.32
+ * Date: 9th August 2011
  *
  * FlashVars expected: (AS3 property of: loaderInfo.parameters)
  *	id: 	(URL Encoded: String) Id of jPlayer instance
@@ -17,8 +17,7 @@
  *	muted:	(Boolean in a String) Sets the initial muted state
  *	jQuery:	(URL Encoded: String) Sets the jQuery var name. Used with: someVar = jQuery.noConflict(true);
  *
- * Compiled using: Adobe Flash CS4 Professional
- * Jplayer.fla
+ * Compiled using: Adobe Flex Compiler (mxmlc) Version 4.5.1 build 21328
  */
 
 package {
@@ -40,6 +39,12 @@ package {
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+
+	import flash.ui.ContextMenu;
+	import flash.ui.ContextMenuItem;
+	import flash.events.ContextMenuEvent;
+	import flash.net.URLRequest;
+	import flash.net.navigateToURL;
 
 	public class Jplayer extends Sprite {
 		private var jQuery:String;
@@ -81,6 +86,19 @@ package {
 			addChild(myMp4Player);
 
 			setupListeners(!isMp3, isMp3); // Set up the listeners to the default isMp3 state.
+
+			// The ContextMenu only partially works. The menu select events never occur.
+			// Investigated and it is something to do with the way jPlayer inserts the Flash on the page.
+			// A simple test inserting the Jplayer.swf on a page using: 1) SWFObject 2.2 works. 2) AC_FL_RunContent() works.
+			// jPlayer Flash insertion is based on SWFObject 2.2 and the resaon behind this failure is not clear. The Flash insertion HTML on the page looks similar.
+			var myContextMenu:ContextMenu = new ContextMenu();
+			myContextMenu.hideBuiltInItems();
+			var menuItem_jPlayer:ContextMenuItem = new ContextMenuItem("jPlayer " + JplayerStatus.VERSION);
+			var menuItem_happyworm:ContextMenuItem = new ContextMenuItem("© 2009-2011 Happyworm Ltd", true);
+			menuItem_jPlayer.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, menuSelectHandler_jPlayer);
+			menuItem_happyworm.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, menuSelectHandler_happyworm);
+			myContextMenu.customItems.push(menuItem_jPlayer, menuItem_happyworm);
+			contextMenu = myContextMenu;
 
 			// Log console for dev compile option: debug
 			if(debug) {
@@ -298,7 +316,7 @@ package {
 			}
 		}
 		private function extractStatusData(data:JplayerStatus):Object {
-			var myStatus = {
+			var myStatus:Object = {
 				version: JplayerStatus.VERSION,
 				src: data.src,
 				paused: !data.isPlaying, // Changing this name requires inverting all assignments and conditional statements.
@@ -363,7 +381,15 @@ package {
 				jPlayerFlashEvent(new JplayerEvent(JplayerEvent.JPLAYER_CLICK, myMp4Player.myStatus, "click"))
 			}
 		}
-		private function log(t):void {
+		// This event is never called. See comments in class constructor.
+		private function menuSelectHandler_jPlayer(e:ContextMenuEvent):void {
+			navigateToURL(new URLRequest("http://jplayer.org/"), "_blank");
+		}
+		// This event is never called. See comments in class constructor.
+		private function menuSelectHandler_happyworm(e:ContextMenuEvent):void {
+			navigateToURL(new URLRequest("http://happyworm.com/"), "_blank");
+		}
+		private function log(t:String):void {
 			if(debug) {
 				txLog.text = t + "\n" + txLog.text;
 			}

@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.31
- * Date: 8th August 2011
+ * Version: 2.0.32
+ * Date: 9th August 2011
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -233,8 +233,8 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.31",
-			needFlash: "2.0.29",
+			script: "2.0.32",
+			needFlash: "2.0.32",
 			flash: "unknown"
 		},
 		options: { // Instanced in $.jPlayer() constructor
@@ -703,7 +703,7 @@
 					htmlObj = document.createElement("object");
 					htmlObj.setAttribute("id", this.internal.flash.id);
 					htmlObj.setAttribute("data", this.internal.flash.swf);
-					htmlObj.setAttribute("type", "application/x-shockwave-flash"); // Note: This line causes a security error when used with iframes.
+					htmlObj.setAttribute("type", "application/x-shockwave-flash");
 					htmlObj.setAttribute("width", "1"); // Non-zero
 					htmlObj.setAttribute("height", "1"); // Non-zero
 					createParam(htmlObj, "flashvars", flashVars);
