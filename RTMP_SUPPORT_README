@@ -1,5 +1,5 @@
 Author: Robert M. Hall - www.impossibilities.com
-UPDATED: 08/11/2011
+UPDATED: 08/18/2011
 
 This fork of Jplayer adds in basic support for RTMP based audio and video (video is currently being tested).
 
@@ -29,7 +29,7 @@ USAGE NOTES:
 
 TODO Future Features List:
 
-98% COMPLETE: 1. Automatic Multiple port/protocol negotiation support (right now its only the standard connection attempts on the default protocol/port you pass in as the source RTMP string via setMedia) - should be adjusted to an array of configureable ports/protocols and timeout attempts, latching onto first to respond in order for more robust support in enterprise/firewalled networks.
+99% COMPLETE: 1. Automatic Multiple port/protocol negotiation support (right now its only the standard connection attempts on the default protocol/port you pass in as the source RTMP string via setMedia) - should be adjusted to an array of configureable ports/protocols and timeout attempts, latching onto first to respond in order for more robust support in enterprise/firewalled networks.
 
 2. Bandwidth detection. Currently no bandwidth detection is being used. Could leverage old style onBwDone one time check, but ideal situations would be to add in support for AS3 based NetStreamInfo QOS metric properties to allow dynamic/multibitrate switching on the fly - auto determine other bitrates, etc. Possibly support for basic SMIL sources.
 
