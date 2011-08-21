@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.32
- * Date: 9th August 2011
+ * Version: 2.0.33
+ * Date: 21st August 2011
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -233,7 +233,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.32",
+			script: "2.0.33",
 			needFlash: "2.0.32",
 			flash: "unknown"
 		},
@@ -292,21 +292,21 @@
 			},
 			noFullScreen: {
 				msie: /msie [0-6]/,
-				ipad: /ipad.*?os [0-5]/,
-				iphone: /iphone.*?os [0-5]/,
-				ipod: /ipod.*?os [0-5]/,
+				ipad: /ipad.*?os [0-4]/,
+				iphone: /iphone/,
+				ipod: /ipod/,
 				android_pad: /android [0-3](?!.*?mobile)/,
-				android_phone: /android [0-2].*?mobile/,
+				android_phone: /android.*?mobile/,
 				blackberry: /blackberry/,
 				windows_ce: /windows ce/,
 				webos: /webos/
 			},
 			noVolume: {
-				ipad: /ipad.*?os [0-5]/,
-				iphone: /iphone.*?os [0-5]/,
-				ipod: /ipod.*?os [0-5]/,
-				android_pad: /android [0-3](?!.*?mobile)/,
-				android_phone: /android [0-2].*?mobile/,
+				ipad: /ipad/,
+				iphone: /iphone/,
+				ipod: /ipod/,
+				android_pad: /android(?!.*?mobile)/,
+				android_phone: /android.*?mobile/,
 				blackberry: /blackberry/,
 				windows_ce: /windows ce/,
 				webos: /webos/,
@@ -1252,7 +1252,8 @@
 			 */
 
 			var	self = this,
-				supported = false;
+				supported = false,
+				posterChanged = this.status.media.poster !== media.poster; // Compare before reset. Important for OSX Safari as this.htmlElement.poster.src is absolute, even if original poster URL was relative.
 
 			this._resetMedia();
 			this._resetGate();
@@ -1307,14 +1308,13 @@
 				if(!(this.status.nativeVideoControls && this.html.video.gate)) {
 					// Set poster IMG if native video controls are not being used
 					// Note: With IE the IMG onload event occurs immediately when cached.
+					// Note: Poster hidden by default in _resetMedia()
 					if(this._validString(media.poster)) {
-						if(this.htmlElement.poster.src !== media.poster) { // Since some browsers do not generate img onload event.
+						if(posterChanged) { // Since some browsers do not generate img onload event.
 							this.htmlElement.poster.src = media.poster;
 						} else {
 							this.internal.poster.jq.show();
 						}
-					} else {
-						this.internal.poster.jq.hide(); // Hide if not used, since clearMedia() does not always occur above. ie., HTML audio <-> video switching.
 					}
 				}
 				this.status.srcSet = true;
