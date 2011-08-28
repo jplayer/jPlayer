@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.33
- * Date: 21st August 2011
+ * Version: 2.0.34
+ * Date: 28th August 2011
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -233,7 +233,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.33",
+			script: "2.0.34",
 			needFlash: "2.0.32",
 			flash: "unknown"
 		},
@@ -312,6 +312,7 @@
 				webos: /webos/,
 				playbook: /playbook/
 			},
+			verticalVolume: false, // Calculate volume from the bottom of the volume bar. Default is from the left. Also volume affects either width or height.
 			// globalVolume: false, // Not implemented: Set to make volume changes affect all jPlayer instances
 			// globalMute: false, // Not implemented: Set to make mute changes affect all jPlayer instances
 			idPrefix: "jp", // Prefix for the ids of html elements created by jPlayer. For flash, this must not include characters: . - + * / \
@@ -1489,11 +1490,17 @@
 		},
 		volumeBar: function(e) { // Handles clicks on the volumeBar
 			if(this.css.jq.volumeBar.length) {
-				var offset = this.css.jq.volumeBar.offset();
-				var x = e.pageX - offset.left;
-				var w = this.css.jq.volumeBar.width();
-				var v = x/w;
-				this.volume(v);
+				var 	offset = this.css.jq.volumeBar.offset(),
+					x = e.pageX - offset.left,
+					w = this.css.jq.volumeBar.width(),
+					y = this.css.jq.volumeBar.height() - e.pageY + offset.top,
+					h = this.css.jq.volumeBar.height();
+
+				if(this.options.verticalVolume) {
+					this.volume(y/h);
+				} else {
+					this.volume(x/w);
+				}
 			}
 			if(this.options.muted) {
 				this._muted(false);
@@ -1524,7 +1531,7 @@
 				}
 				if(this.css.jq.volumeBarValue.length) {
 					this.css.jq.volumeBarValue.show();
-					this.css.jq.volumeBarValue.width((v*100)+"%");
+					this.css.jq.volumeBarValue[this.options.verticalVolume ? "height" : "width"]((v*100)+"%");
 				}
 				if(this.css.jq.volumeMax.length) {
 					this.css.jq.volumeMax.show();
