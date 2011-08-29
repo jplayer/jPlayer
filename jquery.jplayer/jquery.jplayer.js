@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.35
+ * Version: 2.0.36
  * Date: 29th August 2011
  */
 
@@ -210,6 +210,10 @@
 			!rmobile.exec( ua ) && randroid.exec( ua ) ||
 			[];
 
+		if(platform[1]) {
+			platform[1] = platform[1].replace(/\s/g, "_"); // Change whitespace to underscore. Enables dot notation.
+		}
+
 		return { platform: platform[1] || "", tablet: tablet[1] || "" };
 	};
 
@@ -233,7 +237,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.35",
+			script: "2.0.36",
 			needFlash: "2.0.32",
 			flash: "unknown"
 		},
@@ -1490,7 +1494,7 @@
 		},
 		volumeBar: function(e) { // Handles clicks on the volumeBar
 			if(this.css.jq.volumeBar.length) {
-				var 	offset = this.css.jq.volumeBar.offset(),
+				var	offset = this.css.jq.volumeBar.offset(),
 					x = e.pageX - offset.left,
 					w = this.css.jq.volumeBar.width(),
 					y = this.css.jq.volumeBar.height() - e.pageY + offset.top,
