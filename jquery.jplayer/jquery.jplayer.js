@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.34
- * Date: 28th August 2011
+ * Version: 2.0.35
+ * Date: 29th August 2011
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -233,7 +233,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.34",
+			script: "2.0.35",
 			needFlash: "2.0.32",
 			flash: "unknown"
 		},
@@ -1858,20 +1858,28 @@
 					});
 				};
 
-			clearTimeout(this.internal.autohideId);
-			this.element.unbind(namespace);
 			if(this.css.jq.gui.length) {
+
+				// End animations first so that its callback is executed now.
+				// Otherwise an in progress fadeIn animation still has the callback to fadeOut again.
+				this.css.jq.gui.stop(true, true);
+
+				// Removes the fadeOut operation from the fadeIn callback.
+				clearTimeout(this.internal.autohideId);
+
+				this.element.unbind(namespace);
 				this.css.jq.gui.unbind(namespace);
+
 				if(!this.status.nativeVideoControls) {
 					if(this.options.fullScreen && this.options.autohide.full || !this.options.fullScreen && this.options.autohide.restored) {
 						this.element.bind(eventType, handler);
 						this.css.jq.gui.bind(eventType, handler);
-						this.css.jq.gui.stop(true, true).hide();
+						this.css.jq.gui.hide();
 					} else {
-						this.css.jq.gui.stop(true, true).show(); // Need the stop() otherwise a change screen mode during the GUI fade out hides the GUI in the other mode.
+						this.css.jq.gui.show();
 					}
 				} else {
-					this.css.jq.gui.stop(true, true).hide();
+					this.css.jq.gui.hide();
 				}
 			}
 		},
