@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Date: 7th August 2011
+ * Date: 1st September 2011
  */
 
 package happyworm.jPlayer {
@@ -70,6 +70,10 @@ package happyworm.jPlayer {
 			myStatus.srcSet = false;
 		}
 		private function errorHandler(err:IOErrorEvent):void {
+			// MP3 player needs to stop progress and timeupdate events as they are started before the error occurs.
+			// NB: The MP4 player works differently and the error occurs before they are started.
+			progressUpdates(false);
+			timeUpdates(false);
 			myStatus.error(); // Resets status except the src, and it sets srcError property.
 			this.dispatchEvent(new JplayerEvent(JplayerEvent.JPLAYER_ERROR, myStatus));
 		}
