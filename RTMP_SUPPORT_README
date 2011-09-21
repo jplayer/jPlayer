@@ -1,4 +1,7 @@
 Author: Robert M. Hall - www.impossibilities.com
+UPDATE: 09/21/2011
+Jplayer 2.1 is available now - will be merging 2.1 with this fork and checking in some updates and bug fixes soon - hang tight..
+
 UPDATED: 08/18/2011
 
 This fork of Jplayer adds in basic support for RTMP based audio and video (video is currently being tested).
