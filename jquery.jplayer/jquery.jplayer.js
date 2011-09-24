@@ -8,13 +8,13 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.0.21
- * Date: 11th July 2011
- * Modified for basic rtmp audio support
+ * Version: 2.1.0
+ * Date: 1st September 2011
+ * Modified for basic rtmp support
  * Author: Robert M. Hall
- * Date: 7th August 2011
+ * Date: 23rd September 2011
  */
-
+ 
 /* Code verified using http://www.jshint.com/ */
 /*jshint asi:false, bitwise:false, boss:false, browser:true, curly:true, debug:false, eqeqeq:true, eqnull:false, evil:false, forin:false, immed:false, jquery:true, laxbreak:false, newcap:true, noarg:true, noempty:true, nonew:true, nomem:false, onevar:false, passfail:false, plusplus:false, regexp:false, undef:true, sub:false, strict:false, white:false */
 /*global jQuery:false, ActiveXObject:false, alert:false */
@@ -95,6 +95,7 @@
 		flashreset: "jPlayer_flashreset", // Similar to the ready event if the Flash solution is set to display:none and then shown again or if it's reloaded for another reason by the browser. For example, using CSS position:fixed on Firefox for the full screen feature.
 		resize: "jPlayer_resize", // Occurs when the size changes through a full/restore screen operation or if the size/sizeFull options are changed.
 		repeat: "jPlayer_repeat", // Occurs when the repeat status changes. Usually through clicks on the repeat button of the interface.
+		click: "jPlayer_click", // Occurs when the user clicks on one of the following: poster image, html video, flash video.
 		error: "jPlayer_error", // Event error code in event.jPlayer.error.type. See $.jPlayer.error
 		warning: "jPlayer_warning", // Event warning code in event.jPlayer.warning.type. See $.jPlayer.warning
 
@@ -148,7 +149,6 @@
 	];
 
 	$.jPlayer.pause = function() {
-		// $.each($.jPlayer.instances, function(i, element) {
 		$.each($.jPlayer.prototype.instances, function(i, element) {
 			if(element.data("jPlayer").status.srcSet) { // Check that media is set otherwise would cause error event.
 				element.jPlayer("pause");
@@ -213,6 +213,10 @@
 			!rmobile.exec( ua ) && randroid.exec( ua ) ||
 			[];
 
+		if(platform[1]) {
+			platform[1] = platform[1].replace(/\s/g, "_"); // Change whitespace to underscore. Enables dot notation.
+		}
+
 		return { platform: platform[1] || "", tablet: tablet[1] || "" };
 	};
 
@@ -236,8 +240,8 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.21",
-			needFlash: "2.0.26",
+			script: "2.0.21", // RHALL move to 2.1
+			needFlash: "2.0.26", // RHALL mode to 2.1
 			flash: "unknown"
 		},
 		options: { // Instanced in $.jPlayer() constructor
@@ -268,7 +272,8 @@
 				restoreScreen: ".jp-restore-screen", // *
 				repeat: ".jp-repeat",
 				repeatOff: ".jp-repeat-off",
-				gui: ".jp-gui" // The interface used with autohide feature.
+				gui: ".jp-gui", // The interface used with autohide feature.
+				noSolution: ".jp-no-solution" // For error feedback when jPlayer cannot find a solution.
 			},
 			fullScreen: false,
 			autohide: {
@@ -288,6 +293,33 @@
 					$(this).unbind(".jPlayerRepeat");
 				}
 			},
+			nativeVideoControls: {
+				// Works well on standard browsers.
+				// Phone and tablet browsers can have problems with the controls disappearing.
+			},
+			noFullScreen: {
+				msie: /msie [0-6]/,
+				ipad: /ipad.*?os [0-4]/,
+				iphone: /iphone/,
+				ipod: /ipod/,
+				android_pad: /android [0-3](?!.*?mobile)/,
+				android_phone: /android.*?mobile/,
+				blackberry: /blackberry/,
+				windows_ce: /windows ce/,
+				webos: /webos/
+			},
+			noVolume: {
+				ipad: /ipad/,
+				iphone: /iphone/,
+				ipod: /ipod/,
+				android_pad: /android(?!.*?mobile)/,
+				android_phone: /android.*?mobile/,
+				blackberry: /blackberry/,
+				windows_ce: /windows ce/,
+				webos: /webos/,
+				playbook: /playbook/
+			},
+			verticalVolume: false, // Calculate volume from the bottom of the volume bar. Default is from the left. Also volume affects either width or height.
 			// globalVolume: false, // Not implemented: Set to make volume changes affect all jPlayer instances
 			// globalMute: false, // Not implemented: Set to make mute changes affect all jPlayer instances
 			idPrefix: "jp", // Prefix for the ids of html elements created by jPlayer. For flash, this must not include characters: . - + * / \
@@ -345,13 +377,16 @@
 			width
 			height
 			cssClass
+			nativeVideoControls
+			noFullScreen
+			noVolume
 */
 		},
 
 		internal: { // Instanced in _init()
 			ready: false
-			// instance: undefined,
-			// domNode: undefined,
+			// instance: undefined
+			// domNode: undefined
 			// htmlDlyCmdId: undefined
 			// autohideId: undefined
 		},
@@ -507,7 +542,7 @@
 			this.internal.flash = $.extend({}, {
 				id: this.options.idPrefix + "_flash_" + this.count,
 				jq: undefined,
-				swf: this.options.swfPath + ((this.options.swfPath !== "" && this.options.swfPath.slice(-1) !== "/") ? "/" : "") + "Jplayer.swf"
+				swf: this.options.swfPath + (this.options.swfPath.toLowerCase().slice(-4) !== ".swf" ? (this.options.swfPath && this.options.swfPath.slice(-1) !== "/" ? "/" : "") + "Jplayer.swf" : "")
 			});
 			this.internal.poster = $.extend({}, {
 				id: this.options.idPrefix + "_poster_" + this.count,
@@ -543,6 +578,14 @@
 			}
 			this._setSize(); // update status and jPlayer element size
 
+			// Determine the status for Blocklisted options.
+			this.status.nativeVideoControls = this._uaBlocklist(this.options.nativeVideoControls);
+			this.status.noFullScreen = this._uaBlocklist(this.options.noFullScreen);
+			this.status.noVolume = this._uaBlocklist(this.options.noVolume);
+
+			// The native controls are only for video and are disabled when audio is also used.
+			this._restrictNativeVideoControls();
+
 			// Create the poster image.
 			this.htmlElement.poster = document.createElement('img');
 			this.htmlElement.poster.id = this.internal.poster.id;
@@ -555,19 +598,22 @@
 			this.internal.poster.jq = $("#" + this.internal.poster.id);
 			this.internal.poster.jq.css({'width': this.status.width, 'height': this.status.height});
 			this.internal.poster.jq.hide();
+			this.internal.poster.jq.bind("click.jPlayer", function() {
+				self._trigger($.jPlayer.event.click);
+			});
 			
 			// Generate the required media elements
 			this.html.audio.available = false;
 			if(this.require.audio) { // If a supplied format is audio
 				this.htmlElement.audio = document.createElement('audio');
 				this.htmlElement.audio.id = this.internal.audio.id;
-				this.html.audio.available = !!this.htmlElement.audio.canPlayType;
+				this.html.audio.available = !!this.htmlElement.audio.canPlayType && this._testCanPlayType(this.htmlElement.audio); // Test is for IE9 on Win Server 2008.
 			}
 			this.html.video.available = false;
 			if(this.require.video) { // If a supplied format is video
 				this.htmlElement.video = document.createElement('video');
 				this.htmlElement.video.id = this.internal.video.id;
-				this.html.video.available = !!this.htmlElement.video.canPlayType;
+				this.html.video.available = !!this.htmlElement.video.canPlayType && this._testCanPlayType(this.htmlElement.video); // Test is for IE9 on Win Server 2008.
 			}
 
 			this.flash.available = this._checkForFlash(10);
@@ -618,11 +664,8 @@
 			});
 
 			// Init solution active state and the event gates to false.
-			this.html.active = false;
-			this.html.audio.gate = false;
-			this.html.video.gate = false;
-			this.flash.active = false;
-			this.flash.gate = false;
+			this._resetActive();
+			this._resetGate();
 
 			// Set up the css selectors for the control and feedback entities.
 			this._cssSelectorAncestor(this.options.cssSelectorAncestor);
@@ -635,6 +678,13 @@
 					message: $.jPlayer.errorMsg.NO_SOLUTION,
 					hint: $.jPlayer.errorHint.NO_SOLUTION
 				});
+				if(this.css.jq.noSolution.length) {
+					this.css.jq.noSolution.show();
+				}
+			} else {
+				if(this.css.jq.noSolution.length) {
+					this.css.jq.noSolution.hide();
+				}
 			}
 
 			// Add the flash solution if it is being used.
@@ -672,8 +722,8 @@
 					htmlObj.setAttribute("id", this.internal.flash.id);
 					htmlObj.setAttribute("data", this.internal.flash.swf);
 					htmlObj.setAttribute("type", "application/x-shockwave-flash");
-					htmlObj.setAttribute("width", "1"); // Non-zero
-					htmlObj.setAttribute("height", "1"); // Non-zero
+					htmlObj.setAttribute("width", "1"); // RHALL 1 Non-zero
+					htmlObj.setAttribute("height", "1"); // RHALL 1 Non-zero
 					createParam(htmlObj, "flashvars", flashVars);
 					createParam(htmlObj, "allowscriptaccess", "always");
 					createParam(htmlObj, "bgcolor", this.options.backgroundColor);
@@ -699,7 +749,14 @@
 					this._addHtmlEventListeners(this.htmlElement.video, this.html.video);
 					this.element.append(this.htmlElement.video);
 					this.internal.video.jq = $("#" + this.internal.video.id);
-					this.internal.video.jq.css({'width':'0px', 'height':'0px'}); // Using size 0x0 since a .hide() causes issues in iOS
+					if(this.status.nativeVideoControls) {
+						this.internal.video.jq.css({'width': this.status.width, 'height': this.status.height});
+					} else {
+						this.internal.video.jq.css({'width':'0px', 'height':'0px'}); // Using size 0x0 since a .hide() causes issues in iOS
+					}
+					this.internal.video.jq.bind("click.jPlayer", function() {
+						self._trigger($.jPlayer.event.click);
+					});
 				}
 			}
 
@@ -718,6 +775,7 @@
 			}
 
 			// Initialize the interface components with the options.
+			this._updateNativeVideoControls(); // Must do this first, otherwise there is a bizarre bug in iOS 4.3.2, where the native controls are not shown. Fails in iOS if called after _updateButtons() below. Works if called later in setMedia too, so it odd.
 			this._updateInterface();
 			this._updateButtons(false);
 			this._updateAutohide();
@@ -731,41 +789,94 @@
 		},
 		destroy: function() {
 			// MJP: The background change remains. Would need to store the original to restore it correctly.
+			// MJP: The jPlayer element's size change remains.
 
-			// Reset the interface, remove seeking effect and times.
-			this._resetStatus();
-			this._updateInterface();
-			this._seeked();
+			// Clear the media to reset the GUI and stop any downloads. Streams on some browsers had persited. (Chrome)
+			this.clearMedia();
+			// Remove the size/sizeFull cssClass from the cssSelectorAncestor
+			this._removeUiClass();
+			// Remove the times from the GUI
 			if(this.css.jq.currentTime.length) {
 				this.css.jq.currentTime.text("");
 			}
 			if(this.css.jq.duration.length) {
 				this.css.jq.duration.text("");
 			}
-
-			if(this.status.srcSet) { // Or you get a bogus error event
-				this.pause(); // Pauses the media and clears any delayed commands used in the HTML solution.
-			}
-			$.each(this.css.jq, function(fn, jq) { // Remove any bindings from the interface controls.
+			// Remove any bindings from the interface controls.
+			$.each(this.css.jq, function(fn, jq) {
 				// Check selector is valid before trying to execute method.
 				if(jq.length) {
 					jq.unbind(".jPlayer");
 				}
 			});
-			if( this.options.emulateHtml ) {
+			// Remove the click handlers for $.jPlayer.event.click
+			this.internal.poster.jq.unbind(".jPlayer");
+			if(this.internal.video.jq) {
+				this.internal.video.jq.unbind(".jPlayer");
+			}
+			// Destroy the HTML bridge.
+			if(this.options.emulateHtml) {
 				this._destroyHtmlBridge();
 			}
 			this.element.removeData("jPlayer"); // Remove jPlayer data
 			this.element.unbind(".jPlayer"); // Remove all event handlers created by the jPlayer constructor
 			this.element.empty(); // Remove the inserted child elements
 			
-			this.instances[this.internal.instance] = undefined; // Clear the instance on the static instance object
+			delete this.instances[this.internal.instance]; // Clear the instance on the static instance object
 		},
 		enable: function() { // Plan to implement
 			// options.disabled = false
 		},
 		disable: function () { // Plan to implement
 			// options.disabled = true
+		},
+		_testCanPlayType: function(elem) {
+			// IE9 on Win Server 2008 did not implement canPlayType(), but it has the property.
+			try {
+				elem.canPlayType(this.format.mp3.codec); // The type is irrelevant.
+				return true;
+			} catch(err) {
+				return false;
+			}
+		},
+		_uaBlocklist: function(list) {
+			// list : object with properties that are all regular expressions. Property names are irrelevant.
+			// Returns true if the user agent is matched in list.
+			var	ua = navigator.userAgent.toLowerCase(),
+				block = false;
+
+			$.each(list, function(p, re) {
+				if(re && re.test(ua)) {
+					block = true;
+					return false; // exit $.each.
+				}
+			});
+			return block;
+		},
+		_restrictNativeVideoControls: function() {
+			// Fallback to noFullScreen when nativeVideoControls is true and audio media is being used. Affects when both media types are used.
+			if(this.require.audio) {
+				if(this.status.nativeVideoControls) {
+					this.status.nativeVideoControls = false;
+					this.status.noFullScreen = true;
+				}
+			}
+		},
+		_updateNativeVideoControls: function() {
+			if(this.html.video.available && this.html.used) {
+				// Turn the HTML Video controls on/off
+				this.htmlElement.video.controls = this.status.nativeVideoControls;
+				// Show/hide the jPlayer GUI.
+				this._updateAutohide();
+				// For when option changed. The poster image is not updated, as it is dealt with in setMedia(). Acceptable degradation since seriously doubt these options will change on the fly. Can again review later.
+				if(this.status.nativeVideoControls && this.require.video) {
+					this.internal.poster.jq.hide();
+					this.internal.video.jq.css({'width': this.status.width, 'height': this.status.height});
+				} else if(this.status.waitForPlay && this.status.video) {
+					this.internal.poster.jq.show();
+					this.internal.video.jq.css({'width': '0px', 'height': '0px'});
+				}
+			}
 		},
 		_addHtmlEventListeners: function(mediaElement, entity) {
 			var self = this;
@@ -778,21 +889,21 @@
 			// Using entity.gate so that object is referenced and gate property always current
 			
 			mediaElement.addEventListener("progress", function() {
-				if(entity.gate && !self.status.waitForLoad) {
+				if(entity.gate) {
 					self._getHtmlStatus(mediaElement);
 					self._updateInterface();
 					self._trigger($.jPlayer.event.progress);
 				}
 			}, false);
 			mediaElement.addEventListener("timeupdate", function() {
-				if(entity.gate && !self.status.waitForLoad) {
+				if(entity.gate) {
 					self._getHtmlStatus(mediaElement);
 					self._updateInterface();
 					self._trigger($.jPlayer.event.timeupdate);
 				}
 			}, false);
 			mediaElement.addEventListener("durationchange", function() {
-				if(entity.gate && !self.status.waitForLoad) {
+				if(entity.gate) {
 					self.status.duration = this.duration;
 					self._getHtmlStatus(mediaElement);
 					self._updateInterface();
@@ -800,44 +911,45 @@
 				}
 			}, false);
 			mediaElement.addEventListener("play", function() {
-				if(entity.gate && !self.status.waitForLoad) {
+				if(entity.gate) {
 					self._updateButtons(true);
+					self._html_checkWaitForPlay(); // So the native controls update this variable and puts the hidden interface in the correct state. Affects toggling native controls.
 					self._trigger($.jPlayer.event.play);
 				}
 			}, false);
 			mediaElement.addEventListener("playing", function() {
-				if(entity.gate && !self.status.waitForLoad) {
+				if(entity.gate) {
 					self._updateButtons(true);
 					self._seeked();
 					self._trigger($.jPlayer.event.playing);
 				}
 			}, false);
 			mediaElement.addEventListener("pause", function() {
-				if(entity.gate && !self.status.waitForLoad) {
+				if(entity.gate) {
 					self._updateButtons(false);
 					self._trigger($.jPlayer.event.pause);
 				}
 			}, false);
 			mediaElement.addEventListener("waiting", function() {
-				if(entity.gate && !self.status.waitForLoad) {
+				if(entity.gate) {
 					self._seeking();
 					self._trigger($.jPlayer.event.waiting);
 				}
 			}, false);
 			mediaElement.addEventListener("seeking", function() {
-				if(entity.gate && !self.status.waitForLoad) {
+				if(entity.gate) {
 					self._seeking();
 					self._trigger($.jPlayer.event.seeking);
 				}
 			}, false);
 			mediaElement.addEventListener("seeked", function() {
-				if(entity.gate && !self.status.waitForLoad) {
+				if(entity.gate) {
 					self._seeked();
 					self._trigger($.jPlayer.event.seeked);
 				}
 			}, false);
 			mediaElement.addEventListener("volumechange", function() {
-				if(entity.gate && !self.status.waitForLoad) {
+				if(entity.gate) {
 					// Read the values back from the element as the Blackberry PlayBook shares the volume with the physical buttons master volume control.
 					// However, when tested 6th July 2011, those buttons do not generate an event. The physical play/pause button does though.
 					self.options.volume = mediaElement.volume;
@@ -848,13 +960,13 @@
 				}
 			}, false);
 			mediaElement.addEventListener("suspend", function() { // Seems to be the only way of capturing that the iOS4 browser did not actually play the media from the page code. ie., It needs a user gesture.
-				if(entity.gate && !self.status.waitForLoad) {
+				if(entity.gate) {
 					self._seeked();
 					self._trigger($.jPlayer.event.suspend);
 				}
 			}, false);
 			mediaElement.addEventListener("ended", function() {
-				if(entity.gate && !self.status.waitForLoad) {
+				if(entity.gate) {
 					// Order of the next few commands are important. Change the time and then pause.
 					// Solves a bug in Firefox, where issuing pause 1st causes the media to play from the start. ie., The pause is ignored.
 					if(!$.jPlayer.browser.webkit) { // Chrome crashes if you do this in conjunction with a setMedia command in an ended event handler. ie., The playlist demo.
@@ -868,17 +980,17 @@
 				}
 			}, false);
 			mediaElement.addEventListener("error", function() {
-				if(entity.gate && !self.status.waitForLoad) {
+				if(entity.gate) {
 					self._updateButtons(false);
 					self._seeked();
 					if(self.status.srcSet) { // Deals with case of clearMedia() causing an error event.
 						clearTimeout(self.internal.htmlDlyCmdId); // Clears any delayed commands used in the HTML solution.
 						self.status.waitForLoad = true; // Allows the load operation to try again.
 						self.status.waitForPlay = true; // Reset since a play was captured.
-						if(self.status.video) {
+						if(self.status.video && !self.status.nativeVideoControls) {
 							self.internal.video.jq.css({'width':'0px', 'height':'0px'});
 						}
-						if(self._validString(self.status.media.poster)) {
+						if(self._validString(self.status.media.poster) && !self.status.nativeVideoControls) {
 							self.internal.poster.jq.show();
 						}
 						if(self.css.jq.videoPlay.length) {
@@ -896,7 +1008,7 @@
 			// Create all the other event listeners that bubble up to a jPlayer event from html, without being used by jPlayer.
 			$.each($.jPlayer.htmlEvent, function(i, eventType) {
 				mediaElement.addEventListener(this, function() {
-					if(entity.gate && !self.status.waitForLoad) {
+					if(entity.gate) {
 						self._trigger($.jPlayer.event[eventType]);
 					}
 				}, false);
@@ -1022,6 +1134,9 @@
 						this._updateButtons(false);
 						this._trigger(eventType);
 						break;
+					case $.jPlayer.event.click:
+						this._trigger(eventType); // This could be dealt with by the default
+						break;
 					case $.jPlayer.event.error:
 						this.status.waitForLoad = true; // Allows the load operation to try again.
 						this.status.waitForPlay = true; // Reset since a play was captured.
@@ -1031,7 +1146,7 @@
 						if(this._validString(this.status.media.poster)) {
 							this.internal.poster.jq.show();
 						}
-						if(this.css.jq.videoPlay.length) {
+						if(this.css.jq.videoPlay.length && this.status.video) {
 							this.css.jq.videoPlay.show();
 						}
 						if(this.status.video) { // Set up for another try. Execute before error event.
@@ -1039,6 +1154,7 @@
 						} else {
 							this._flash_setAudio(this.status.media);
 						}
+						this._updateButtons(false);
 						this._error( {
 							type: $.jPlayer.error.URL,
 							context:status.src,
@@ -1091,7 +1207,10 @@
 				}
 			}
 			if(this.css.jq.restoreScreen.length && this.css.jq.fullScreen.length) {
-				if(this.options.fullScreen) {
+				if(this.status.noFullScreen) {
+					this.css.jq.fullScreen.hide();
+					this.css.jq.restoreScreen.hide();
+				} else if(this.options.fullScreen) {
 					this.css.jq.fullScreen.hide();
 					this.css.jq.restoreScreen.show();
 				} else {
@@ -1133,6 +1252,15 @@
 				this.css.jq.seekBar.removeClass("jp-seeking-bg");
 			}
 		},
+		_resetGate: function() {
+			this.html.audio.gate = false;
+			this.html.video.gate = false;
+			this.flash.gate = false;
+		},
+		_resetActive: function() {
+			this.html.active = false;
+			this.flash.active = false;
+		},
 		setMedia: function(media) {
 		
 			/*	media[format] = String: URL of format. Must contain all of the supplied option's video or audio formats.
@@ -1141,69 +1269,29 @@
 			 *	media.chapters = String: * NOT IMPLEMENTED * URL of chapters SRT file
 			 *	media.stream = Boolean: * NOT IMPLEMENTED * Designating actual media streams. ie., "false/undefined" for files. Plan to refresh the flash every so often.
 			 */
-			
-			var self = this;
-			
-			this._seeked();
-			clearTimeout(this.internal.htmlDlyCmdId); // Clears any delayed commands used in the HTML solution.
 
-			// Store the current html gates, since we need for clearMedia() conditions.
-			var audioGate = this.html.audio.gate;
-			var videoGate = this.html.video.gate;
+			var	self = this,
+				supported = false,
+				posterChanged = this.status.media.poster !== media.poster; // Compare before reset. Important for OSX Safari as this.htmlElement.poster.src is absolute, even if original poster URL was relative.
 
-			var supported = false;
+			this._resetMedia();
+			this._resetGate();
+			this._resetActive();
+
 			$.each(this.formats, function(formatPriority, format) {
 				var isVideo = self.format[format].media === 'video';
 				$.each(self.solutions, function(solutionPriority, solution) {
 					if(self[solution].support[format] && self._validString(media[format])) { // Format supported in solution and url given for format.
 						var isHtml = solution === 'html';
-						
+
 						if(isVideo) {
 							if(isHtml) {
-								self.html.audio.gate = false;
 								self.html.video.gate = true;
-								self.flash.gate = false;
-							} else {
-								self.html.audio.gate = false;
-								self.html.video.gate = false;
-								self.flash.gate = true;
-							}
-						} else {
-							if(isHtml) {
-								self.html.audio.gate = true;
-								self.html.video.gate = false;
-								self.flash.gate = false;
-							} else {
-								self.html.audio.gate = false;
-								self.html.video.gate = false;
-								self.flash.gate = true;
-							}
-						}
-
-						// Clear media of the previous solution if:
-						//  - it was Flash
-						//  - changing from HTML to Flash
-						//  - the HTML solution media type (audio or video) remained the same.
-						// Note that, we must be careful with clearMedia() on iPhone, otherwise clearing the video when changing to audio corrupts the built in video player.
-						if(self.flash.active || (self.html.active && self.flash.gate) || (audioGate === self.html.audio.gate && videoGate === self.html.video.gate)) {
-							self.clearMedia();
-						} else if(audioGate !== self.html.audio.gate && videoGate !== self.html.video.gate) { // If switching between html elements
-							self._html_pause();
-							// Hide the video if it was being used.
-							if(self.status.video) {
-								self.internal.video.jq.css({'width':'0px', 'height':'0px'});
-							}
-							self._resetStatus(); // Since clearMedia usually does this. Execute after status.video useage.
-						}
-
-						if(isVideo) {
-							if(isHtml) {
 								self._html_setVideo(media);
 								self.html.active = true;
-								self.flash.active = false;
 							} else {
+								self.flash.gate = true;
 								self._flash_setVideo(media);
-								self.html.active = false;
 								self.flash.active = true;
 							}
 							if(self.css.jq.videoPlay.length) {
@@ -1212,12 +1300,12 @@
 							self.status.video = true;
 						} else {
 							if(isHtml) {
+								self.html.audio.gate = true;
 								self._html_setAudio(media);
 								self.html.active = true;
-								self.flash.active = false;
 							} else {
+								self.flash.gate = true;
 								self._flash_setAudio(media);
-								self.html.active = false;
 								self.flash.active = true;
 							}
 							if(self.css.jq.videoPlay.length) {
@@ -1236,43 +1324,23 @@
 			});
 
 			if(supported) {
-				// Set poster after the possible clearMedia() command above. IE had issues since the IMG onload event occurred immediately when cached. ie., The clearMedia() hide the poster.
-				if(this._validString(media.poster)) {
-					if(this.htmlElement.poster.src !== media.poster) { // Since some browsers do not generate img onload event.
-						this.htmlElement.poster.src = media.poster;
-					} else {
-						this.internal.poster.jq.show();
+				if(!(this.status.nativeVideoControls && this.html.video.gate)) {
+					// Set poster IMG if native video controls are not being used
+					// Note: With IE the IMG onload event occurs immediately when cached.
+					// Note: Poster hidden by default in _resetMedia()
+					if(this._validString(media.poster)) {
+						if(posterChanged) { // Since some browsers do not generate img onload event.
+							this.htmlElement.poster.src = media.poster;
+						} else {
+							this.internal.poster.jq.show();
+						}
 					}
-				} else {
-					this.internal.poster.jq.hide(); // Hide if not used, since clearMedia() does not always occur above. ie., HTML audio <-> video switching.
 				}
 				this.status.srcSet = true;
 				this.status.media = $.extend({}, media);
 				this._updateButtons(false);
 				this._updateInterface();
 			} else { // jPlayer cannot support any formats provided in this browser
-				// Pause here if old media could be playing. Otherwise, playing media being changed to bad media would leave the old media playing.
-				if(this.status.srcSet && !this.status.waitForPlay) {
-					this.pause();
-				}
-				// Reset all the control flags
-				this.html.audio.gate = false;
-				this.html.video.gate = false;
-				this.flash.gate = false;
-				this.html.active = false;
-				this.flash.active = false;
-				// Reset status and interface.
-				this._resetStatus();
-				this._updateInterface();
-				this._updateButtons(false);
-				// Hide the any old media
-				this.internal.poster.jq.hide();
-				if(this.html.used && this.require.video) {
-					this.internal.video.jq.css({'width':'0px', 'height':'0px'});
-				}
-				if(this.flash.used) {
-					this.internal.flash.jq.css({'width':'0px', 'height':'0px'});
-				}
 				// Send an error event
 				this._error( {
 					type: $.jPlayer.error.NO_SUPPORT,
@@ -1282,19 +1350,32 @@
 				});
 			}
 		},
-		clearMedia: function() {
+		_resetMedia: function() {
 			this._resetStatus();
 			this._updateButtons(false);
-
+			this._updateInterface();
+			this._seeked();
 			this.internal.poster.jq.hide();
 
 			clearTimeout(this.internal.htmlDlyCmdId);
+
+			if(this.html.active) {
+				this._html_resetMedia();
+			} else if(this.flash.active) {
+				this._flash_resetMedia();
+			}
+		},
+		clearMedia: function() {
+			this._resetMedia();
 
 			if(this.html.active) {
 				this._html_clearMedia();
 			} else if(this.flash.active) {
 				this._flash_clearMedia();
 			}
+
+			this._resetGate();
+			this._resetActive();
 		},
 		load: function() {
 			if(this.status.srcSet) {
@@ -1377,7 +1458,7 @@
 			}
 
 			// The HTML solution generates this event from the media element itself.
-			if(this.flash.gate) {
+			if(!this.html.video.gate && !this.html.audio.gate) {
 				this._updateMute(muted);
 				this._updateVolume(this.options.volume);
 				this._trigger($.jPlayer.event.volumechange);
@@ -1396,7 +1477,10 @@
 				mute = this.options.muted;
 			}
 			if(this.css.jq.mute.length && this.css.jq.unmute.length) {
-				if(mute) {
+				if(this.status.noVolume) {
+					this.css.jq.mute.hide();
+					this.css.jq.unmute.hide();
+				} else if(mute) {
 					this.css.jq.mute.hide();
 					this.css.jq.unmute.show();
 				} else {
@@ -1417,18 +1501,24 @@
 			}
 
 			// The HTML solution generates this event from the media element itself.
-			if(this.flash.gate) {
+			if(!this.html.video.gate && !this.html.audio.gate) {
 				this._updateVolume(v);
 				this._trigger($.jPlayer.event.volumechange);
 			}
 		},
 		volumeBar: function(e) { // Handles clicks on the volumeBar
 			if(this.css.jq.volumeBar.length) {
-				var offset = this.css.jq.volumeBar.offset();
-				var x = e.pageX - offset.left;
-				var w = this.css.jq.volumeBar.width();
-				var v = x/w;
-				this.volume(v);
+				var	offset = this.css.jq.volumeBar.offset(),
+					x = e.pageX - offset.left,
+					w = this.css.jq.volumeBar.width(),
+					y = this.css.jq.volumeBar.height() - e.pageY + offset.top,
+					h = this.css.jq.volumeBar.height();
+
+				if(this.options.verticalVolume) {
+					this.volume(y/h);
+				} else {
+					this.volume(x/w);
+				}
 			}
 			if(this.options.muted) {
 				this._muted(false);
@@ -1443,8 +1533,27 @@
 			}
 			v = this.options.muted ? 0 : v;
 
-			if(this.css.jq.volumeBarValue.length) {
-				this.css.jq.volumeBarValue.width((v*100)+"%");
+			if(this.status.noVolume) {
+				if(this.css.jq.volumeBar.length) {
+					this.css.jq.volumeBar.hide();
+				}
+				if(this.css.jq.volumeBarValue.length) {
+					this.css.jq.volumeBarValue.hide();
+				}
+				if(this.css.jq.volumeMax.length) {
+					this.css.jq.volumeMax.hide();
+				}
+			} else {
+				if(this.css.jq.volumeBar.length) {
+					this.css.jq.volumeBar.show();
+				}
+				if(this.css.jq.volumeBarValue.length) {
+					this.css.jq.volumeBarValue.show();
+					this.css.jq.volumeBarValue[this.options.verticalVolume ? "height" : "width"]((v*100)+"%");
+				}
+				if(this.css.jq.volumeMax.length) {
+					this.css.jq.volumeMax.show();
+				}
 			}
 		},
 		volumeMax: function() { // Handles clicks on the volume max
@@ -1558,6 +1667,9 @@
 		gui: function(e) { // Handles clicks on the gui
 			// Added to avoid errors using cssSelector system for the gui
 		},
+		noSolution: function(e) { // Handles clicks on the error message
+			// Added to avoid errors using cssSelector system for no-solution
+		},
 
 		// Options code adapted from ui.widget.js (1.8.7).  Made changes so the key can use dot notation. To match previous getData solution in jPlayer 1.
 		option: function(key, value) {
@@ -1670,6 +1782,25 @@
 				case "loop" :
 					this._loop(value);
 					break;
+				case "nativeVideoControls" :
+					this.options[key] = $.extend({}, this.options[key], value); // store a merged copy of it, incase not all properties changed.
+					this.status.nativeVideoControls = this._uaBlocklist(this.options.nativeVideoControls);
+					this._restrictNativeVideoControls();
+					this._updateNativeVideoControls();
+					break;
+				case "noFullScreen" :
+					this.options[key] = $.extend({}, this.options[key], value); // store a merged copy of it, incase not all properties changed.
+					this.status.nativeVideoControls = this._uaBlocklist(this.options.nativeVideoControls); // Need to check again as noFullScreen can depend on this flag and the restrict() can override it.
+					this.status.noFullScreen = this._uaBlocklist(this.options.noFullScreen);
+					this._restrictNativeVideoControls();
+					this._updateButtons();
+					break;
+				case "noVolume" :
+					this.options[key] = $.extend({}, this.options[key], value); // store a merged copy of it, incase not all properties changed.
+					this.status.noVolume = this._uaBlocklist(this.options.noVolume);
+					this._updateVolume();
+					this._updateMute();
+					break;
 				case "emulateHtml" :
 					if(this.options[key] !== value) { // To avoid multiple event handlers being created, if true already.
 						this.options[key] = value;
@@ -1723,14 +1854,12 @@
 			// The poster uses show/hide so can simply resize it.
 			this.internal.poster.jq.css({'width': this.status.width, 'height': this.status.height});
 
-			// Video html or flash resized if necessary at this time.
-			if(!this.status.waitForPlay) {
-				if(this.html.active && this.status.video) { // Only if video media
-					this.internal.video.jq.css({'width': this.status.width, 'height': this.status.height});
-				}
-				else if(this.flash.active) {
-					this.internal.flash.jq.css({'width': this.status.width, 'height': this.status.height});
-				}
+			// Video html or flash resized if necessary at this time, or if native video controls being used.
+			if(!this.status.waitForPlay && this.html.active && this.status.video || this.html.video.available && this.html.used && this.status.nativeVideoControls) {
+				this.internal.video.jq.css({'width': this.status.width, 'height': this.status.height});
+			}
+			else if(!this.status.waitForPlay && this.flash.active && this.status.video) {
+				this.internal.flash.jq.css({'width': this.status.width, 'height': this.status.height});
 			}
 		},
 		_updateAutohide: function() {
@@ -1747,16 +1876,28 @@
 					});
 				};
 
-			clearTimeout(this.internal.autohideId);
-			this.element.unbind(namespace);
 			if(this.css.jq.gui.length) {
+
+				// End animations first so that its callback is executed now.
+				// Otherwise an in progress fadeIn animation still has the callback to fadeOut again.
+				this.css.jq.gui.stop(true, true);
+
+				// Removes the fadeOut operation from the fadeIn callback.
+				clearTimeout(this.internal.autohideId);
+
+				this.element.unbind(namespace);
 				this.css.jq.gui.unbind(namespace);
-				if(this.options.fullScreen && this.options.autohide.full || !this.options.fullScreen && this.options.autohide.restored) {
-					this.element.bind(eventType, handler);
-					this.css.jq.gui.bind(eventType, handler);
-					this.css.jq.gui.hide();
+
+				if(!this.status.nativeVideoControls) {
+					if(this.options.fullScreen && this.options.autohide.full || !this.options.fullScreen && this.options.autohide.restored) {
+						this.element.bind(eventType, handler);
+						this.css.jq.gui.bind(eventType, handler);
+						this.css.jq.gui.hide();
+					} else {
+						this.css.jq.gui.show();
+					}
 				} else {
-					this.css.jq.gui.show();
+					this.css.jq.gui.hide();
 				}
 			}
 		},
@@ -1767,11 +1908,10 @@
 			this._setOption("fullScreen", false);
 		},
 		_html_initMedia: function() {
-			if(this.status.srcSet  && !this.status.waitForPlay) {
-				this.htmlElement.media.pause();
-			}
+			this.htmlElement.media.src = this.status.src;
+
 			if(this.options.preload !== 'none') {
-				this._html_load();
+				this._html_load(); // See function for comments
 			}
 			this._trigger($.jPlayer.event.timeupdate); // The flash generates this event for its solution.
 		},
@@ -1800,23 +1940,32 @@
 					return false;
 				}
 			});
+			if(this.status.nativeVideoControls) {
+				this.htmlElement.video.poster = this._validString(media.poster) ? media.poster : "";
+			}
 			this.htmlElement.media = this.htmlElement.video;
 			this._html_initMedia();
 		},
-		_html_clearMedia: function() {
+		_html_resetMedia: function() {
 			if(this.htmlElement.media) {
-				if(this.htmlElement.media.id === this.internal.video.id) {
+				if(this.htmlElement.media.id === this.internal.video.id && !this.status.nativeVideoControls) {
 					this.internal.video.jq.css({'width':'0px', 'height':'0px'});
 				}
 				this.htmlElement.media.pause();
+			}
+		},
+		_html_clearMedia: function() {
+			if(this.htmlElement.media) {
 				this.htmlElement.media.src = "";
 				this.htmlElement.media.load(); // Stops an old, "in progress" download from continuing the download. Triggers the loadstart, error and emptied events, due to the empty src. Also an abort event if a download was in progress.
 			}
 		},
 		_html_load: function() {
+			// This function remains to allow the early HTML5 browsers to work, such as Firefox 3.6
+			// A change in the W3C spec for the media.load() command means that this is no longer necessary.
+			// This command should be removed and actually causes minor undesirable effects on some browsers. Such as loading the whole file and not only the metadata.
 			if(this.status.waitForLoad) {
 				this.status.waitForLoad = false;
-				this.htmlElement.media.src = this.status.src;
 				this.htmlElement.media.load();
 			}
 			clearTimeout(this.internal.htmlDlyCmdId);
@@ -1973,8 +2122,11 @@
 				}
 			} catch(err) { this._flashError(err); }
 		},
-		_flash_clearMedia: function() {
+		_flash_resetMedia: function() {
 			this.internal.flash.jq.css({'width':'0px', 'height':'0px'}); // Must do via CSS as setting attr() to zero causes a jQuery error in IE.
+			this._flash_pause(NaN);
+		},
+		_flash_clearMedia: function() {
 			try {
 				this._getMovie().fl_clearMedia();
 			} catch(err) { this._flashError(err); }
@@ -2086,7 +2238,9 @@
 				message: $.jPlayer.errorMsg[errorType] + error.message,
 				hint: $.jPlayer.errorHint[errorType]
 			});
-
+			// Allow the audio player to recover if display:none and then shown again, or with position:fixed on Firefox.
+			// This really only affects audio in a media player, as an audio player could easily move the jPlayer element away from such issues.
+			this.internal.flash.jq.css({'width':'1px', 'height':'1px'});
 		},
 		_error: function(error) {
 			this._trigger($.jPlayer.event.error, error);
