@@ -1,31 +1,54 @@
-jPlayer : HTML5 Audio & Video for jQuery
+Author: Robert M. Hall - www.impossibilities.com
 
-http://www.jplayer.org/
+UPDATE: 09/23/2011
+The main jquery.jplayer.js has now been merged into this fork, the version #s it requires the SWF to report are still the older versions as those haven't been updated yet, but have also checked in a number of other changes in the ActionScript and SWF's.
+In a state of flu at the moment as I am debugging some issues with LIVE rtmp streams, and adding in a new logging methods via localConnection to pipe logs/debug output to a standalone Adobe AIR based helper app (will commit that source soon).
+Need to merge in a few changes from the master from the AS3 files, and then they will be pretty much in sync again, and will consider sending a new push Request to Mark.
 
-What is jPlayer?
 
-jPlayer is a jQuery plugin that allows you to:
+UPDATE: 09/21/2011
+Jplayer 2.1 is available now - will be merging 2.1 with this fork and checking in some updates and bug fixes soon - hang tight..
 
- * play and control media files in your webpage
- * create and style a media player using just HTML and CSS
- * add audio and video to your jQuery projects
- * support more devices using HTML5
- * support older browsers using a Flash Fallback
- * control media on your website using a JavaScript API
+MAIN INFO - UPDATED: 08/18/2011
 
-jPlayer supports:
- * HTML5: mp3, m4a (AAC), m4v (H.264), ogv*, oga*, wav*, webm*
- * Flash: mp3, m4a (AAC), m4v (H.264)
-(*) Optional counterpart formats to increase HTML5 x-browser support.
+This fork of Jplayer adds in basic support for RTMP based audio and video (video is currently being tested).
 
-Dual licensed under the MIT and GPL licenses.
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/copyleft/gpl.html
+We are working to get it merged in with the master respository and branch that the author Mark J Panaghiston maintains here on GitHub.
 
-Quick Start Guide:
-http://www.jplayer.org/latest/quick-start-guide/
+As of now, the fork relies on version 2.0.21 of jquery.jplayer.js
+and 2.0.26 of the ActionScript source. Somewhere after 2.0.21 the changes to jquery.jplayer.js are causing issues with duration and current time updates, so we are going to freeze on that version until 2.1 is released and then revisit the changes.
 
-Developer Guide and API Reference:
-http://www.jplayer.org/latest/developer-guide/
+Basic support and functionality is in place and working well - additional features listed below will come over time. Please feel free to try this out and post any notes/issues here in the forks issues section.
 
-Author: Mark J Panaghiston
+Thanks!
+Rob
+
+USAGE NOTES:
+
+1. Initial focus is on Audio streams both ondemand and live (video should be functioning properly, but has not been fully tested as of yet). 
+
+2. Two new supplied media types for setMedia "rtmpa" and "rtmpv" - specify for rtmp audio streams and rtmp video streams. Example jPlayer("setMedia", {
+            rtmpa: "rtmp://cpcode.edgefcs.net/ondemand/mp3:/path_to_my_audio/some_audio_track.mp3"
+
+3. URL parsing of RTMP sources (which may need to be customized per usage, or extended/modified based on implementation needs) is located in the new ActionScript class files: JplayerRTMP.as - the relevant function is: parseRTMPsrcConnect(string) - this is where you should make accomodations for your FMS instance name, media location path, etc. Currently has basic support for parsing vod and live, but you may need to adjust this function to handle and parse your RTMP source URLs appropriately. Examples for splitting the host, appname and streamname are there, but if you have custom instances, or other needs, this is the place to edit/adjust.
+
+	08/11/2011 UPDATE: Reworked the parseRTMPsrcConnect to add significant amount of intelligence about rtmp sources. Now as long as its a valid rtmp source, it will be parsed appropriately. I also added in support for instance name detection without the much slower practice of multiple connection attempts to try and figure out the instance name verus portion of the stream name. Use a single "^" instead of a "/" directly after the instance name in your rtmp source url as a sentinel to indicate the end of a custom instance name after an FMS appname. Example:
+		rtmp://media.somehost.com:1935/someAppName/customInstanceName^mp3:thepathtosomefolder/folder/my_great_audio.mp3
+
+4. The changes to jquery.jplayer.js are very minor, the majority of the big changes are in the Jplayer.as to allow for the new RTMP formats "rtmpa" and "rtmpv" and to import a new JplayerRTMP.as class file which adds the bulk of the RTMP support.
+
+TODO Future Features List:
+
+99% COMPLETE: 1. Automatic Multiple port/protocol negotiation support (right now its only the standard connection attempts on the default protocol/port you pass in as the source RTMP string via setMedia) - should be adjusted to an array of configureable ports/protocols and timeout attempts, latching onto first to respond in order for more robust support in enterprise/firewalled networks.
+
+2. Bandwidth detection. Currently no bandwidth detection is being used. Could leverage old style onBwDone one time check, but ideal situations would be to add in support for AS3 based NetStreamInfo QOS metric properties to allow dynamic/multibitrate switching on the fly - auto determine other bitrates, etc. Possibly support for basic SMIL sources.
+
+3. Additional error/status messages for the various NetConnection/NetStream status codes returned by FMS for RTMP streaming, and pass through to JPlayer. Bare minimum currently.
+
+4. Add in indeterminate progress/waiting event similar to seeking, specifically for RTMP connection negotiation and buffering.
+
+5. Additional buffering parameters - perhaps dual threshold buffering, but at least additional config options for prerecorded media. LIVE streams are set to use bufferTimeMax at .5 and bufferTime at 0 (recommended for LIVE streams)
+
+6. LIVE stream GUI adjustments, change scrub/seek bar to Indeterminate animating progress bar and change current time/duration time from numeric values to "LIVE". Right now this should all be handled in JavaScript on per app basis, based on knowing when you are passing in a LIVE source and adjusting HTML/CSS. Rather keep this separate from player.
+
+7. Explore support for DVR live feature of FMS, and additional formats like HLS/Chunked F4V/HTTP Dynamic Streaming, etc.
