@@ -35,3 +35,5 @@ UPDATE: 09/23/2011
 UPDATE: 09/21/2011
 1. Jplayer 2.1 is available now - will be merging 2.1 with this fork and checking in some updates and bug fixes soon - hang tight..
 
+UPDATE: 8/12/2011
+1. Initil commit of RTMP support additions/changes.
