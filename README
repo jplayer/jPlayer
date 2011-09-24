@@ -19,7 +19,7 @@ UPDATE: 09/23/2011
 
 1. The main jquery.jplayer.js version 2.1 dated 09/1/11 has now been merged into this fork, the version #s it requires the SWF to report are still the older versions as those haven't been updated yet, but have also checked in a number of other changes in the ActionScript and SWF's.
 
-2. Temporarily in a state of flu at the moment as I am debugging some issues with LIVE rtmp streams, and adding in a new logging methods via localConnection to pipe logs/debug output to a standalone Adobe AIR based helper app (will commit that source soon).
+2. Temporarily in a state of flux at the moment as I am debugging some issues with LIVE rtmp streams, and adding in a new logging methods via localConnection to pipe logs/debug output to a standalone Adobe AIR based helper app (will commit that source soon).
 
 3. Need to merge in a few changes from the master from the AS3 files, and then they will be pretty much in sync again, and will consider sending a new push Request to Mark.
 
