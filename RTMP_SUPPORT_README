@@ -47,7 +47,7 @@ TODO Future Features List:
 
 4. Add in indeterminate progress/waiting event similar to seeking, specifically for RTMP connection negotiation and buffering.
 
-5. Additional buffering parameters - perhaps dual threshold buffering, but at least additional config options
+5. Additional buffering parameters - perhaps dual threshold buffering, but at least additional config options for prerecorded media. LIVE streams are set to use bufferTimeMax at .5 and bufferTime at 0 (recommended for LIVE streams)
 
 6. LIVE stream GUI adjustments, change scrub/seek bar to Indeterminate animating progress bar and change current time/duration time from numeric values to "LIVE". Right now this should all be handled in JavaScript on per app basis, based on knowing when you are passing in a LIVE source and adjusting HTML/CSS. Rather keep this separate from player.
 
