@@ -21,6 +21,8 @@ UPDATE: 09/26/2011
 
 2. Everything is now in sync with the master 2.1 repo as of today. Now only customlogging and new features remain. Need to test existing mp3/mp4 and video features, and rtmp based video, but expect they should be fine.
 
+3. Fixed an bug caused by the 2.1 version of jquery.jplayer.js - the time and scrubbar wouldn't update after the initial setMedia call.
+
 UPDATE: 09/23/2011
 
 1. The main jquery.jplayer.js version 2.1 dated 09/1/11 has now been merged into this fork, the version #s it requires the SWF to report are still the older versions as those haven't been updated yet, but have also checked in a number of other changes in the ActionScript and SWF's.
