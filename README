@@ -1,6 +1,6 @@
 Author: Robert M. Hall - www.impossibilities.com
 
-MAIN INFO - About this FORK - UPDATED: 09/23/2011
+MAIN INFO - About this FORK - UPDATED: 09/26/2011
 
 This fork of Jplayer adds in basic support for RTMP based audio and video (video is currently being developed/tested).
 
@@ -14,6 +14,12 @@ Thanks!
 Rob
 
 Version History:
+
+UPDATE: 09/26/2011
+
+1. Live RTMP buffering bug (allowed glitches due to incorrect bufferTime and bufferTimeMax settings) fixed.
+
+2. Everything is now in sync with the master 2.1 repo as of today. Now only customlogging and new features remain. Need to test existing mp3/mp4 and video features, and rtmp based video, but expect they should be fine.
 
 UPDATE: 09/23/2011
 
