@@ -14,7 +14,7 @@
  * Author: Robert M. Hall
  * Date: 23rd September 2011
  */
- 
+
 /* Code verified using http://www.jshint.com/ */
 /*jshint asi:false, bitwise:false, boss:false, browser:true, curly:true, debug:false, eqeqeq:true, eqnull:false, evil:false, forin:false, immed:false, jquery:true, laxbreak:false, newcap:true, noarg:true, noempty:true, nonew:true, nomem:false, onevar:false, passfail:false, plusplus:false, regexp:false, undef:true, sub:false, strict:false, white:false */
 /*global jQuery:false, ActiveXObject:false, alert:false */
@@ -240,8 +240,8 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.0.21", // RHALL move to 2.1
-			needFlash: "2.0.26", // RHALL mode to 2.1
+			script: "2.1.0",
+			needFlash: "2.1.0",
 			flash: "unknown"
 		},
 		options: { // Instanced in $.jPlayer() constructor
