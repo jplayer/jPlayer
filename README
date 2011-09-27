@@ -15,6 +15,10 @@ Rob
 
 Version History:
 
+UPDATE: 09/27/2011
+
+1. Changed buffering settings to leverage optimal settings for LIVE rtmp streams of mp3/aac content, the 80% use case of this player. (If using NellyMoser or Speex over live rtmp streams, the buffering should be 0 - need to come up with a setting to allow this to be overridden, or change based on the metadata received from FMS server)
+
 UPDATE: 09/26/2011
 
 1. Live RTMP buffering bug (allowed glitches due to incorrect bufferTime and bufferTimeMax settings) fixed.
