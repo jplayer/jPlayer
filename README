@@ -17,6 +17,12 @@ Rob
 
 Version History:
 
+UPDATE: 09/29/2011
+
+1. Additional fixes related to live streams having duration of 0 which was preventing some pause/play branching from executing. 
+2. Fix for pausing of live streams (they are closed now instead).
+3. Fixed an issue where a paused or closed stream is left pause/closed for 3600 seconds (1 hour) the default idle timeout for most FMS server, was generating an idle timeout event and a netconnection.close, which was causing the player to restart. Now short circuit that, and it properly closes netconnection, netstream, resets status and waits for a new play, or setMedia.
+
 UPDATE: 09/27/2011
 
 1. Changed buffering settings to leverage optimal settings for LIVE rtmp streams of mp3/aac content, the 80% use case of this player. (If using NellyMoser or Speex over live rtmp streams, the buffering should be 0 - need to come up with a setting to allow this to be overridden, or change based on the metadata received from FMS server)
