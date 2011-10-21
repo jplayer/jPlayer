@@ -157,7 +157,7 @@
 	};
 	
 	$.jPlayer.timeFormat = {
-		showHour: false,
+		showHour: true,
 		showMin: true,
 		showSec: true,
 		padHour: false,
@@ -2080,9 +2080,6 @@
 							case "rtmpa":
 								self._getMovie().fl_setAudio_rtmp(media[format]);
 								break;
-							case "rtmpv":
-								self._getMovie().fl_setVideo_rtmp(media[format]);
-								break;	
 						}
 						self.status.src = media[format];
 						self.status.format[format] = true;
@@ -2108,6 +2105,9 @@
 							case "flv" :
 								self._getMovie().fl_setVideo_m4v(media[format]);
 								break;
+							case "rtmpv":
+								self._getMovie().fl_setVideo_rtmp(media[format]);
+								break;		
 						}
 						self.status.src = media[format];
 						self.status.format[format] = true;
