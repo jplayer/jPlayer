@@ -8,7 +8,9 @@ This fork of Jplayer adds in basic support for RTMP based audio and video steams
 
 We are working to get it merged in with the master respository and branch that the author Mark J Panaghiston maintains here on GitHub.
 
-Basic support and functionality is in place and working well, including some new advanced features. Additional features listed in the RTMP_NOTES document will come over time.
+Basic support and functionality is in place and working well, including some new advanced features.
+
+Additional features listed in the RTMP_NOTES https://github.com/rmhall/jPlayer/blob/master/RTMP_NOTES document will come over time.
 
 Please feel free to try this out and post any notes/issues here in the forks issues section.
 
@@ -19,8 +21,8 @@ Version History:
 
 UPDATE: 10/21/2011
 
-	1. Video is now functioning properly. Several bug fixes related to video over rtmp are now in place allowing it to function as expected.
-	2. Optimized the buffering settings to provide a dual-threshold buffering approach for recorded/ondemand RTMP streams, and standard non dual-threshold buffering for LIVE content where technically there may not be anything to buffer.
+1. Video is now functioning properly. Several bug fixes related to video over rtmp are now in place allowing it to function as expected.
+2. Optimized the buffering settings to provide a dual-threshold buffering approach for recorded/ondemand RTMP streams, and standard non dual-threshold buffering for LIVE content where technically there may not be anything to buffer.
 
 UPDATE: 09/29/2011
 
