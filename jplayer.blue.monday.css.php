@@ -219,8 +219,8 @@ div.jp-playlist ul {
   list-style-type: none;
   margin: 0;
   padding-left: 0;
-  background-color: #ccc;
   font-size: .72em;
+  height: 100%; /* 100% of parent container, for drag/drop */
 }
 div.jp-playlist li {
   border: 1px solid #eee;
