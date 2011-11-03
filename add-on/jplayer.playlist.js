@@ -198,7 +198,7 @@
 				$(this.cssSelector.playlist + " ul").slideUp(displayTime, function() {
 					var $this = $(this);
 					$(this).empty();
-					
+
 					$.each(self.playlist, function(i,v) {
 						$this.append(self._createListItem(self.playlist[i]));
 					});
@@ -302,6 +302,7 @@
 		},
 		add: function(media, playNow) {
 			$(this.cssSelector.playlist + " ul").append(this._createListItem(media)).find("li:last-child").hide().slideDown(this.options.playlistOptions.addTime);
+            $(this.cssSelector.playlist + " ul li:last").attr('name', this.original.length);
 			this._updateControls();
 			this.original.push(media);
 			this.playlist.push(media); // Both array elements share the same object pointer. Comforms with _initPlaylist(p) system.
@@ -447,6 +448,20 @@
 					$(this).slideDown(self.options.playlistOptions.shuffleTime);
 				});
 			}
-		}
+		},
+        scan: function() {
+            var self = this;
+
+            var replace = [];
+            $.each($(this.cssSelector.playlist + " ul li"), function(index, value) {
+                replace[index] = self.original[$(value).attr('name')];
+                if(self.current === parseInt($(value).attr('name'), 10)) {
+                    self.current = index;
+                }
+                $(value).attr('name', index);
+            });
+            this.original = replace;
+            this._originalPlaylist();
+        }
 	};
 })(jQuery);
