@@ -6,6 +6,8 @@ Forked from: https://github.com/happyworm/jPlayer
 
 This fork of Jplayer adds in basic support for RTMP based audio and video steams.
 
+See it in use at http://www.daytrotter.com/ 
+
 We are working to get it merged in with the master respository and branch that the author Mark J Panaghiston maintains here on GitHub.
 
 Basic support and functionality is in place and working well, including some new advanced features.
