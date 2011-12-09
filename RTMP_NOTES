@@ -1,5 +1,10 @@
 NOTES:
 
+Added an example page showing video usage with "rtmpv" and the most recent jPlayer skin here:
+http://clients.impossibilities.com/jplayer/rtmpv.html
+
+More examples coming soon...
+
 1. Two new supplied media types for setMedia "rtmpa" and "rtmpv" - specify for rtmp audio streams and rtmp video streams.
 
 Example Audio:
