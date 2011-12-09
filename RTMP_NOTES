@@ -4,11 +4,11 @@ NOTES:
 
 Example Audio:
 	jPlayer("setMedia", {
-        rtmpa: "rtmp://cpcode.edgefcs.net/ondemand/mp3:/path_to_my_audio/some_audio_track.mp3"
+        rtmpa: "rtmp://cpcode.edgefcs.net/ondemand/mp3:/path_to_my_audio/some_audio_track.mp3" } );
 
 Example Video:
 	jPlayer("setMedia", {
-        rtmpv: "rtmp://cpcode.edgefcs.net/ondemand/mp4:/path_to_my_audio/some_audio_track.mp4"
+        rtmpv: "rtmp://cpcode.edgefcs.net/ondemand/mp4:/path_to_my_audio/some_audio_track.mp4" } );
 	
 2. URL parsing of RTMP sources (which may need to be customized per usage, or extended/modified based on implementation needs) is located in the new ActionScript class files: JplayerRTMP.as - the relevant function is: parseRTMPsrcConnect(string) - this is where you should make accomodations for your FMS instance name, media location path, etc. Currently has basic support for parsing vod and live, but you may need to adjust this function to handle and parse your RTMP source URLs appropriately. Examples for splitting the host, appname and streamname are there, but if you have custom instances, or other needs, this is the place to edit/adjust.
 
