@@ -8,6 +8,11 @@ This fork of Jplayer adds in basic support for RTMP based audio and video steams
 
 See it in use at http://www.daytrotter.com/ 
 
+Added an example page showing video usage with "rtmpv" and the most recent jPlayer skin here:
+http://clients.impossibilities.com/jplayer/rtmpv.html
+
+( More examples coming soon... )
+
 We are working to get it merged in with the master respository and branch that the author Mark J Panaghiston maintains here on GitHub.
 
 Basic support and functionality is in place and working well, including some new advanced features.
