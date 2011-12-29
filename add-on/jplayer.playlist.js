@@ -456,12 +456,14 @@
 		},
         scan: function() {
             var self = this;
+            var isAdjusted = false;
 
             var replace = [];
             $.each($(this.cssSelector.playlist + " ul li"), function(index, value) {
                 replace[index] = self.original[$(value).attr('name')];
-                if(self.current === parseInt($(value).attr('name'), 10)) {
+                if(!isAdjusted && self.current === parseInt($(value).attr('name'), 10)) {
                     self.current = index;
+                    isAdjusted = true;
                 }
                 $(value).attr('name', index);
             });
