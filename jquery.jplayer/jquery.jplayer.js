@@ -168,12 +168,12 @@
 	$.jPlayer.convertTime = function(s) {
 		var myTime = new Date(s * 1000);
 		var hour = myTime.getUTCHours();
-		var min = myTime.getUTCMinutes();
+		var min  = $.jPlayer.timeFormat.showHour ? myTime.getUTCMinutes() : myTime.getUTCMinutes() + hour*60;
 		var sec = myTime.getUTCSeconds();
 		var strHour = ($.jPlayer.timeFormat.padHour && hour < 10) ? "0" + hour : hour;
 		var strMin = ($.jPlayer.timeFormat.padMin && min < 10) ? "0" + min : min;
 		var strSec = ($.jPlayer.timeFormat.padSec && sec < 10) ? "0" + sec : sec;
-		return (($.jPlayer.timeFormat.showHour) ? strHour + $.jPlayer.timeFormat.sepHour : "") + (($.jPlayer.timeFormat.showMin) ? strMin + $.jPlayer.timeFormat.sepMin : "") + (($.jPlayer.timeFormat.showSec) ? strSec + $.jPlayer.timeFormat.sepSec : "");
+		return (($.jPlayer.timeFormat.showHour && hour > 0) ? strHour +  $.jPlayer.timeFormat.sepHour : "") +  (($.jPlayer.timeFormat.showMin) ? strMin + $.jPlayer.timeFormat.sepMin : "") + (($.jPlayer.timeFormat.showSec) ? strSec + $.jPlayer.timeFormat.sepSec : "");
 	};
 
 	// Adapting jQuery 1.4.4 code for jQuery.browser. Required since jQuery 1.3.2 does not detect Chrome as webkit.
