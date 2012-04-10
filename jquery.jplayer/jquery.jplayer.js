@@ -2,18 +2,18 @@
  * jPlayer Plugin for jQuery JavaScript Library
  * http://www.jplayer.org
  *
- * Copyright (c) 2009 - 2011 Happyworm Ltd
+ * Copyright (c) 2009 - 2012 Happyworm Ltd
  * Dual licensed under the MIT and GPL licenses.
  *  - http://www.opensource.org/licenses/mit-license.php
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.1.0
- * Date: 1st September 2011
+ * Version: 2.1.1
+ * Date: 10th April 20112
  */
 
 /* Code verified using http://www.jshint.com/ */
-/*jshint asi:false, bitwise:false, boss:false, browser:true, curly:true, debug:false, eqeqeq:true, eqnull:false, evil:false, forin:false, immed:false, jquery:true, laxbreak:false, newcap:true, noarg:true, noempty:true, nonew:true, nomem:false, onevar:false, passfail:false, plusplus:false, regexp:false, undef:true, sub:false, strict:false, white:false */
+/*jshint asi:false, bitwise:false, boss:false, browser:true, curly:true, debug:false, eqeqeq:true, eqnull:false, evil:false, forin:false, immed:false, jquery:true, laxbreak:false, newcap:true, noarg:true, noempty:true, nonew:true, nomem:false, onevar:false, passfail:false, plusplus:false, regexp:false, undef:true, sub:false, strict:false, white:false smarttabs:true */
 /*global jQuery:false, ActiveXObject:false, alert:false */
 
 (function($, undefined) {
@@ -423,6 +423,11 @@
 				flashCanPlay: true,
 				media: 'audio'
 			},
+			rtmpa: { // RTMP AUDIO
+				codec: 'audio/rtmp; codecs="rtmp"',
+				flashCanPlay: true,
+				media: 'audio'
+			},
 			m4v: { // H.264 / MP4
 				codec: 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"',
 				flashCanPlay: true,
@@ -440,6 +445,11 @@
 			},
 			flv: { // FLV / F4V
 				codec: 'video/x-flv',
+				flashCanPlay: true,
+				media: 'video'
+			},
+			rtmpv: { // RTMP VIDEO
+				codec: 'video/rtmp; codecs="rtmp"',
 				flashCanPlay: true,
 				media: 'video'
 			}
@@ -2064,6 +2074,9 @@
 							case "mp3" :
 								self._getMovie().fl_setAudio_mp3(media[format]);
 								break;
+							case "rtmpa":
+								self._getMovie().fl_setAudio_rtmp(media[format]);
+								break;
 						}
 						self.status.src = media[format];
 						self.status.format[format] = true;
@@ -2089,6 +2102,9 @@
 							case "flv" :
 								self._getMovie().fl_setVideo_m4v(media[format]);
 								break;
+							case "rtmpv":
+								self._getMovie().fl_setVideo_rtmp(media[format]);
+								break;		
 						}
 						self.status.src = media[format];
 						self.status.format[format] = true;
