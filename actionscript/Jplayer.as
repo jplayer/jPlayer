@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.1.1
- * Date: 10th April 2012
+ * Version: 2.1.2
+ * Date: 12th April 2012
  *
  * FlashVars expected: (AS3 property of: loaderInfo.parameters)
  *	id: 	(URL Encoded: String) Id of jPlayer instance
@@ -69,6 +69,9 @@ package {
 		private var isMp3:Boolean = false;
 		private var isVideo:Boolean = false;
 
+		private var securityIssue:Boolean = false; // When SWF parameters contain illegal characters
+		private var directAccess:Boolean = false; // When SWF visited directly with no parameters
+
 		private var txLog:TextField;
 		private var debug:Boolean = false; // Set debug to false for release compile!
 		private var localAIRDebug:Boolean = false; // This is autodetermined by AIR app - leave false!
@@ -80,31 +83,35 @@ package {
 			flash.system.Security.allowDomain("*");
 			traceOut = new TraceOut();
 
-			jQuery = loaderInfo.parameters.jQuery + "('#" + loaderInfo.parameters.id + "').jPlayer";
-			commonStatus.volume = Number(loaderInfo.parameters.vol);
-			commonStatus.muted = loaderInfo.parameters.muted == "true";
+			// Fix to the security exploit reported by Jason Calvert http://appsec.ws/
+			checkFlashVars(loaderInfo.parameters);
 
-			stage.scaleMode = StageScaleMode.NO_SCALE;
-			stage.align = StageAlign.TOP_LEFT;
-			stage.addEventListener(Event.RESIZE, resizeHandler);
-			stage.addEventListener(MouseEvent.CLICK, clickHandler);
+			if(!securityIssue) {
+				jQuery = loaderInfo.parameters.jQuery + "('#" + loaderInfo.parameters.id + "').jPlayer";
+				commonStatus.volume = Number(loaderInfo.parameters.vol);
+				commonStatus.muted = loaderInfo.parameters.muted == "true";
 
-			var initialVolume:Number = commonStatus.volume;
-			if(commonStatus.muted) {
-				initialVolume = 0;
+				stage.scaleMode = StageScaleMode.NO_SCALE;
+				stage.align = StageAlign.TOP_LEFT;
+				stage.addEventListener(Event.RESIZE, resizeHandler);
+				stage.addEventListener(MouseEvent.CLICK, clickHandler);
+
+				var initialVolume:Number = commonStatus.volume;
+				if(commonStatus.muted) {
+					initialVolume = 0;
+				}
+
+				myMp3Player = new JplayerMp3(initialVolume);
+				addChild(myMp3Player);
+
+				myMp4Player = new JplayerMp4(initialVolume);
+				addChild(myMp4Player);
+
+				myRtmpPlayer = new JplayerRtmp(initialVolume);
+				addChild(myRtmpPlayer);
+
+				switchType("mp3"); // set default state to mp3
 			}
-
-
-			myMp3Player = new JplayerMp3(initialVolume);
-			addChild(myMp3Player);
-
-			myMp4Player = new JplayerMp4(initialVolume);
-			addChild(myMp4Player);
-
-			myRtmpPlayer = new JplayerRtmp(initialVolume);
-			addChild(myRtmpPlayer);
-
-			switchType("mp3"); // set default state to mp3
 
 			// The ContextMenu only partially works. The menu select events never occur.
 			// Investigated and it is something to do with the way jPlayer inserts the Flash on the page.
@@ -113,36 +120,51 @@ package {
 			var myContextMenu:ContextMenu = new ContextMenu();
 			myContextMenu.hideBuiltInItems();
 			var menuItem_jPlayer:ContextMenuItem = new ContextMenuItem("jPlayer " + JplayerStatus.VERSION);
-			var menuItem_happyworm:ContextMenuItem = new ContextMenuItem("© 2009-2011 Happyworm Ltd", true);
+			var menuItem_happyworm:ContextMenuItem = new ContextMenuItem("© 2009-2012 Happyworm Ltd", true);
 			menuItem_jPlayer.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, menuSelectHandler_jPlayer);
 			menuItem_happyworm.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, menuSelectHandler_happyworm);
 			myContextMenu.customItems.push(menuItem_jPlayer, menuItem_happyworm);
 			contextMenu = myContextMenu;
 
 			// Log console for dev compile option: debug
-			if(debug) {
+			if(debug || directAccess) {
 				txLog = new TextField();
 				txLog.x = 5;
 				txLog.y = 5;
-				txLog.width = 540;
-				txLog.height = 390;
+				txLog.width = stage.stageWidth - 10;
+				txLog.height = stage.stageHeight - 10;
+				txLog.backgroundColor = 0xEEEEFF;
 				txLog.border = true;
 				txLog.background = true;
-				txLog.backgroundColor = 0xEEEEFF;
-				txLog.multiline = true;
 				txLog.text = "jPlayer " + JplayerStatus.VERSION;
-				txLog.visible = false;
-				this.addChild(txLog);
-				this.stage.addEventListener(KeyboardEvent.KEY_UP, keyboardHandler);
 
-				myMp3Player.addEventListener(JplayerEvent.DEBUG_MSG, debugMsgHandler);
-				myMp4Player.addEventListener(JplayerEvent.DEBUG_MSG, debugMsgHandler);
-				myRtmpPlayer.addEventListener(JplayerEvent.DEBUG_MSG, debugMsgHandler);
+				if(debug) {
+					txLog.multiline = true;
+					txLog.visible = false;
+				} else if(directAccess) {
+					txLog.visible = true;
+				}
+				if(debug && directAccess) {
+					txLog.visible = true;
+					log("Direct Access");
+				}
+
+				this.addChild(txLog);
+
+				if(debug && !securityIssue) {
+					this.stage.addEventListener(KeyboardEvent.KEY_UP, keyboardHandler);
+
+					myMp3Player.addEventListener(JplayerEvent.DEBUG_MSG, debugMsgHandler);
+					myMp4Player.addEventListener(JplayerEvent.DEBUG_MSG, debugMsgHandler);
+					myRtmpPlayer.addEventListener(JplayerEvent.DEBUG_MSG, debugMsgHandler);
+				}
 			}
 
-			// Delay init() because Firefox 3.5.7+ developed a bug with local testing in Firebug.
-			myInitTimer.addEventListener(TimerEvent.TIMER, init);
-			myInitTimer.start();
+			if(!securityIssue) {
+				// Delay init() because Firefox 3.5.7+ developed a bug with local testing in Firebug.
+				myInitTimer.addEventListener(TimerEvent.TIMER, init);
+				myInitTimer.start();
+			}
 		}
 
 		private function switchType(playType:String):void {
@@ -186,7 +208,7 @@ package {
 		
 		private function init(e:TimerEvent):void {
 			myInitTimer.stop();
-			if(ExternalInterface.available) {
+			if(ExternalInterface.available && !securityIssue) {
 				ExternalInterface.addCallback("fl_setAudio_mp3", fl_setAudio_mp3);
 				ExternalInterface.addCallback("fl_setAudio_m4a", fl_setAudio_m4a);
 				ExternalInterface.addCallback("fl_setVideo_m4v", fl_setVideo_m4v);
@@ -202,6 +224,29 @@ package {
 
 				ExternalInterface.call(jQuery, "jPlayerFlashEvent", JplayerEvent.JPLAYER_READY, extractStatusData(commonStatus)); // See JplayerStatus() class for version number.
 			}
+		}
+		private function checkFlashVars(p:Object):void {
+			var i:Number = 0;
+			for each (var s:String in p) {
+				if(illegalChar(s)) {
+					securityIssue = true; // Illegal char found
+				}
+				i++;
+			}
+			if(i === 0) {
+				directAccess = true;
+			}
+		}
+		private function illegalChar(s:String):Boolean {
+			var illegals:String = "' \" ( ) { } * + /";
+			if(Boolean(s)) { // Otherwise exception if parameter null.
+				for each (var illegal:String in illegals.split(' ')) {
+					if(s.indexOf(illegal) >= 0) {
+						return true; // Illegal char found
+					}
+				}
+			}
+			return false;
 		}
 		// switchType() here
 		private function listenToMp3(active:Boolean):void {
@@ -433,7 +478,7 @@ package {
 		private function jPlayerFlashEvent(e:JplayerEvent):void {
 			log("jPlayer Flash Event: " + e.type + ": " + e.target);
 			//tracer("jPlayer Flash Event: " + e.type + ": " + e.target);
-			if(ExternalInterface.available) {
+			if(ExternalInterface.available && !securityIssue) {
 				ExternalInterface.call(jQuery, "jPlayerFlashEvent", e.type, extractStatusData(e.data));
 			}
 		}
@@ -461,7 +506,7 @@ package {
 		}
 		private function jPlayerMetaDataHandler(e:JplayerEvent):void {
 			log("jPlayerMetaDataHandler:" + e.target);
-			if(ExternalInterface.available) {
+			if(ExternalInterface.available && !securityIssue) {
 				resizeHandler(new Event(Event.RESIZE));
 				ExternalInterface.call(jQuery, "jPlayerFlashEvent", e.type, extractStatusData(e.data));
 			}
@@ -486,23 +531,25 @@ package {
 				videoItem = myMp4Player;
 			}
 			
-			if(stage.stageWidth > 0 && stage.stageHeight > 0 && videoItem.myVideo.width > 0 && videoItem.myVideo.height > 0) {
-				aspectRatioStage = stage.stageWidth / stage.stageHeight;
-				aspectRatioVideo = videoItem.myVideo.width / videoItem.myVideo.height;
-				if(aspectRatioStage < aspectRatioVideo) {
-					mediaWidth = stage.stageWidth;
-					mediaHeight = stage.stageWidth / aspectRatioVideo;
-					mediaX = 0;
-					mediaY = (stage.stageHeight - mediaHeight) / 2;
-				} else {
-					mediaWidth = stage.stageHeight * aspectRatioVideo;
-					mediaHeight = stage.stageHeight;
-					mediaX = (stage.stageWidth - mediaWidth) / 2;
-					mediaY = 0;
+			if(videoItem) {
+				if(stage.stageWidth > 0 && stage.stageHeight > 0 && videoItem.myVideo.width > 0 && videoItem.myVideo.height > 0) {
+					aspectRatioStage = stage.stageWidth / stage.stageHeight;
+					aspectRatioVideo = videoItem.myVideo.width / videoItem.myVideo.height;
+					if(aspectRatioStage < aspectRatioVideo) {
+						mediaWidth = stage.stageWidth;
+						mediaHeight = stage.stageWidth / aspectRatioVideo;
+						mediaX = 0;
+						mediaY = (stage.stageHeight - mediaHeight) / 2;
+					} else {
+						mediaWidth = stage.stageHeight * aspectRatioVideo;
+						mediaHeight = stage.stageHeight;
+						mediaX = (stage.stageWidth - mediaWidth) / 2;
+						mediaY = 0;
+					}
+					resizeEntity(videoItem, mediaX, mediaY, mediaWidth, mediaHeight);
 				}
-				resizeEntity(videoItem, mediaX, mediaY, mediaWidth, mediaHeight);
 			}
-			if(debug && stage.stageWidth > 20 && stage.stageHeight > 20) {
+			if((debug || directAccess) && stage.stageWidth > 20 && stage.stageHeight > 20) {
 				txLog.width = stage.stageWidth - 10;
 				txLog.height = stage.stageHeight - 10;
 			}
