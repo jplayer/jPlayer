@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Date: 7th August 2011
+ * Date: 1st September 2011
  */
 
 package happyworm.jPlayer {

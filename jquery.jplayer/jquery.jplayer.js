@@ -2,21 +2,18 @@
  * jPlayer Plugin for jQuery JavaScript Library
  * http://www.jplayer.org
  *
- * Copyright (c) 2009 - 2011 Happyworm Ltd
+ * Copyright (c) 2009 - 2012 Happyworm Ltd
  * Dual licensed under the MIT and GPL licenses.
  *  - http://www.opensource.org/licenses/mit-license.php
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.1.0
- * Date: 1st September 2011
- * Modified for basic rtmp support
- * Author: Robert M. Hall
- * Date: 23rd September 2011
+ * Version: 2.1.2
+ * Date: 12th April 20112
  */
 
 /* Code verified using http://www.jshint.com/ */
-/*jshint asi:false, bitwise:false, boss:false, browser:true, curly:true, debug:false, eqeqeq:true, eqnull:false, evil:false, forin:false, immed:false, jquery:true, laxbreak:false, newcap:true, noarg:true, noempty:true, nonew:true, nomem:false, onevar:false, passfail:false, plusplus:false, regexp:false, undef:true, sub:false, strict:false, white:false */
+/*jshint asi:false, bitwise:false, boss:false, browser:true, curly:true, debug:false, eqeqeq:true, eqnull:false, evil:false, forin:false, immed:false, jquery:true, laxbreak:false, newcap:true, noarg:true, noempty:true, nonew:true, nomem:false, onevar:false, passfail:false, plusplus:false, regexp:false, undef:true, sub:false, strict:false, white:false smarttabs:true */
 /*global jQuery:false, ActiveXObject:false, alert:false */
 
 (function($, undefined) {
@@ -240,8 +237,8 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.1.0",
-			needFlash: "2.1.0",
+			script: "2.1.2",
+			needFlash: "2.1.2",
 			flash: "unknown"
 		},
 		options: { // Instanced in $.jPlayer() constructor
@@ -396,16 +393,6 @@
 		},
 		// 'MPEG-4 support' : canPlayType('video/mp4; codecs="mp4v.20.8"')
 		format: { // Static Object
-			rtmpa: { // RTMP AUDIO
-				codec: 'audio/rtmp; codecs="rtmp"',
-				flashCanPlay: true,
-				media: 'audio'
-			},
-			rtmpv: { // RTMP VIDEO
-				codec: 'video/rtmp; codecs="rtmp"',
-				flashCanPlay: true,
-				media: 'video'
-			},
 			mp3: {
 				codec: 'audio/mpeg; codecs="mp3"',
 				flashCanPlay: true,
@@ -436,6 +423,11 @@
 				flashCanPlay: true,
 				media: 'audio'
 			},
+			rtmpa: { // RTMP AUDIO
+				codec: 'audio/rtmp; codecs="rtmp"',
+				flashCanPlay: true,
+				media: 'audio'
+			},
 			m4v: { // H.264 / MP4
 				codec: 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"',
 				flashCanPlay: true,
@@ -453,6 +445,11 @@
 			},
 			flv: { // FLV / F4V
 				codec: 'video/x-flv',
+				flashCanPlay: true,
+				media: 'video'
+			},
+			rtmpv: { // RTMP VIDEO
+				codec: 'video/rtmp; codecs="rtmp"',
 				flashCanPlay: true,
 				media: 'video'
 			}
@@ -722,8 +719,8 @@
 					htmlObj.setAttribute("id", this.internal.flash.id);
 					htmlObj.setAttribute("data", this.internal.flash.swf);
 					htmlObj.setAttribute("type", "application/x-shockwave-flash");
-					htmlObj.setAttribute("width", "1"); // RHALL 1 Non-zero
-					htmlObj.setAttribute("height", "1"); // RHALL 1 Non-zero
+					htmlObj.setAttribute("width", "1"); // Non-zero
+					htmlObj.setAttribute("height", "1"); // Non-zero
 					createParam(htmlObj, "flashvars", flashVars);
 					createParam(htmlObj, "allowscriptaccess", "always");
 					createParam(htmlObj, "bgcolor", this.options.backgroundColor);
