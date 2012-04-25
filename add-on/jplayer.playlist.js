@@ -32,7 +32,7 @@
 		this.playlist = []; // Array of Objects: The current playlist displayed (Un-shuffled or Shuffled)
 		this.original = []; // Array of Objects: The original playlist
 
-		this._initPlaylist(playlist); // Copies playlist to this.original. Then mirrors this.original to this.playlist. Creating two arrays, where the element pointers match. (Enables pointer comparison.)
+		this._initPlaylist(playlist, this.options.currentIndex); // Copies playlist to this.original. Then mirrors this.original to this.playlist. Creating two arrays, where the element pointers match. (Enables pointer comparison.)
 
 		// Setup the css selectors for the extra interface items used by the playlist.
 		this.cssSelector.title = this.cssSelector.cssSelectorAncestor + " .jp-title"; // Note that the text is written to the decendant li node.
@@ -118,6 +118,7 @@
 		},
 		_options: { // static object, instanced in constructor
 			playlistOptions: {
+				currentIndex: 0,
 				autoPlay: false,
 				loopOnPrevious: false,
 				shuffleOnLoop: true,
@@ -163,8 +164,8 @@
 				}
 			});
 		},
-		_initPlaylist: function(playlist) {
-			this.current = 0;
+		_initPlaylist: function(playlist, currentIndex) {
+			this.current = currentIndex > playlist.length -1 ? 0 : currentIndex;
 			this.shuffled = false;
 			this.removing = false;
 			this.original = $.extend(true, [], playlist); // Copy the Array of Objects
@@ -296,8 +297,8 @@
 				$(this.cssSelector.title + " li").html(this.playlist[index].title + (this.playlist[index].artist ? " <span class='jp-artist'>by " + this.playlist[index].artist + "</span>" : ""));
 			}
 		},
-		setPlaylist: function(playlist) {
-			this._initPlaylist(playlist);
+		setPlaylist: function(playlist, currentIndex) {
+			this._initPlaylist(playlist, currentIndex);
 			this._init();
 		},
 		add: function(media, playNow) {
