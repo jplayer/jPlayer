@@ -1281,6 +1281,10 @@
 					if(self[solution].support[format] && self._validString(media[format])) { // Format supported in solution and url given for format.
 						var isHtml = solution === 'html';
 
+                                                // if media url contains comma separated urls, then use first one for html and second for flash
+						if( media[format].indexOf( "," ) > 0 )
+							media[format] = media[format].split( ',' )[ isHtml ? 1 : 0 ];
+
 						if(isVideo) {
 							if(isHtml) {
 								self.html.video.gate = true;
