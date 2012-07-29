@@ -2369,4 +2369,4 @@
 		CSS_SELECTOR_STRING: "Check your css selector is a string.",
 		OPTION_KEY: "Check your option name."
 	};
-})(jQuery);
+}));

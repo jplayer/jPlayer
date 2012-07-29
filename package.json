@@ -27,5 +27,5 @@
     }
   ],
   "github": "http://github.com/happyworm/jPlayer",
-  "main": "example.js"
+  "main": "jquery.jplayer/jquery.jplayer.js"
 }
