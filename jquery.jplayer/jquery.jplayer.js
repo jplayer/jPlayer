@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.1.2
- * Date: 12th April 20112
+ * Version: 2.1.3
+ * Date: 6th August 2012
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -237,7 +237,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.1.2",
+			script: "2.1.3",
 			needFlash: "2.1.2",
 			flash: "unknown"
 		},
@@ -901,7 +901,6 @@
 			}, false);
 			mediaElement.addEventListener("durationchange", function() {
 				if(entity.gate) {
-					self.status.duration = this.duration;
 					self._getHtmlStatus(mediaElement);
 					self._updateInterface();
 					self._trigger($.jPlayer.event.durationchange);
@@ -1014,14 +1013,17 @@
 		_getHtmlStatus: function(media, override) {
 			var ct = 0, d = 0, cpa = 0, sp = 0, cpr = 0;
 
-			if(media.duration) { // Fixes the duration bug in iOS, where the durationchange event occurs when media.duration is not always correct.
+			// Fixes the duration bug in iOS, where the durationchange event occurs when media.duration is not always correct.
+			// Fixes the initial duration bug in BB OS7, where the media.duration is infinity and displays as NaN:NaN due to Date() using inifity.
+			if(isFinite(media.duration)) {
 				this.status.duration = media.duration;
 			}
+
 			ct = media.currentTime;
 			cpa = (this.status.duration > 0) ? 100 * ct / this.status.duration : 0;
 			if((typeof media.seekable === "object") && (media.seekable.length > 0)) {
 				sp = (this.status.duration > 0) ? 100 * media.seekable.end(media.seekable.length-1) / this.status.duration : 100;
-				cpr = 100 * media.currentTime / media.seekable.end(media.seekable.length-1);
+				cpr = (this.status.duration > 0) ? 100 * media.currentTime / media.seekable.end(media.seekable.length-1) : 0; // Duration conditional for iOS duration bug. ie., seekable.end is a NaN in that case.
 			} else {
 				sp = 100;
 				cpr = cpa;
