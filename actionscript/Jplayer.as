@@ -2,14 +2,14 @@
  * jPlayer Plugin for jQuery JavaScript Library
  * http://www.happyworm.com/jquery/jplayer
  *
- * Copyright (c) 2009 - 2011 Happyworm Ltd
+ * Copyright (c) 2009 - 2012 Happyworm Ltd
  * Dual licensed under the MIT and GPL licenses.
  *  - http://www.opensource.org/licenses/mit-license.php
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.1.2
- * Date: 12th April 2012
+ * Version: 2.1.4
+ * Date: 7th August 2012
  *
  * FlashVars expected: (AS3 property of: loaderInfo.parameters)
  *	id: 	(URL Encoded: String) Id of jPlayer instance
@@ -435,22 +435,22 @@ package {
 
 		private function fl_load():Boolean {
 			log("load.");
-			var returnType=getType();
+			var returnType:Object = getType();
 			return returnType.load();
 		}
 		private function fl_play(time:Number = NaN):Boolean {
 			log("play: time = " + time);
-			var returnType=getType();
+			var returnType:Object = getType();
 			return returnType.play(time * 1000); // Flash uses milliseconds
 		}
 		private function fl_pause(time:Number = NaN):Boolean {
 			log("pause: time = " + time);
-			var returnType=getType();
+			var returnType:Object = getType();
 			return returnType.pause(time * 1000); // Flash uses milliseconds
 		}
 		private function fl_play_head(percent:Number):Boolean {
 			log("play_head: "+percent+"%");
-			var returnType=getType();
+			var returnType:Object = getType();
 			return returnType.playHead(percent);
 		}
 		private function fl_volume(v:Number):void {
@@ -522,7 +522,7 @@ package {
 			var aspectRatioStage:Number = 0;
 			var aspectRatioVideo:Number = 0;
 			
-			var videoItem;
+			var videoItem:*;
 			
 			if(isRtmp) {
 				videoItem = myRtmpPlayer;
