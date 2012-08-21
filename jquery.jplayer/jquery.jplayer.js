@@ -95,6 +95,7 @@
 		click: "jPlayer_click", // Occurs when the user clicks on one of the following: poster image, html video, flash video.
 		error: "jPlayer_error", // Event error code in event.jPlayer.error.type. See $.jPlayer.error
 		warning: "jPlayer_warning", // Event warning code in event.jPlayer.warning.type. See $.jPlayer.warning
+		playclicked: "jPlayer_playclicked", // Occurs right after the user clicks on the play button
 
 		// Other events match HTML5 spec.
 		loadstart: "jPlayer_loadstart",
@@ -1387,6 +1388,7 @@
 			}
 		},
 		play: function(time) {
+			this._trigger($.jPlayer.event.playclicked);
 			time = (typeof time === "number") ? time : NaN; // Remove jQuery event from click handler
 			if(this.status.srcSet) {
 				if(this.html.active) {
