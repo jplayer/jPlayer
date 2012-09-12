@@ -4,14 +4,14 @@
  *
  * Skin Name: Pink Flag
  *
- * Copyright (c) 2011 Happyworm Ltd
+ * Copyright (c) 2012 Happyworm Ltd
  * Dual licensed under the MIT and GPL licenses.
  *  - http://www.opensource.org/licenses/mit-license.php
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Silvia Benvenuti
- * Skin Version: 1.0 (jPlayer 2.1.0)
- * Date: 1st September 2011
+ * Skin Version: 1.1 (jPlayer 2.2.0)
+ * Date: 11th September 2012
  */
 
 div.jp-audio,
@@ -31,13 +31,12 @@ div.jp-video {
 	border-right:1px solid #180a1f;
 	border-bottom:1px solid #180a1f;
 	background-color:#3a2a45;
-	position:relative;
 }
 div.jp-audio {
 	width:201px;
 	padding:20px;
 }
-
+
 div.jp-video-270p {
 	width:480px;
 }
@@ -49,7 +48,12 @@ div.jp-video-full {
 	width:480px;
 	height:270px;
 	/* Rules for IE7 (full-screen) - Otherwise the relative container causes other page items that are not position:static (default) to appear over the video/gui. */
-	position:static !important; position:relative
+	position:static !important; position:relative;
+}
+
+/* The z-index rule is defined in this manner to enable Popcorn plugins that add overlays to video area. EG. Subtitles. */
+div.jp-video-full div div {
+	z-index:1000;
 }
 
 div.jp-video-full div.jp-jplayer {
@@ -57,7 +61,6 @@ div.jp-video-full div.jp-jplayer {
 	left: 0;
 	position: fixed !important; position: relative; /* Rules for IE6 (full-screen) */
 	overflow: hidden;
-	z-index:1000;
 }
 
 div.jp-video-full div.jp-gui {
@@ -66,13 +69,12 @@ div.jp-video-full div.jp-gui {
 	left: 0;
 	width:100%;
 	height:100%;
-	z-index:1000;
+	z-index:1001; /* 1 layer above the others. */
 }
 div.jp-video-full div.jp-interface {
 	position: absolute !important; position: relative; /* Rules for IE6 (full-screen) */
 	bottom: 0;
 	left: 0;
-	z-index:1000;
 }
 
 div.jp-interface {
@@ -221,7 +223,6 @@ ul.jp-toggles {
 	list-style-type:none;
 	padding:0;
 	margin:0 auto;
-	z-index:20;
 	overflow:hidden;
 }
 
@@ -476,7 +477,7 @@ div.jp-video .jp-volume-bar {
 .jp-video .jp-title ul {
 	margin: 0 20px 10px;
 }
-
+
 .jp-video .jp-playlist ul {
 	margin: 0 20px;
 }
@@ -496,7 +497,7 @@ div.jp-video .jp-volume-bar {
 	padding:0;
 	text-align:center;
 }
-
+
 /* Note that the first-child (IE6) and last-child (IE6/7/8) selectors do not work on IE */
 
 div.jp-type-playlist div.jp-playlist li:first-child {
@@ -565,22 +566,20 @@ span.jp-artist {
 
 
 div.jp-video div.jp-video-play {
-	position:absolute;
-	top:0;
-	left:0;
 	width:100%;
+	overflow:hidden; /* Important for nested negative margins to work in modern browsers */
 	cursor:pointer;
-	background-color:rgba(0,0,0,0); /* Makes IE9 work with the active area over the whole video area. IE6/7/8 only have the button as active area. */
 }
 div.jp-video-270p div.jp-video-play {
+	margin-top:-270px;
 	height:270px;
 }
 div.jp-video-360p div.jp-video-play {
+	margin-top:-360px;
 	height:360px;
 }
 div.jp-video-full div.jp-video-play {
 	height:100%;
-	z-index:1000;
 }
 a.jp-video-play-icon {
 	position:relative;

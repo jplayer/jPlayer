@@ -4,14 +4,14 @@
  *
  * Skin Name: Blue Monday
  *
- * Copyright (c) 2010-2011 Happyworm Ltd
+ * Copyright (c) 2010-2012 Happyworm Ltd
  * Dual licensed under the MIT and GPL licenses.
  *  - http://www.opensource.org/licenses/mit-license.php
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Silvia Benvenuti
- * Skin Version: 4.0 (jPlayer 2.1.0)
- * Date: 1st September 2011
+ * Skin Version: 4.1 (jPlayer 2.2.0)
+ * Date: 11th September 2012
  */
 
 div.jp-audio,
@@ -28,7 +28,6 @@ div.jp-video {
 	color: #666;
 	border:1px solid #009be3;
 	background-color:#eee;
-	position:relative;
 }
 div.jp-audio {
 	width:420px;
@@ -47,12 +46,16 @@ div.jp-video-full {
 	position:static !important; position:relative
 }
 
+/* The z-index rule is defined in this manner to enable Popcorn plugins that add overlays to video area. EG. Subtitles. */
+div.jp-video-full div div {
+	z-index:1000;
+}
+
 div.jp-video-full div.jp-jplayer {
 	top: 0;
 	left: 0;
 	position: fixed !important; position: relative; /* Rules for IE6 (full-screen) */
 	overflow: hidden;
-	z-index:1000;
 }
 
 div.jp-video-full div.jp-gui {
@@ -61,14 +64,13 @@ div.jp-video-full div.jp-gui {
 	left: 0;
 	width:100%;
 	height:100%;
-	z-index:1000;
+	z-index:1001; /* 1 layer above the others. */
 }
 
 div.jp-video-full div.jp-interface {
 	position: absolute !important; position: relative; /* Rules for IE6 (full-screen) */
 	bottom: 0;
 	left: 0;
-	z-index:1000;
 }
 
 div.jp-interface {
@@ -263,7 +265,7 @@ div.jp-video a.jp-mute,
 div.jp-video a.jp-unmute {
 	left: 50px;
 }
-
+
 div.jp-video a.jp-volume-max {
 	left: 134px;
 }
@@ -281,7 +283,7 @@ a.jp-unmute {
 a.jp-unmute:hover {
 	background: url("jplayer.blue.monday.jpg") -79px -170px no-repeat;
 }
-a.jp-volume-max {
+a.jp-volume-max {
 	background: url("jplayer.blue.monday.jpg") 0 -186px no-repeat;
 }
 a.jp-volume-max:hover {
@@ -444,22 +446,21 @@ span.jp-artist {
 /* @end */
 
 div.jp-video-play {
-	position:absolute;
-	top:0;
-	left:0;
 	width:100%;
+	overflow:hidden; /* Important for nested negative margins to work in modern browsers */
 	cursor:pointer;
 	background-color:rgba(0,0,0,0); /* Makes IE9 work with the active area over the whole video area. IE6/7/8 only have the button as active area. */
 }
 div.jp-video-270p div.jp-video-play {
+	margin-top:-270px;
 	height:270px;
 }
 div.jp-video-360p div.jp-video-play {
+	margin-top:-360px;
 	height:360px;
 }
 div.jp-video-full div.jp-video-play {
 	height:100%;
-	z-index:1000;
 }
 a.jp-video-play-icon {
 	position:relative;
