@@ -8,12 +8,12 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.1.5
+ * Version: 2.2.0
  * Date: 13th September 2012
  */
 
 /* Code verified using http://www.jshint.com/ */
-/*jshint asi:false, bitwise:false, boss:false, browser:true, curly:true, debug:false, eqeqeq:true, eqnull:false, evil:false, forin:false, immed:false, jquery:true, laxbreak:false, newcap:true, noarg:true, noempty:true, nonew:true, nomem:false, onevar:false, passfail:false, plusplus:false, regexp:false, undef:true, sub:false, strict:false, white:false smarttabs:true */
+/*jshint asi:false, bitwise:false, boss:false, browser:true, curly:true, debug:false, eqeqeq:true, eqnull:false, evil:false, forin:false, immed:false, jquery:true, laxbreak:false, newcap:true, noarg:true, noempty:true, nonew:true, onevar:false, passfail:false, plusplus:false, regexp:false, undef:true, sub:false, strict:false, white:false smarttabs:true */
 /*global jQuery:false, ActiveXObject:false, alert:false */
 
 (function($, undefined) {
@@ -237,8 +237,8 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.1.5",
-			needFlash: "2.1.4",
+			script: "2.2.0",
+			needFlash: "2.2.0",
 			flash: "unknown"
 		},
 		options: { // Instanced in $.jPlayer() constructor
@@ -1011,7 +1011,7 @@
 			});
 		},
 		_getHtmlStatus: function(media, override) {
-			var ct = 0, d = 0, cpa = 0, sp = 0, cpr = 0;
+			var ct = 0, cpa = 0, sp = 0, cpr = 0;
 
 			// Fixes the duration bug in iOS, where the durationchange event occurs when media.duration is not always correct.
 			// Fixes the initial duration bug in BB OS7, where the media.duration is infinity and displays as NaN:NaN due to Date() using inifity.
@@ -1399,7 +1399,7 @@
 				this._urlNotSetError("play");
 			}
 		},
-		videoPlay: function(e) { // Handles clicks on the play button over the video poster
+		videoPlay: function() { // Handles clicks on the play button over the video poster
 			this.play();
 		},
 		pause: function(time) {
@@ -1657,16 +1657,16 @@
 
 		// Plan to review the cssSelector method to cope with missing associated functions accordingly.
 
-		currentTime: function(e) { // Handles clicks on the text
+		currentTime: function() { // Handles clicks on the text
 			// Added to avoid errors using cssSelector system for the text
 		},
-		duration: function(e) { // Handles clicks on the text
+		duration: function() { // Handles clicks on the text
 			// Added to avoid errors using cssSelector system for the text
 		},
-		gui: function(e) { // Handles clicks on the gui
+		gui: function() { // Handles clicks on the gui
 			// Added to avoid errors using cssSelector system for the gui
 		},
-		noSolution: function(e) { // Handles clicks on the error message
+		noSolution: function() { // Handles clicks on the error message
 			// Added to avoid errors using cssSelector system for no-solution
 		},
 
@@ -2257,8 +2257,7 @@
 			alert("jPlayer " + this.version.script + " : id='" + this.internal.self.id +"' : " + message);
 		},
 		_emulateHtmlBridge: function() {
-			var self = this,
-			methods = $.jPlayer.emulateMethods;
+			var self = this;
 
 			// Emulate methods on jPlayer's DOM element.
 			$.each( $.jPlayer.emulateMethods.split(/\s+/g), function(i, name) {
