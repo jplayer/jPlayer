@@ -8,10 +8,11 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 0.1.0
- * Date: 21st August 2012
+ * Version: 1.0.0
+ * Date: 13th September 2012
  *
- * For jPlayer Version: 2.1.0 (It will be for 2.2.0 once that is online)
+ * For Popcorn Version: 1.3
+ * For jPlayer Version: 2.2.0
  * Requires: jQuery 1.3.2+
  * Note: jQuery dependancy cannot be removed since jPlayer 2 is a jQuery plugin. Use of jQuery will be kept to a minimum.
  */
@@ -22,9 +23,9 @@
 
 (function(Popcorn) {
 
-	var JQUERY_SCRIPT = 'http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js', // Used if jQuery not already present.
-	JPLAYER_SCRIPT = 'http://www.jplayer.org/2.1.0/js/jquery.jplayer.min.js', // Used if jPlayer not already present.
-	JPLAYER_SWFPATH = 'http://www.jplayer.org/2.1.0/js/Jplayer.swf', // Used if not specified in jPlayer options via SRC Object.
+	var JQUERY_SCRIPT = 'http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js', // Used if jQuery not already present.
+	JPLAYER_SCRIPT = 'http://www.jplayer.org/2.2.0/js/jquery.jplayer.min.js', // Used if jPlayer not already present.
+	JPLAYER_SWFPATH = 'http://www.jplayer.org/2.2.0/js/Jplayer.swf', // Used if not specified in jPlayer options via SRC Object.
 	SOLUTION = 'html,flash', // The default solution option.
 	DEBUG = false, // Decided to leave the debugging option and console output in for the time being. Overhead is trivial.
 	jQueryDownloading = false, // Flag to stop multiple instances from each pulling in jQuery, thus corrupting it.
@@ -141,7 +142,7 @@
 			var cType = containerType.toLowerCase(),
 			srcObj = {
 				media:{},
-				options:{},
+				options:{}
 			},
 			rVal = false, // Only a boolean false means it is not supported.
 			mediaType;
