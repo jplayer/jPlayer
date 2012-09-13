@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.1.4
- * Date: 7th August 2012
+ * Version: 2.1.5
+ * Date: 13th September 2012
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -237,7 +237,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.1.4",
+			script: "2.1.5",
 			needFlash: "2.1.4",
 			flash: "unknown"
 		},
@@ -692,7 +692,7 @@
 				// Code influenced by SWFObject 2.2: http://code.google.com/p/swfobject/
 				// Non IE browsers have an initial Flash size of 1 by 1 otherwise the wmode affected the Flash ready event. 
 
-				if($.browser.msie && Number($.browser.version) <= 8) {
+				if($.jPlayer.browser.msie && Number($.jPlayer.browser.version) <= 8) {
 					var objStr = '<object id="' + this.internal.flash.id + '" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="0" height="0"></object>';
 
 					var paramStr = [
