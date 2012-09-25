@@ -2364,3 +2364,12 @@
 		OPTION_KEY: "Check your option name."
 	};
 })(jQuery);
+
+$(document).ready(function() {
+	$(".jp-full-screen").click(function(){
+		$("body").addClass("noScroll");
+	});
+	$(".jp-restore-screen").click(function(){
+		$("body").removeClass("noScroll");
+	});
+});

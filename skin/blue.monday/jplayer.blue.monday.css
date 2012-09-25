@@ -13,6 +13,10 @@
  * Skin Version: 4.1 (jPlayer 2.2.0)
  * Date: 11th September 2012
  */
+ 
+.noScroll {
+	overflow: hidden !important;
+}
 
 div.jp-audio,
 div.jp-video {
