@@ -129,7 +129,8 @@
 				itemClass: "jp-playlist-item",
 				freeGroupClass: "jp-free-media",
 				freeItemClass: "jp-playlist-item-free",
-				removeItemClass: "jp-playlist-item-remove"
+				removeItemClass: "jp-playlist-item-remove",
+				readyCallback : null
 			}
 		},
 		option: function(option, value) { // For changing playlist options only
@@ -160,6 +161,9 @@
 					self.play(self.current);
 				} else {
 					self.select(self.current);
+				}
+				if(typeof self.options.readyCallback == 'function') {
+					self.options.readyCallback.call(this);
 				}
 			});
 		},
