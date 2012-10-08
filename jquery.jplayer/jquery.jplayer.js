@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.0
- * Date: 13th September 2012
+ * Version: 2.2.2
+ * Date: 8th October 2012
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -166,14 +166,22 @@
 	};
 
 	$.jPlayer.convertTime = function(s) {
-		var myTime = new Date(s * 1000);
-		var hour = myTime.getUTCHours();
-		var min  = $.jPlayer.timeFormat.showHour ? myTime.getUTCMinutes() : myTime.getUTCMinutes() + hour*60;
-		var sec = myTime.getUTCSeconds();
-		var strHour = ($.jPlayer.timeFormat.padHour && hour < 10) ? "0" + hour : hour;
-		var strMin = ($.jPlayer.timeFormat.padMin && min < 10) ? "0" + min : min;
-		var strSec = ($.jPlayer.timeFormat.padSec && sec < 10) ? "0" + sec : sec;
-		return (($.jPlayer.timeFormat.showHour && hour > 0) ? strHour +  $.jPlayer.timeFormat.sepHour : "") +  (($.jPlayer.timeFormat.showMin) ? strMin + $.jPlayer.timeFormat.sepMin : "") + (($.jPlayer.timeFormat.showSec) ? strSec + $.jPlayer.timeFormat.sepSec : "");
+		s = (s && typeof s === 'number') ? s : 0;
+
+		var myTime = new Date(s * 1000),
+			hour = myTime.getUTCHours(),
+			min = $.jPlayer.timeFormat.showHour ? myTime.getUTCMinutes() : myTime.getUTCMinutes() + hour * 60,
+			sec = $.jPlayer.timeFormat.showMin ? myTime.getUTCSeconds() : myTime.getUTCSeconds() + min * 60,
+			strHour = ($.jPlayer.timeFormat.padHour && hour < 10) ? "0" + hour : hour,
+			strMin = ($.jPlayer.timeFormat.padMin && min < 10) ? "0" + min : min,
+			strSec = ($.jPlayer.timeFormat.padSec && sec < 10) ? "0" + sec : sec,
+			strTime = "";
+
+		strTime += $.jPlayer.timeFormat.showHour ? strHour + $.jPlayer.timeFormat.sepHour : "";
+		strTime += $.jPlayer.timeFormat.showMin ? strMin + $.jPlayer.timeFormat.sepMin : "";
+		strTime += $.jPlayer.timeFormat.showSec ? strSec + $.jPlayer.timeFormat.sepSec : "";
+
+		return strTime;
 	};
 
 	// Adapting jQuery 1.4.4 code for jQuery.browser. Required since jQuery 1.3.2 does not detect Chrome as webkit.
@@ -237,7 +245,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.2.0",
+			script: "2.2.2",
 			needFlash: "2.2.0",
 			flash: "unknown"
 		},
