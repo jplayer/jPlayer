@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.2
- * Date: 8th October 2012
+ * Version: 2.2.4
+ * Date: 9th October 2012
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -251,7 +251,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.2.2",
+			script: "2.2.4",
 			needFlash: "2.2.0",
 			flash: "unknown"
 		},
@@ -707,7 +707,7 @@
 				// Non IE browsers have an initial Flash size of 1 by 1 otherwise the wmode affected the Flash ready event. 
 
 				if($.jPlayer.browser.msie && Number($.jPlayer.browser.version) <= 8) {
-					var objStr = '<object id="' + this.internal.flash.id + '" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="0" height="0"></object>';
+					var objStr = '<object id="' + this.internal.flash.id + '" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="0" height="0" tabindex="-1"></object>';
 
 					var paramStr = [
 						'<param name="movie" value="' + this.internal.flash.swf + '" />',
@@ -735,6 +735,7 @@
 					htmlObj.setAttribute("type", "application/x-shockwave-flash");
 					htmlObj.setAttribute("width", "1"); // Non-zero
 					htmlObj.setAttribute("height", "1"); // Non-zero
+					htmlObj.setAttribute("tabindex", "-1");
 					createParam(htmlObj, "flashvars", flashVars);
 					createParam(htmlObj, "allowscriptaccess", "always");
 					createParam(htmlObj, "bgcolor", this.options.backgroundColor);
