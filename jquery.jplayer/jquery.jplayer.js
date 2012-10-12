@@ -8,13 +8,13 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.5
- * Date: 9th October 2012
+ * Version: 2.2.6
+ * Date: 12th October 2012
  */
 
 /* Code verified using http://www.jshint.com/ */
 /*jshint asi:false, bitwise:false, boss:false, browser:true, curly:true, debug:false, eqeqeq:true, eqnull:false, evil:false, forin:false, immed:false, jquery:true, laxbreak:false, newcap:true, noarg:true, noempty:true, nonew:true, onevar:false, passfail:false, plusplus:false, regexp:false, undef:true, sub:false, strict:false, white:false smarttabs:true */
-/*global jQuery:false, ActiveXObject:false, alert:false */
+/*global define:false, ActiveXObject:false, alert:false */
 
 (function (root, factory) {
 	if (typeof define === 'function' && define.amd) {
@@ -259,7 +259,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.2.4",
+			script: "2.2.6",
 			needFlash: "2.2.0",
 			flash: "unknown"
 		},
@@ -408,6 +408,7 @@
 			// domNode: undefined
 			// htmlDlyCmdId: undefined
 			// autohideId: undefined
+			// cmdsIgnored
 		},
 		solution: { // Static Object: Defines the solutions built in jPlayer.
 			html: true,
@@ -483,6 +484,9 @@
 			
 			this.status = $.extend({}, this.status); // Copy static to unique instance.
 			this.internal = $.extend({}, this.internal); // Copy static to unique instance.
+
+			// On iOS, assume commands will be ignored before user initiates them.
+			this.internal.cmdsIgnored = $.jPlayer.platform.ipad || $.jPlayer.platform.iphone || $.jPlayer.platform.ipod;
 
 			this.internal.domNode = this.element.get(0);
 
@@ -910,6 +914,9 @@
 			
 			mediaElement.addEventListener("progress", function() {
 				if(entity.gate) {
+					if(self.internal.cmdsIgnored && this.readyState > 0) { // Detect iOS executed the command
+						self.internal.cmdsIgnored = false;
+					}
 					self._getHtmlStatus(mediaElement);
 					self._updateInterface();
 					self._trigger($.jPlayer.event.progress);
@@ -1993,25 +2000,41 @@
 			clearTimeout(this.internal.htmlDlyCmdId);
 		},
 		_html_play: function(time) {
-			var self = this;
+			var self = this,
+				media = this.htmlElement.media;
+
 			this._html_load(); // Loads if required and clears any delayed commands.
 
-			this.htmlElement.media.play(); // Before currentTime attempt otherwise Firefox 4 Beta never loads.
-
 			if(!isNaN(time)) {
+
+				// Attempt to play it, since iOS has been ignoring commands
+				if(this.internal.cmdsIgnored) {
+					media.play();
+				}
+
 				try {
-					this.htmlElement.media.currentTime = time;
+					// !media.seekable is for old HTML5 browsers, like Firefox 3.6.
+					// Checking seekable.length is important for iOS6 to work with setMedia().play(time)
+					if(!media.seekable || typeof media.seekable === "object" && media.seekable.length > 0) {
+						media.currentTime = time;
+						media.play();
+					} else {
+						throw 1;
+					}
 				} catch(err) {
 					this.internal.htmlDlyCmdId = setTimeout(function() {
 						self.play(time);
-					}, 100);
+					}, 250);
 					return; // Cancel execution and wait for the delayed command.
 				}
+			} else {
+				media.play();
 			}
 			this._html_checkWaitForPlay();
 		},
 		_html_pause: function(time) {
-			var self = this;
+			var self = this,
+				media = this.htmlElement.media;
 			
 			if(time > 0) { // We do not want the stop() command, which does pause(0), causing a load operation.
 				this._html_load(); // Loads if required and clears any delayed commands.
@@ -2020,15 +2043,19 @@
 			}
 
 			// Order of these commands is important for Safari (Win) and IE9. Pause then change currentTime.
-			this.htmlElement.media.pause();
+			media.pause();
 
 			if(!isNaN(time)) {
 				try {
-					this.htmlElement.media.currentTime = time;
+					if(!media.seekable || typeof media.seekable === "object" && media.seekable.length > 0) {
+						media.currentTime = time;
+					} else {
+						throw 1;
+					}
 				} catch(err) {
 					this.internal.htmlDlyCmdId = setTimeout(function() {
 						self.pause(time);
-					}, 100);
+					}, 250);
 					return; // Cancel execution and wait for the delayed command.
 				}
 			}
@@ -2037,20 +2064,23 @@
 			}
 		},
 		_html_playHead: function(percent) {
-			var self = this;
+			var self = this,
+				media = this.htmlElement.media;
+
 			this._html_load(); // Loads if required and clears any delayed commands.
+
 			try {
-				if((typeof this.htmlElement.media.seekable === "object") && (this.htmlElement.media.seekable.length > 0)) {
-					this.htmlElement.media.currentTime = percent * this.htmlElement.media.seekable.end(this.htmlElement.media.seekable.length-1) / 100;
-				} else if(this.htmlElement.media.duration > 0 && !isNaN(this.htmlElement.media.duration)) {
-					this.htmlElement.media.currentTime = percent * this.htmlElement.media.duration / 100;
+				if(typeof media.seekable === "object" && media.seekable.length > 0) {
+					media.currentTime = percent * media.seekable.end(media.seekable.length-1) / 100;
+				} else if(media.duration > 0 && !isNaN(media.duration)) {
+					media.currentTime = percent * media.duration / 100;
 				} else {
 					throw "e";
 				}
 			} catch(err) {
 				this.internal.htmlDlyCmdId = setTimeout(function() {
 					self.playHead(percent);
-				}, 100);
+				}, 250);
 				return; // Cancel execution and wait for the delayed command.
 			}
 			if(!this.status.waitForLoad) {
