@@ -1902,9 +1902,11 @@
 		},
 		fullScreen: function() {
 			this._setOption("fullScreen", true);
+			$("body").addClass("noScroll");
 		},
 		restoreScreen: function() {
 			this._setOption("fullScreen", false);
+			$("body").removeClass("noScroll");
 		},
 		_html_initMedia: function() {
 			this.htmlElement.media.src = this.status.src;
@@ -2365,12 +2367,3 @@
 		OPTION_KEY: "Check your option name."
 	};
 })(jQuery);
-
-$(document).ready(function() {
-	$(".jp-full-screen").click(function(){
-		$("body").addClass("noScroll");
-	});
-	$(".jp-restore-screen").click(function(){
-		$("body").removeClass("noScroll");
-	});
-});
