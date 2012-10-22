@@ -10,11 +10,12 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Silvia Benvenuti
- * Skin Version: 1.1 (jPlayer 2.2.0)
- * Date: 11th September 2012
+ * Skin Version: 1.2 (jPlayer 2.2.0)
+ * Date: 22nd October 2012
  */
 
 div.jp-audio,
+div.jp-audio-stream,
 div.jp-video {
 
 	/* Edit the font-size to counteract inherited font sizing.
@@ -35,6 +36,11 @@ div.jp-video {
 div.jp-audio {
 	width:201px;
 	padding:20px;
+}
+
+div.jp-audio-stream {
+	width:101px;
+	padding:20px 20px 10px 20px;
 }
 
 div.jp-video-270p {
@@ -89,6 +95,11 @@ div.jp-audio .jp-interface {
 	padding-top:30px;
 }
 
+div.jp-audio-stream .jp-interface {
+	height: 50px;
+	padding-top:30px;
+}
+
 /* @group CONTROLS */
 
 div.jp-controls-holder {
@@ -108,8 +119,13 @@ div.jp-interface ul.jp-controls {
 	height: 34px;
 }
 
-div.jp-audio ul.jp-controls {
+div.jp-audio ul.jp-controls,
+div.jp-audio-stream ul.jp-controls {
 	margin:0 auto;
+}
+
+div.jp-audio-stream ul.jp-controls {
+	width: 100px;
 }
 
 div.jp-video ul.jp-controls {
@@ -152,6 +168,12 @@ div.jp-type-single  .jp-pause {
 
 div.jp-type-single  .jp-pause:hover {
 	background: url("jplayer.pink.flag.jpg") -100px -120px no-repeat;
+}
+
+/* The right border is normally in the ul background image. */
+div.jp-audio-stream .jp-play,
+div.jp-audio-stream .jp-pause {
+	border-right:1px solid #180920;
 }
 
 div.jp-type-single  .jp-stop {
@@ -361,12 +383,15 @@ div.jp-interface ul.jp-controls a.jp-volume-max {
 }
 
 div.jp-audio ul.jp-controls a.jp-mute,
-div.jp-audio ul.jp-controls a.jp-unmute {
+div.jp-audio ul.jp-controls a.jp-unmute,
+div.jp-audio-stream ul.jp-controls a.jp-mute,
+div.jp-audio-stream ul.jp-controls a.jp-unmute {
 	top:-6px;
 	left: 0;
 }
 
-div.jp-audio ul.jp-controls a.jp-volume-max {
+div.jp-audio ul.jp-controls a.jp-volume-max,
+div.jp-audio-stream ul.jp-controls a.jp-volume-max {
 	top:-6px;
 	right: 0;
 }
@@ -417,16 +442,24 @@ div.jp-interface ul.jp-controls a.jp-volume-max:hover {
 }
 
 
-div.jp-audio .jp-interface .jp-volume-bar {
+div.jp-audio .jp-interface .jp-volume-bar,
+div.jp-audio-stream .jp-interface .jp-volume-bar {
 	top:10px;
 	left: 0;
+}
+
+div.jp-audio-stream .jp-interface .jp-volume-bar {
+	width: 97px;
+	border-right:1px solid #180920;
+	padding-right:1px;
 }
 
 div.jp-video .jp-volume-bar {
 	top: 0;
 	left: 0;
 	width:95px;
-	border-right:1px solid #000;
+	border-right:1px solid #180920;
+	padding-right:1px;
 	margin-top: 30px;
 }
 
@@ -613,12 +646,6 @@ div.jp-jplayer {
 /* @group NO SOLUTION error feedback */
 
 .jp-no-solution {
-	position:absolute;
-	width:390px;
-	margin-left:-202px;
-	left:50%;
-	top: 10px;
-
 	padding:5px;
 	font-size:.8em;
 	background-color:#3a2a45;
@@ -640,10 +667,4 @@ div.jp-jplayer {
 	text-align:center;
 	font-weight:bold;
 }
-
-.jp-audio .jp-no-solution {
-	width:190px;
-	margin-left:-102px;
-}
-
 /* @end */

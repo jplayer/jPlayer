@@ -1,6 +1,6 @@
 /*
  * Skin for jPlayer Plugin (jQuery JavaScript Library)
- * http://www.happyworm.com/jquery/jplayer
+ * http://www.jplayer.org
  *
  * Skin Name: Blue Monday
  *
@@ -10,11 +10,12 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Silvia Benvenuti
- * Skin Version: 4.1 (jPlayer 2.2.0)
- * Date: 11th September 2012
+ * Skin Version: 4.2 (jPlayer 2.2.0)
+ * Date: 22nd October 2012
  */
 
 div.jp-audio,
+div.jp-audio-stream,
 div.jp-video {
 
 	/* Edit the font-size to counteract inherited font sizing.
@@ -31,6 +32,9 @@ div.jp-video {
 }
 div.jp-audio {
 	width:420px;
+}
+div.jp-audio-stream {
+	width:182px;
 }
 div.jp-video-270p {
 	width:480px;
@@ -86,6 +90,10 @@ div.jp-audio div.jp-type-playlist div.jp-interface {
 	height:80px;
 }
 
+div.jp-audio-stream div.jp-type-single div.jp-interface {
+	height:80px;
+}
+
 div.jp-video div.jp-interface {
 	border-top:1px solid #009be3;
 }
@@ -110,6 +118,11 @@ div.jp-interface ul.jp-controls {
 
 div.jp-audio ul.jp-controls {
 	width: 380px;
+	padding:20px 20px 0 20px;
+}
+
+div.jp-audio-stream ul.jp-controls {
+	width: 142px;
 	padding:20px 20px 0 20px;
 }
 
@@ -243,13 +256,18 @@ div.jp-audio div.jp-type-single a.jp-mute,
 div.jp-audio div.jp-type-single a.jp-unmute {
 	margin-left: 210px;	
 }
-
 div.jp-audio div.jp-type-playlist a.jp-mute,
 div.jp-audio div.jp-type-playlist a.jp-unmute {
 	margin-left: 154px;
 }
 
-div.jp-audio a.jp-volume-max {
+div.jp-audio-stream div.jp-type-single a.jp-mute,
+div.jp-audio-stream div.jp-type-single a.jp-unmute {
+	margin-left:10px;
+}
+
+div.jp-audio a.jp-volume-max,
+div.jp-audio-stream a.jp-volume-max {
 	margin-left: 56px;	
 }
 
@@ -301,6 +319,10 @@ div.jp-volume-bar {
 div.jp-audio div.jp-volume-bar {
 	top:37px;
 	left:330px;
+}
+div.jp-audio-stream div.jp-volume-bar {
+	top:37px;
+	left:92px;
 }
 div.jp-video div.jp-volume-bar {
 	top:17px;
@@ -596,12 +618,6 @@ a.jp-shuffle-off:hover {
 /* @group NO SOLUTION error feedback */
 
 .jp-no-solution {
-	position:absolute;
-	width:390px;
-	margin-left:-202px;
-	left:50%;
-	top: 10px;
-
 	padding:5px;
 	font-size:.8em;
 	background-color:#eee;
