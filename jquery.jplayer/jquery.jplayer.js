@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.6
- * Date: 12th October 2012
+ * Version: 2.2.7
+ * Date: 24th October 2012
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -256,10 +256,30 @@
 		$.jPlayer.platform.tablet = !!platformMatch.tablet;
 	}
 
+	// Internet Explorer (IE) Browser Document Mode Sniffer. Based on code at:
+	// http://msdn.microsoft.com/en-us/library/cc288325%28v=vs.85%29.aspx#GetMode
+	$.jPlayer.getDocMode = function() {
+		var docMode;
+		if ($.jPlayer.browser.msie) {
+			if (document.documentMode) { // IE8 or later
+				docMode = document.documentMode;
+			} else { // IE 5-7
+				docMode = 5; // Assume quirks mode unless proven otherwise
+				if (document.compatMode) {
+					if (document.compatMode === "CSS1Compat") {
+						docMode = 7; // standards mode
+					}
+				}
+			}
+		}
+		return docMode;
+	};
+	$.jPlayer.browser.documentMode = $.jPlayer.getDocMode();
+
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.2.6",
+			script: "2.2.7",
 			needFlash: "2.2.0",
 			flash: "unknown"
 		},
@@ -718,7 +738,7 @@
 				// Code influenced by SWFObject 2.2: http://code.google.com/p/swfobject/
 				// Non IE browsers have an initial Flash size of 1 by 1 otherwise the wmode affected the Flash ready event. 
 
-				if($.jPlayer.browser.msie && Number($.jPlayer.browser.version) <= 8) {
+				if($.jPlayer.browser.msie && (Number($.jPlayer.browser.version) < 9 || $.jPlayer.browser.documentMode < 9)) {
 					var objStr = '<object id="' + this.internal.flash.id + '" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="0" height="0" tabindex="-1"></object>';
 
 					var paramStr = [
