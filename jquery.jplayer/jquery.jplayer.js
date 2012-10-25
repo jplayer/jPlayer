@@ -664,7 +664,12 @@
 			this.html.canPlay = {};
 			this.flash.canPlay = {};
 			$.each(this.formats, function(priority, format) {
-				self.html.canPlay[format] = self.html[self.format[format].media].available && "" !== self.htmlElement[self.format[format].media].canPlayType(self.format[format].codec);
+                var browserCanPlay = self.html[self.format[format].media].available && "" !== self.htmlElement[self.format[format].media].canPlayType(self.format[format].codec);
+                // Override this if MS IE 9 and M4A which is falsely reported as supported
+                if (format == 'm4a' && $.jPlayer.browser.msie && Number($.jPlayer.browser.version) == 9) {
+                    browserCanPlay = false;
+                }
+                self.html.canPlay[format] = browserCanPlay;
 				self.flash.canPlay[format] = self.format[format].flashCanPlay && self.flash.available;
 			});
 			this.html.desired = false;
