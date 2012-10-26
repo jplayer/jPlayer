@@ -327,7 +327,9 @@
 			if(playNow) {
 				this.play(0);
 			} else {
-				this.select(0);
+				if(this.original.length === 1) {
+					this.select(0);
+				}
 			}
 		},
 		remove: function(index) {
