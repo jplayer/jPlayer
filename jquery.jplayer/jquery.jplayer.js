@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.7
- * Date: 24th October 2012
+ * Version: 2.2.8
+ * Date: 26th October 2012
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -279,7 +279,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.2.7",
+			script: "2.2.8",
 			needFlash: "2.2.0",
 			flash: "unknown"
 		},
@@ -2005,7 +2005,9 @@
 		},
 		_html_clearMedia: function() {
 			if(this.htmlElement.media) {
-				this.htmlElement.media.src = "";
+				this.htmlElement.media.src = "about:blank";
+				// The following load() is only required for Firefox 3.6 (PowerMacs).
+				// Recent HTMl5 browsers only require the src change. Due to changes in W3C spec and load() effect.
 				this.htmlElement.media.load(); // Stops an old, "in progress" download from continuing the download. Triggers the loadstart, error and emptied events, due to the empty src. Also an abort event if a download was in progress.
 			}
 		},
