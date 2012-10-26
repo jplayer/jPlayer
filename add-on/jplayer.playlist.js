@@ -327,6 +327,7 @@
 			if(playNow) {
 				this.play(0);
 			} else {
+				this.current += 1;
 				if(this.original.length === 1) {
 					this.select(0);
 				}
