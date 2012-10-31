@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.8
- * Date: 26th October 2012
+ * Version: 2.2.9
+ * Date: 31st October 2012
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -279,7 +279,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.2.8",
+			script: "2.2.9",
 			needFlash: "2.2.0",
 			flash: "unknown"
 		},
@@ -659,7 +659,7 @@
 				this.html.video.available = !!this.htmlElement.video.canPlayType && this._testCanPlayType(this.htmlElement.video); // Test is for IE9 on Win Server 2008.
 			}
 
-			this.flash.available = this._checkForFlash(10);
+			this.flash.available = this._checkForFlash("10.1");
 
 			this.html.canPlay = {};
 			this.flash.canPlay = {};
@@ -2260,30 +2260,74 @@
 		_getMovie: function() {
 			return document[this.internal.flash.id];
 		},
-		_checkForFlash: function (version) {
-			// Function checkForFlash adapted from FlashReplace by Robert Nyman
-			// http://code.google.com/p/flashreplace/
-			var flashIsInstalled = false;
-			var flash;
-			if(window.ActiveXObject){
-				try{
-					flash = new ActiveXObject(("ShockwaveFlash.ShockwaveFlash." + version));
-					flashIsInstalled = true;
+		_getFlashPluginVersionArray: function() {
+
+			// Code influenced by SWFObject 2.2: http://code.google.com/p/swfobject/
+
+			var UNDEF = "undefined",
+				OBJECT = "object",
+				SHOCKWAVE_FLASH = "Shockwave Flash",
+				SHOCKWAVE_FLASH_AX = "ShockwaveFlash.ShockwaveFlash",
+				FLASH_MIME_TYPE = "application/x-shockwave-flash",
+				
+				nav = navigator,
+
+				playerVersion = [0,0,0],
+				d = null;
+
+			if (typeof nav.plugins != UNDEF && typeof nav.plugins[SHOCKWAVE_FLASH] == OBJECT) {
+				d = nav.plugins[SHOCKWAVE_FLASH].description;
+				if (d && !(typeof nav.mimeTypes != UNDEF && nav.mimeTypes[FLASH_MIME_TYPE] && !nav.mimeTypes[FLASH_MIME_TYPE].enabledPlugin)) { // navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin indicates whether plug-ins are enabled or disabled in Safari 3+
+					d = d.replace(/^.*\s+(\S+\s+\S+$)/, "$1");
+					playerVersion[0] = parseInt(d.replace(/^(.*)\..*$/, "$1"), 10);
+					playerVersion[1] = parseInt(d.replace(/^.*\.(.*)\s.*$/, "$1"), 10);
+					playerVersion[2] = /[a-zA-Z]/.test(d) ? parseInt(d.replace(/^.*[a-zA-Z]+(.*)$/, "$1"), 10) : 0;
 				}
-				catch(e){
-					// Throws an error if the version isn't available			
-				}
-			}
-			else if(navigator.plugins && navigator.mimeTypes.length > 0){
-				flash = navigator.plugins["Shockwave Flash"];
-				if(flash){
-					var flashVersion = navigator.plugins["Shockwave Flash"].description.replace(/.*\s(\d+\.\d+).*/, "$1");
-					if(flashVersion >= version){
-						flashIsInstalled = true;
+			} else if (typeof window.ActiveXObject != UNDEF) {
+				try {
+					var a = new ActiveXObject(SHOCKWAVE_FLASH_AX);
+					if (a) { // a will return null when ActiveX is disabled
+						d = a.GetVariable("$version");
+						if (d) {
+							d = d.split(" ")[1].split(",");
+							playerVersion = [parseInt(d[0], 10), parseInt(d[1], 10), parseInt(d[2], 10)];
+						}
 					}
-				}
+				} catch(e) {}
 			}
-			return flashIsInstalled;
+			return playerVersion;
+		},
+		_getFlashPluginVersion: function() {
+
+			// A utility function to convert the plugin version to a string.
+
+			var playerVersion = this._getFlashPluginVersionArray(),
+				version = "";
+			$.each(playerVersion, function(i,v) {
+				version += v;
+				if(i+1 < playerVersion.length) {
+					version += ".";
+				}
+			});
+			return version;
+		},
+		_checkForFlash: function (version) {
+
+			var requiredVersion = ("" + version).split("."), // Converts param to String and splits.
+				playerVersion = this._getFlashPluginVersionArray(),
+				flashOk = true;
+
+			// Loop through each of the required version numbers and compare with plugin.
+			$.each(requiredVersion, function(i,v) {
+				if(playerVersion[i] > v) {
+					return false; // exit $.each loop: Version is good
+				} else if(playerVersion[i] < v) {
+					flashOk = false;
+					return false; // exit $.each loop: Version is bad
+				}
+				// Else we check the next version point. A.B.C
+			});
+			return flashOk;
 		},
 		_validString: function(url) {
 			return (url && typeof url === "string"); // Empty strings return false
