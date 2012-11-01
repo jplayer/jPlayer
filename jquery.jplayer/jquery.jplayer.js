@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.9
- * Date: 31st October 2012
+ * Version: 2.2.10
+ * Date: 1st November 2012
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -279,7 +279,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.2.9",
+			script: "2.2.10",
 			needFlash: "2.2.0",
 			flash: "unknown"
 		},
@@ -1956,7 +1956,21 @@
 		restoreScreen: function() {
 			this._setOption("fullScreen", false);
 		},
-		_html_initMedia: function() {
+		_html_initMedia: function(media) {
+			// Remove any existing track elements
+			var $media = $(this.htmlElement.media).empty();
+
+			// Create any track elements given with the media, as an Array of track Objects.
+			$.each(media.track || [], function(i,v) {
+				var track = document.createElement('track');
+				if(v.kind) track.setAttribute("kind", v.kind);
+				if(v.src) track.setAttribute("src", v.src);
+				if(v.srclang) track.setAttribute("srclang", v.srclang);
+				if(v.label) track.setAttribute("label", v.label);
+				if(v.default) track.setAttribute("default", v.default);
+				$media.append(track);
+			});
+
 			this.htmlElement.media.src = this.status.src;
 
 			if(this.options.preload !== 'none') {
@@ -1964,7 +1978,7 @@
 			}
 			this._trigger($.jPlayer.event.timeupdate); // The flash generates this event for its solution.
 		},
-		_html_setAudio: function(media) {
+		_html_setFormat: function(media) {
 			var self = this;
 			// Always finds a format due to checks in setMedia()
 			$.each(this.formats, function(priority, format) {
@@ -1975,25 +1989,19 @@
 					return false;
 				}
 			});
+		},
+		_html_setAudio: function(media) {
+			this._html_setFormat(media);
 			this.htmlElement.media = this.htmlElement.audio;
-			this._html_initMedia();
+			this._html_initMedia(media);
 		},
 		_html_setVideo: function(media) {
-			var self = this;
-			// Always finds a format due to checks in setMedia()
-			$.each(this.formats, function(priority, format) {
-				if(self.html.support[format] && media[format]) {
-					self.status.src = media[format];
-					self.status.format[format] = true;
-					self.status.formatType = format;
-					return false;
-				}
-			});
+			this._html_setFormat(media);
 			if(this.status.nativeVideoControls) {
 				this.htmlElement.video.poster = this._validString(media.poster) ? media.poster : "";
 			}
 			this.htmlElement.media = this.htmlElement.video;
-			this._html_initMedia();
+			this._html_initMedia(media);
 		},
 		_html_resetMedia: function() {
 			if(this.htmlElement.media) {
