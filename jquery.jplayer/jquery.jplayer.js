@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.12
+ * Version: 2.2.13
  * Date: 1st November 2012
  */
 
@@ -279,7 +279,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.2.12",
+			script: "2.2.13",
 			needFlash: "2.2.0",
 			flash: "unknown"
 		},
@@ -1965,11 +1965,13 @@
 			// Create any track elements given with the media, as an Array of track Objects.
 			$.each(media.track || [], function(i,v) {
 				var track = document.createElement('track');
-				if(v.kind) track.setAttribute("kind", v.kind);
-				if(v.src) track.setAttribute("src", v.src);
-				if(v.srclang) track.setAttribute("srclang", v.srclang);
-				if(v.label) track.setAttribute("label", v.label);
-				if(v.default) track.setAttribute("default", v.default);
+				track.setAttribute("kind", v.kind ? v.kind : "");
+				track.setAttribute("src", v.src ? v.src : "");
+				track.setAttribute("srclang", v.srclang ? v.srclang : "");
+				track.setAttribute("label", v.label ? v.label : "");
+				if(v.def) {
+					track.setAttribute("default", v.def);
+				}
 				$media.append(track);
 			});
 
