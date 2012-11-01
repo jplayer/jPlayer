@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.10
+ * Version: 2.2.11
  * Date: 1st November 2012
  */
 
@@ -279,7 +279,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.2.10",
+			script: "2.2.11",
 			needFlash: "2.2.0",
 			flash: "unknown"
 		},
@@ -345,6 +345,7 @@
 				android_phone: /android.*?mobile/,
 				blackberry: /blackberry/,
 				windows_ce: /windows ce/,
+				iemobile: /iemobile/,
 				webos: /webos/
 			},
 			noVolume: {
@@ -355,6 +356,7 @@
 				android_phone: /android.*?mobile/,
 				blackberry: /blackberry/,
 				windows_ce: /windows ce/,
+				iemobile: /iemobile/,
 				webos: /webos/,
 				playbook: /playbook/
 			},
