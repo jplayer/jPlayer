@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.14
+ * Version: 2.2.15
  * Date: 19th November 2012
  */
 
@@ -390,7 +390,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.2.14",
+			script: "2.2.15",
 			needFlash: "2.2.0",
 			flash: "unknown"
 		},
@@ -449,11 +449,11 @@
 				// Phone and tablet browsers can have problems with the controls disappearing.
 			},
 			noFullWindow: {
-				msie: /msie [0-6]/,
-				ipad: /ipad.*?os [0-4]/,
+				msie: /msie [0-6]\./,
+				ipad: /ipad.*?os [0-4]\./,
 				iphone: /iphone/,
 				ipod: /ipod/,
-				android_pad: /android [0-3](?!.*?mobile)/,
+				android_pad: /android [0-3]\.(?!.*?mobile)/,
 				android_phone: /android.*?mobile/,
 				blackberry: /blackberry/,
 				windows_ce: /windows ce/,
