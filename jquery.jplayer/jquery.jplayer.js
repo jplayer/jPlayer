@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.13
- * Date: 1st November 2012
+ * Version: 2.2.14
+ * Date: 19th November 2012
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -276,10 +276,121 @@
 	};
 	$.jPlayer.browser.documentMode = $.jPlayer.getDocMode();
 
+	$.jPlayer.nativeFeatures = {
+		init: function() {
+
+			/* Fullscreen function naming influenced by W3C naming.
+			 * No support for: Mozilla Proposal: https://wiki.mozilla.org/Gecko:FullScreenAPI
+			 */
+
+			var d = document,
+				v = d.createElement('video'),
+				spec = {
+					// http://www.w3.org/TR/fullscreen/
+					w3c: [
+						'fullscreenEnabled',
+						'fullscreenElement',
+						'requestFullscreen',
+						'exitFullscreen',
+						'fullscreenchange',
+						'fullscreenerror'
+					],
+					// https://developer.mozilla.org/en-US/docs/DOM/Using_fullscreen_mode
+					moz: [
+						'mozFullScreenEnabled',
+						'mozFullScreenElement',
+						'mozRequestFullScreen',
+						'mozCancelFullScreen',
+						'mozfullscreenchange',
+						'mozfullscreenerror'
+					],
+					// http://developer.apple.com/library/safari/#documentation/WebKit/Reference/ElementClassRef/Element/Element.html
+					// http://developer.apple.com/library/safari/#documentation/UserExperience/Reference/DocumentAdditionsReference/DocumentAdditions/DocumentAdditions.html
+					webkit: [
+						'',
+						'webkitCurrentFullScreenElement',
+						'webkitRequestFullScreen',
+						'webkitCancelFullScreen',
+						'webkitfullscreenchange',
+						''
+					],
+					// http://developer.apple.com/library/safari/#documentation/AudioVideo/Reference/HTMLVideoElementClassReference/HTMLVideoElement/HTMLVideoElement.html
+					webkitVideo: [
+						'webkitSupportsFullscreen',
+						'webkitDisplayingFullscreen',
+						'webkitEnterFullscreen',
+						'webkitExitFullscreen',
+						'',
+						''
+					]
+				},
+				specOrder = [
+					'w3c',
+					'moz',
+					'webkit',
+					'webkitVideo'
+				],
+				fs, i, il;
+
+			this.fullscreen = fs = {
+				support: {
+					w3c: !!d[spec.w3c[0]],
+					moz: !!d[spec.moz[0]],
+					webkit: typeof d[spec.webkit[3]] === 'function',
+					webkitVideo: typeof v[spec.webkitVideo[2]] === 'function'
+				},
+				used: {}
+			};
+
+			// Store the name of the spec being used and as a handy boolean.
+			for(i = 0, il = specOrder.length; i < il; i++) {
+				var n = specOrder[i];
+				if(fs.support[n]) {
+					fs.spec = n;
+					fs.used[n] = true;
+					break;
+				}
+			}
+
+			if(fs.spec) {
+				var s = spec[fs.spec];
+				fs.api = {
+					fullscreenEnabled: true,
+					fullscreenElement: function(elem) {
+						elem = elem ? elem : d; // Video element required for webkitVideo
+						return elem[s[1]];
+					},
+					requestFullscreen: function(elem) {
+						return elem[s[2]]();
+					},
+					exitFullscreen: function(elem) {
+						elem = elem ? elem : d; // Video element required for webkitVideo
+						return elem[s[3]]();
+					}
+				};
+				fs.event = {
+					fullscreenchange: s[4],
+					fullscreenerror: s[5]
+				};
+			} else {
+				fs.api = {
+					fullscreenEnabled: false,
+					fullscreenElement: function() {
+						return null;
+					},
+					requestFullscreen: function() {},
+					exitFullscreen: function() {}
+				};
+				fs.event = {};
+			}
+		}
+	};
+	$.jPlayer.nativeFeatures.init();
+
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.2.13",
+			script: "2.2.14",
 			needFlash: "2.2.0",
 			flash: "unknown"
 		},
@@ -314,7 +425,8 @@
 				gui: ".jp-gui", // The interface used with autohide feature.
 				noSolution: ".jp-no-solution" // For error feedback when jPlayer cannot find a solution.
 			},
-			fullScreen: false,
+			fullScreen: false, // Native Full Screen
+			fullWindow: false,
 			autohide: {
 				restored: false, // Controls the interface autohide feature.
 				full: true, // Controls the interface autohide feature.
@@ -336,7 +448,7 @@
 				// Works well on standard browsers.
 				// Phone and tablet browsers can have problems with the controls disappearing.
 			},
-			noFullScreen: {
+			noFullWindow: {
 				msie: /msie [0-6]/,
 				ipad: /ipad.*?os [0-4]/,
 				iphone: /iphone/,
@@ -419,7 +531,7 @@
 			height
 			cssClass
 			nativeVideoControls
-			noFullScreen
+			noFullWindow
 			noVolume
 */
 		},
@@ -625,8 +737,13 @@
 
 			// Determine the status for Blocklisted options.
 			this.status.nativeVideoControls = this._uaBlocklist(this.options.nativeVideoControls);
-			this.status.noFullScreen = this._uaBlocklist(this.options.noFullScreen);
+			this.status.noFullWindow = this._uaBlocklist(this.options.noFullWindow);
 			this.status.noVolume = this._uaBlocklist(this.options.noVolume);
+
+			// Create event handlers if native fullscreen is supported
+			if($.jPlayer.nativeFeatures.fullscreen.api.fullscreenEnabled) {
+				this._fullscreenAddEventListeners();
+			}
 
 			// The native controls are only for video and are disabled when audio is also used.
 			this._restrictNativeVideoControls();
@@ -860,6 +977,8 @@
 			if(this.internal.video.jq) {
 				this.internal.video.jq.unbind(".jPlayer");
 			}
+			// Remove the fullscreen event handlers
+			this._fullscreenRemoveEventListeners();
 			// Destroy the HTML bridge.
 			if(this.options.emulateHtml) {
 				this._destroyHtmlBridge();
@@ -900,11 +1019,11 @@
 			return block;
 		},
 		_restrictNativeVideoControls: function() {
-			// Fallback to noFullScreen when nativeVideoControls is true and audio media is being used. Affects when both media types are used.
+			// Fallback to noFullWindow when nativeVideoControls is true and audio media is being used. Affects when both media types are used.
 			if(this.require.audio) {
 				if(this.status.nativeVideoControls) {
 					this.status.nativeVideoControls = false;
-					this.status.noFullScreen = true;
+					this.status.noFullWindow = true;
 				}
 			}
 		},
@@ -1258,10 +1377,10 @@
 				}
 			}
 			if(this.css.jq.restoreScreen.length && this.css.jq.fullScreen.length) {
-				if(this.status.noFullScreen) {
+				if(this.status.noFullWindow) {
 					this.css.jq.fullScreen.hide();
 					this.css.jq.restoreScreen.hide();
-				} else if(this.options.fullScreen) {
+				} else if(this.options.fullWindow) {
 					this.css.jq.fullScreen.hide();
 					this.css.jq.restoreScreen.show();
 				} else {
@@ -1807,20 +1926,38 @@
 					break;
 				case "fullScreen" :
 					if(this.options[key] !== value) { // if changed
+						var wkv = $.jPlayer.nativeFeatures.fullscreen.used.webkitVideo;
+						if(!wkv || wkv && !this.status.waitForPlay) {
+							if(!wkv) { // No sensible way to unset option on these devices.
+								this.options[key] = value;
+							}
+							if(value) {
+								this._requestFullscreen();
+							} else {
+								this._exitFullscreen();
+							}
+							if(!wkv) {
+								this._setOption("fullWindow", value);
+							}
+						}
+					}
+					break;
+				case "fullWindow" :
+					if(this.options[key] !== value) { // if changed
 						this._removeUiClass();
 						this.options[key] = value;
 						this._refreshSize();
 					}
 					break;
 				case "size" :
-					if(!this.options.fullScreen && this.options[key].cssClass !== value.cssClass) {
+					if(!this.options.fullWindow && this.options[key].cssClass !== value.cssClass) {
 						this._removeUiClass();
 					}
 					this.options[key] = $.extend({}, this.options[key], value); // store a merged copy of it, incase not all properties changed.
 					this._refreshSize();
 					break;
 				case "sizeFull" :
-					if(this.options.fullScreen && this.options[key].cssClass !== value.cssClass) {
+					if(this.options.fullWindow && this.options[key].cssClass !== value.cssClass) {
 						this._removeUiClass();
 					}
 					this.options[key] = $.extend({}, this.options[key], value); // store a merged copy of it, incase not all properties changed.
@@ -1839,10 +1976,10 @@
 					this._restrictNativeVideoControls();
 					this._updateNativeVideoControls();
 					break;
-				case "noFullScreen" :
+				case "noFullWindow" :
 					this.options[key] = $.extend({}, this.options[key], value); // store a merged copy of it, incase not all properties changed.
-					this.status.nativeVideoControls = this._uaBlocklist(this.options.nativeVideoControls); // Need to check again as noFullScreen can depend on this flag and the restrict() can override it.
-					this.status.noFullScreen = this._uaBlocklist(this.options.noFullScreen);
+					this.status.nativeVideoControls = this._uaBlocklist(this.options.nativeVideoControls); // Need to check again as noFullWindow can depend on this flag and the restrict() can override it.
+					this.status.noFullWindow = this._uaBlocklist(this.options.noFullWindow);
 					this._restrictNativeVideoControls();
 					this._updateButtons();
 					break;
@@ -1878,7 +2015,7 @@
 		},
 		_setSize: function() {
 			// Determine the current size from the options
-			if(this.options.fullScreen) {
+			if(this.options.fullWindow) {
 				this.status.width = this.options.sizeFull.width;
 				this.status.height = this.options.sizeFull.height;
 				this.status.cssClass = this.options.sizeFull.cssClass;
@@ -1940,7 +2077,7 @@
 				this.css.jq.gui.unbind(namespace);
 
 				if(!this.status.nativeVideoControls) {
-					if(this.options.fullScreen && this.options.autohide.full || !this.options.fullScreen && this.options.autohide.restored) {
+					if(this.options.fullWindow && this.options.autohide.full || !this.options.fullWindow && this.options.autohide.restored) {
 						this.element.bind(eventType, handler);
 						this.css.jq.gui.bind(eventType, handler);
 						this.css.jq.gui.hide();
@@ -1957,6 +2094,64 @@
 		},
 		restoreScreen: function() {
 			this._setOption("fullScreen", false);
+		},
+		_fullscreenAddEventListeners: function() {
+			var self = this,
+				fs = $.jPlayer.nativeFeatures.fullscreen;
+
+			if(fs.api.fullscreenEnabled) {
+				if(fs.event.fullscreenchange) {
+					// Create the event handler function and store it for removal.
+					if(typeof this.internal.fullscreenchangeHandler !== 'function') {
+						this.internal.fullscreenchangeHandler = function() {
+							self._fullscreenchange();
+						};
+					}
+					document.addEventListener(fs.event.fullscreenchange, this.internal.fullscreenchangeHandler, false);
+				}
+				// No point creating handler for fullscreenerror.
+				// Either logic avoids fullscreen occurring (w3c/moz), or their is no event on the browser (webkit).
+			}
+		},
+		_fullscreenRemoveEventListeners: function() {
+			var fs = $.jPlayer.nativeFeatures.fullscreen;
+			if(this.internal.fullscreenchangeHandler) {
+				document.addEventListener(fs.event.fullscreenchange, this.internal.fullscreenchangeHandler, false);
+			}
+		},
+		_fullscreenchange: function() {
+			// If nothing is fullscreen, then we cannot be in fullscreen mode.
+			if(this.options.fullScreen && !$.jPlayer.nativeFeatures.fullscreen.api.fullscreenElement()) {
+				this._setOption("fullScreen", false);
+			}
+		},
+		_requestFullscreen: function() {
+			// Either the container or the jPlayer div
+			var e = this.ancestorJq.length ? this.ancestorJq[0] : this.element[0],
+				fs = $.jPlayer.nativeFeatures.fullscreen;
+
+			// This method needs the video element. For iOS and Android.
+			if(fs.used.webkitVideo) {
+				e = this.htmlElement.video;
+			}
+
+			if(fs.api.fullscreenEnabled) {
+				fs.api.requestFullscreen(e);
+			}
+		},
+		_exitFullscreen: function() {
+
+			var fs = $.jPlayer.nativeFeatures.fullscreen,
+				e;
+
+			// This method needs the video element. For iOS and Android.
+			if(fs.used.webkitVideo) {
+				e = this.htmlElement.video;
+			}
+
+			if(fs.api.fullscreenEnabled) {
+				fs.api.exitFullscreen(e);
+			}
 		},
 		_html_initMedia: function(media) {
 			// Remove any existing track elements
