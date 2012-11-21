@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.15
- * Date: 19th November 2012
+ * Version: 2.2.16
+ * Date: 21st November 2012
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -166,7 +166,8 @@
 			}
 		});
 	};
-	
+
+	// Default for jPlayer option.timeFormat
 	$.jPlayer.timeFormat = {
 		showHour: false,
 		showMin: true,
@@ -178,24 +179,37 @@
 		sepMin: ":",
 		sepSec: ""
 	};
+	var ConvertTime = function() {
+		this.init();
+	};
+	ConvertTime.prototype = {
+		init: function() {
+			this.options = {
+				timeFormat: $.jPlayer.timeFormat
+			};
+		},
+		time: function(s) { // function used on jPlayer.prototype._convertTime to enable per instance options.
+			s = (s && typeof s === 'number') ? s : 0;
 
+			var myTime = new Date(s * 1000),
+				hour = myTime.getUTCHours(),
+				min = this.options.timeFormat.showHour ? myTime.getUTCMinutes() : myTime.getUTCMinutes() + hour * 60,
+				sec = this.options.timeFormat.showMin ? myTime.getUTCSeconds() : myTime.getUTCSeconds() + min * 60,
+				strHour = (this.options.timeFormat.padHour && hour < 10) ? "0" + hour : hour,
+				strMin = (this.options.timeFormat.padMin && min < 10) ? "0" + min : min,
+				strSec = (this.options.timeFormat.padSec && sec < 10) ? "0" + sec : sec,
+				strTime = "";
+
+			strTime += this.options.timeFormat.showHour ? strHour + this.options.timeFormat.sepHour : "";
+			strTime += this.options.timeFormat.showMin ? strMin + this.options.timeFormat.sepMin : "";
+			strTime += this.options.timeFormat.showSec ? strSec + this.options.timeFormat.sepSec : "";
+
+			return strTime;
+		}
+	};
+	var myConvertTime = new ConvertTime();
 	$.jPlayer.convertTime = function(s) {
-		s = (s && typeof s === 'number') ? s : 0;
-
-		var myTime = new Date(s * 1000),
-			hour = myTime.getUTCHours(),
-			min = $.jPlayer.timeFormat.showHour ? myTime.getUTCMinutes() : myTime.getUTCMinutes() + hour * 60,
-			sec = $.jPlayer.timeFormat.showMin ? myTime.getUTCSeconds() : myTime.getUTCSeconds() + min * 60,
-			strHour = ($.jPlayer.timeFormat.padHour && hour < 10) ? "0" + hour : hour,
-			strMin = ($.jPlayer.timeFormat.padMin && min < 10) ? "0" + min : min,
-			strSec = ($.jPlayer.timeFormat.padSec && sec < 10) ? "0" + sec : sec,
-			strTime = "";
-
-		strTime += $.jPlayer.timeFormat.showHour ? strHour + $.jPlayer.timeFormat.sepHour : "";
-		strTime += $.jPlayer.timeFormat.showMin ? strMin + $.jPlayer.timeFormat.sepMin : "";
-		strTime += $.jPlayer.timeFormat.showSec ? strSec + $.jPlayer.timeFormat.sepSec : "";
-
-		return strTime;
+		return myConvertTime.time(s);
 	};
 
 	// Adapting jQuery 1.4.4 code for jQuery.browser. Required since jQuery 1.3.2 does not detect Chrome as webkit.
@@ -390,7 +404,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.2.15",
+			script: "2.2.16",
 			needFlash: "2.2.0",
 			flash: "unknown"
 		},
@@ -471,6 +485,10 @@
 				iemobile: /iemobile/,
 				webos: /webos/,
 				playbook: /playbook/
+			},
+			timeFormat: {
+				// Specific time format for this instance. The supported options are defined in $.jPlayer.timeFormat
+				// For the undefined options we use the default from $.jPlayer.timeFormat
 			},
 			verticalVolume: false, // Calculate volume from the bottom of the volume bar. Default is from the left. Also volume affects either width or height.
 			// globalVolume: false, // Not implemented: Set to make volume changes affect all jPlayer instances
@@ -618,6 +636,9 @@
 			
 			this.status = $.extend({}, this.status); // Copy static to unique instance.
 			this.internal = $.extend({}, this.internal); // Copy static to unique instance.
+
+			// Initialize the time format
+			this.options.timeFormat = $.extend({}, $.jPlayer.timeFormat, this.options.timeFormat);
 
 			// On iOS, assume commands will be ignored before user initiates them.
 			this.internal.cmdsIgnored = $.jPlayer.platform.ipad || $.jPlayer.platform.iphone || $.jPlayer.platform.ipod;
@@ -1406,12 +1427,13 @@
 				this.css.jq.playBar.width(this.status.currentPercentRelative+"%");
 			}
 			if(this.css.jq.currentTime.length) {
-				this.css.jq.currentTime.text($.jPlayer.convertTime(this.status.currentTime));
+				this.css.jq.currentTime.text(this._convertTime(this.status.currentTime));
 			}
 			if(this.css.jq.duration.length) {
-				this.css.jq.duration.text($.jPlayer.convertTime(this.status.duration));
+				this.css.jq.duration.text(this._convertTime(this.status.duration));
 			}
 		},
+		_convertTime: ConvertTime.prototype.time,
 		_seeking: function() {
 			if(this.css.jq.seekBar.length) {
 				this.css.jq.seekBar.addClass("jp-seeking-bg");
@@ -1998,6 +2020,9 @@
 							this._destroyHtmlBridge();
 						}
 					}
+					break;
+				case "timeFormat" :
+					this.options[key] = $.extend({}, this.options[key], value); // store a merged copy of it, incase not all properties changed.
 					break;
 			}
 
