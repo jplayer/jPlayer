@@ -166,7 +166,10 @@
 			}
 		});
 	};
-	
+
+	// Default options for the time format.
+	// It can be overriden for all the instance of jPlayer or/and it can be
+	// defined in the options on each jPlayer instance.
 	$.jPlayer.timeFormat = {
 		showHour: false,
 		showMin: true,
@@ -177,25 +180,6 @@
 		sepHour: ":",
 		sepMin: ":",
 		sepSec: ""
-	};
-
-	$.jPlayer.convertTime = function(s) {
-		s = (s && typeof s === 'number') ? s : 0;
-
-		var myTime = new Date(s * 1000),
-			hour = myTime.getUTCHours(),
-			min = $.jPlayer.timeFormat.showHour ? myTime.getUTCMinutes() : myTime.getUTCMinutes() + hour * 60,
-			sec = $.jPlayer.timeFormat.showMin ? myTime.getUTCSeconds() : myTime.getUTCSeconds() + min * 60,
-			strHour = ($.jPlayer.timeFormat.padHour && hour < 10) ? "0" + hour : hour,
-			strMin = ($.jPlayer.timeFormat.padMin && min < 10) ? "0" + min : min,
-			strSec = ($.jPlayer.timeFormat.padSec && sec < 10) ? "0" + sec : sec,
-			strTime = "";
-
-		strTime += $.jPlayer.timeFormat.showHour ? strHour + $.jPlayer.timeFormat.sepHour : "";
-		strTime += $.jPlayer.timeFormat.showMin ? strMin + $.jPlayer.timeFormat.sepMin : "";
-		strTime += $.jPlayer.timeFormat.showSec ? strSec + $.jPlayer.timeFormat.sepSec : "";
-
-		return strTime;
 	};
 
 	// Adapting jQuery 1.4.4 code for jQuery.browser. Required since jQuery 1.3.2 does not detect Chrome as webkit.
@@ -471,6 +455,10 @@
 				iemobile: /iemobile/,
 				webos: /webos/,
 				playbook: /playbook/
+			},
+			timeFormat: {
+				// Specific time format for this instance. The supported options are defined in $.jPlayer.timeFormat
+				// For the undefined options we use the default from $.jPlayer.timeFormat
 			},
 			verticalVolume: false, // Calculate volume from the bottom of the volume bar. Default is from the left. Also volume affects either width or height.
 			// globalVolume: false, // Not implemented: Set to make volume changes affect all jPlayer instances
@@ -936,6 +924,12 @@
 					self._trigger($.jPlayer.event.ready);
 				}, 100);
 			}
+
+			// Initialize the time format
+			this.timeFormat = $.extend({},
+				$.jPlayer.timeFormat,
+				this.options.timeFormat
+			);
 
 			// Initialize the interface components with the options.
 			this._updateNativeVideoControls(); // Must do this first, otherwise there is a bizarre bug in iOS 4.3.2, where the native controls are not shown. Fails in iOS if called after _updateButtons() below. Works if called later in setMedia too, so it odd.
@@ -1406,10 +1400,10 @@
 				this.css.jq.playBar.width(this.status.currentPercentRelative+"%");
 			}
 			if(this.css.jq.currentTime.length) {
-				this.css.jq.currentTime.text($.jPlayer.convertTime(this.status.currentTime));
+				this.css.jq.currentTime.text(this.convertTime(this.status.currentTime));
 			}
 			if(this.css.jq.duration.length) {
-				this.css.jq.duration.text($.jPlayer.convertTime(this.status.duration));
+				this.css.jq.duration.text(this.convertTime(this.status.duration));
 			}
 		},
 		_seeking: function() {
@@ -1731,6 +1725,24 @@
 			if(this.options.muted) {
 				this._muted(false);
 			}
+		},
+		convertTime: function(s) {
+			s = (s && typeof s === 'number') ? s : 0;
+
+			var myTime = new Date(s * 1000),
+				hour = myTime.getUTCHours(),
+				min = this.timeFormat.showHour ? myTime.getUTCMinutes() : myTime.getUTCMinutes() + hour * 60,
+				sec = this.timeFormat.showMin ? myTime.getUTCSeconds() : myTime.getUTCSeconds() + min * 60,
+				strHour = (this.timeFormat.padHour && hour < 10) ? "0" + hour : hour,
+				strMin = (this.timeFormat.padMin && min < 10) ? "0" + min : min,
+				strSec = (this.timeFormat.padSec && sec < 10) ? "0" + sec : sec,
+				strTime = "";
+
+			strTime += this.timeFormat.showHour ? strHour + this.timeFormat.sepHour : "";
+			strTime += this.timeFormat.showMin ? strMin + this.timeFormat.sepMin : "";
+			strTime += this.timeFormat.showSec ? strSec + this.timeFormat.sepSec : "";
+
+			return strTime;
 		},
 		_cssSelectorAncestor: function(ancestor) {
 			var self = this;
