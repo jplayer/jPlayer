@@ -198,7 +198,7 @@
 				$(this.cssSelector.playlist + " ul").slideUp(displayTime, function() {
 					var $this = $(this);
 					$(this).empty();
-					
+
 					$.each(self.playlist, function(i,v) {
 						$this.append(self._createListItem(self.playlist[i]));
 					});
@@ -309,6 +309,25 @@
 			if(playNow) {
 				this.play(this.playlist.length - 1);
 			} else {
+				if(this.original.length === 1) {
+					this.select(0);
+				}
+			}
+		},
+		append: function(media, playNow) {
+			var self = this;
+			self.add(media, playNow);
+		},
+		prepend: function(media, playNow) {
+			$(this.cssSelector.playlist + " ul").prepend(this._createListItem(media)).find("li:first-child").hide().slideDown(this.options.playlistOptions.addTime);
+			this._updateControls();
+			this.original.unshift(media);
+			this.playlist.unshift(media); // Both array elements share the same object pointer. Comforms with _initPlaylist(p) system.
+
+			if(playNow) {
+				this.play(0);
+			} else {
+				this.current += 1;
 				if(this.original.length === 1) {
 					this.select(0);
 				}
