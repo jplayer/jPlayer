@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.7
- * Date: 24th October 2012
+ * Version: 2.2.16
+ * Date: 21st November 2012
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -166,7 +166,8 @@
 			}
 		});
 	};
-	
+
+	// Default for jPlayer option.timeFormat
 	$.jPlayer.timeFormat = {
 		showHour: false,
 		showMin: true,
@@ -178,24 +179,37 @@
 		sepMin: ":",
 		sepSec: ""
 	};
+	var ConvertTime = function() {
+		this.init();
+	};
+	ConvertTime.prototype = {
+		init: function() {
+			this.options = {
+				timeFormat: $.jPlayer.timeFormat
+			};
+		},
+		time: function(s) { // function used on jPlayer.prototype._convertTime to enable per instance options.
+			s = (s && typeof s === 'number') ? s : 0;
 
+			var myTime = new Date(s * 1000),
+				hour = myTime.getUTCHours(),
+				min = this.options.timeFormat.showHour ? myTime.getUTCMinutes() : myTime.getUTCMinutes() + hour * 60,
+				sec = this.options.timeFormat.showMin ? myTime.getUTCSeconds() : myTime.getUTCSeconds() + min * 60,
+				strHour = (this.options.timeFormat.padHour && hour < 10) ? "0" + hour : hour,
+				strMin = (this.options.timeFormat.padMin && min < 10) ? "0" + min : min,
+				strSec = (this.options.timeFormat.padSec && sec < 10) ? "0" + sec : sec,
+				strTime = "";
+
+			strTime += this.options.timeFormat.showHour ? strHour + this.options.timeFormat.sepHour : "";
+			strTime += this.options.timeFormat.showMin ? strMin + this.options.timeFormat.sepMin : "";
+			strTime += this.options.timeFormat.showSec ? strSec + this.options.timeFormat.sepSec : "";
+
+			return strTime;
+		}
+	};
+	var myConvertTime = new ConvertTime();
 	$.jPlayer.convertTime = function(s) {
-		s = (s && typeof s === 'number') ? s : 0;
-
-		var myTime = new Date(s * 1000),
-			hour = myTime.getUTCHours(),
-			min = $.jPlayer.timeFormat.showHour ? myTime.getUTCMinutes() : myTime.getUTCMinutes() + hour * 60,
-			sec = $.jPlayer.timeFormat.showMin ? myTime.getUTCSeconds() : myTime.getUTCSeconds() + min * 60,
-			strHour = ($.jPlayer.timeFormat.padHour && hour < 10) ? "0" + hour : hour,
-			strMin = ($.jPlayer.timeFormat.padMin && min < 10) ? "0" + min : min,
-			strSec = ($.jPlayer.timeFormat.padSec && sec < 10) ? "0" + sec : sec,
-			strTime = "";
-
-		strTime += $.jPlayer.timeFormat.showHour ? strHour + $.jPlayer.timeFormat.sepHour : "";
-		strTime += $.jPlayer.timeFormat.showMin ? strMin + $.jPlayer.timeFormat.sepMin : "";
-		strTime += $.jPlayer.timeFormat.showSec ? strSec + $.jPlayer.timeFormat.sepSec : "";
-
-		return strTime;
+		return myConvertTime.time(s);
 	};
 
 	// Adapting jQuery 1.4.4 code for jQuery.browser. Required since jQuery 1.3.2 does not detect Chrome as webkit.
@@ -276,10 +290,121 @@
 	};
 	$.jPlayer.browser.documentMode = $.jPlayer.getDocMode();
 
+	$.jPlayer.nativeFeatures = {
+		init: function() {
+
+			/* Fullscreen function naming influenced by W3C naming.
+			 * No support for: Mozilla Proposal: https://wiki.mozilla.org/Gecko:FullScreenAPI
+			 */
+
+			var d = document,
+				v = d.createElement('video'),
+				spec = {
+					// http://www.w3.org/TR/fullscreen/
+					w3c: [
+						'fullscreenEnabled',
+						'fullscreenElement',
+						'requestFullscreen',
+						'exitFullscreen',
+						'fullscreenchange',
+						'fullscreenerror'
+					],
+					// https://developer.mozilla.org/en-US/docs/DOM/Using_fullscreen_mode
+					moz: [
+						'mozFullScreenEnabled',
+						'mozFullScreenElement',
+						'mozRequestFullScreen',
+						'mozCancelFullScreen',
+						'mozfullscreenchange',
+						'mozfullscreenerror'
+					],
+					// http://developer.apple.com/library/safari/#documentation/WebKit/Reference/ElementClassRef/Element/Element.html
+					// http://developer.apple.com/library/safari/#documentation/UserExperience/Reference/DocumentAdditionsReference/DocumentAdditions/DocumentAdditions.html
+					webkit: [
+						'',
+						'webkitCurrentFullScreenElement',
+						'webkitRequestFullScreen',
+						'webkitCancelFullScreen',
+						'webkitfullscreenchange',
+						''
+					],
+					// http://developer.apple.com/library/safari/#documentation/AudioVideo/Reference/HTMLVideoElementClassReference/HTMLVideoElement/HTMLVideoElement.html
+					webkitVideo: [
+						'webkitSupportsFullscreen',
+						'webkitDisplayingFullscreen',
+						'webkitEnterFullscreen',
+						'webkitExitFullscreen',
+						'',
+						''
+					]
+				},
+				specOrder = [
+					'w3c',
+					'moz',
+					'webkit',
+					'webkitVideo'
+				],
+				fs, i, il;
+
+			this.fullscreen = fs = {
+				support: {
+					w3c: !!d[spec.w3c[0]],
+					moz: !!d[spec.moz[0]],
+					webkit: typeof d[spec.webkit[3]] === 'function',
+					webkitVideo: typeof v[spec.webkitVideo[2]] === 'function'
+				},
+				used: {}
+			};
+
+			// Store the name of the spec being used and as a handy boolean.
+			for(i = 0, il = specOrder.length; i < il; i++) {
+				var n = specOrder[i];
+				if(fs.support[n]) {
+					fs.spec = n;
+					fs.used[n] = true;
+					break;
+				}
+			}
+
+			if(fs.spec) {
+				var s = spec[fs.spec];
+				fs.api = {
+					fullscreenEnabled: true,
+					fullscreenElement: function(elem) {
+						elem = elem ? elem : d; // Video element required for webkitVideo
+						return elem[s[1]];
+					},
+					requestFullscreen: function(elem) {
+						return elem[s[2]]();
+					},
+					exitFullscreen: function(elem) {
+						elem = elem ? elem : d; // Video element required for webkitVideo
+						return elem[s[3]]();
+					}
+				};
+				fs.event = {
+					fullscreenchange: s[4],
+					fullscreenerror: s[5]
+				};
+			} else {
+				fs.api = {
+					fullscreenEnabled: false,
+					fullscreenElement: function() {
+						return null;
+					},
+					requestFullscreen: function() {},
+					exitFullscreen: function() {}
+				};
+				fs.event = {};
+			}
+		}
+	};
+	$.jPlayer.nativeFeatures.init();
+
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.2.7",
+			script: "2.2.16",
 			needFlash: "2.2.0",
 			flash: "unknown"
 		},
@@ -314,7 +439,8 @@
 				gui: ".jp-gui", // The interface used with autohide feature.
 				noSolution: ".jp-no-solution" // For error feedback when jPlayer cannot find a solution.
 			},
-			fullScreen: false,
+			fullScreen: false, // Native Full Screen
+			fullWindow: false,
 			autohide: {
 				restored: false, // Controls the interface autohide feature.
 				full: true, // Controls the interface autohide feature.
@@ -336,15 +462,16 @@
 				// Works well on standard browsers.
 				// Phone and tablet browsers can have problems with the controls disappearing.
 			},
-			noFullScreen: {
-				msie: /msie [0-6]/,
-				ipad: /ipad.*?os [0-4]/,
+			noFullWindow: {
+				msie: /msie [0-6]\./,
+				ipad: /ipad.*?os [0-4]\./,
 				iphone: /iphone/,
 				ipod: /ipod/,
-				android_pad: /android [0-3](?!.*?mobile)/,
+				android_pad: /android [0-3]\.(?!.*?mobile)/,
 				android_phone: /android.*?mobile/,
 				blackberry: /blackberry/,
 				windows_ce: /windows ce/,
+				iemobile: /iemobile/,
 				webos: /webos/
 			},
 			noVolume: {
@@ -355,8 +482,13 @@
 				android_phone: /android.*?mobile/,
 				blackberry: /blackberry/,
 				windows_ce: /windows ce/,
+				iemobile: /iemobile/,
 				webos: /webos/,
 				playbook: /playbook/
+			},
+			timeFormat: {
+				// Specific time format for this instance. The supported options are defined in $.jPlayer.timeFormat
+				// For the undefined options we use the default from $.jPlayer.timeFormat
 			},
 			verticalVolume: false, // Calculate volume from the bottom of the volume bar. Default is from the left. Also volume affects either width or height.
 			// globalVolume: false, // Not implemented: Set to make volume changes affect all jPlayer instances
@@ -417,7 +549,7 @@
 			height
 			cssClass
 			nativeVideoControls
-			noFullScreen
+			noFullWindow
 			noVolume
 */
 		},
@@ -504,6 +636,9 @@
 			
 			this.status = $.extend({}, this.status); // Copy static to unique instance.
 			this.internal = $.extend({}, this.internal); // Copy static to unique instance.
+
+			// Initialize the time format
+			this.options.timeFormat = $.extend({}, $.jPlayer.timeFormat, this.options.timeFormat);
 
 			// On iOS, assume commands will be ignored before user initiates them.
 			this.internal.cmdsIgnored = $.jPlayer.platform.ipad || $.jPlayer.platform.iphone || $.jPlayer.platform.ipod;
@@ -623,8 +758,13 @@
 
 			// Determine the status for Blocklisted options.
 			this.status.nativeVideoControls = this._uaBlocklist(this.options.nativeVideoControls);
-			this.status.noFullScreen = this._uaBlocklist(this.options.noFullScreen);
+			this.status.noFullWindow = this._uaBlocklist(this.options.noFullWindow);
 			this.status.noVolume = this._uaBlocklist(this.options.noVolume);
+
+			// Create event handlers if native fullscreen is supported
+			if($.jPlayer.nativeFeatures.fullscreen.api.fullscreenEnabled) {
+				this._fullscreenAddEventListeners();
+			}
 
 			// The native controls are only for video and are disabled when audio is also used.
 			this._restrictNativeVideoControls();
@@ -659,7 +799,7 @@
 				this.html.video.available = !!this.htmlElement.video.canPlayType && this._testCanPlayType(this.htmlElement.video); // Test is for IE9 on Win Server 2008.
 			}
 
-			this.flash.available = this._checkForFlash(10);
+			this.flash.available = this._checkForFlash(10.1);
 
 			this.html.canPlay = {};
 			this.flash.canPlay = {};
@@ -858,6 +998,8 @@
 			if(this.internal.video.jq) {
 				this.internal.video.jq.unbind(".jPlayer");
 			}
+			// Remove the fullscreen event handlers
+			this._fullscreenRemoveEventListeners();
 			// Destroy the HTML bridge.
 			if(this.options.emulateHtml) {
 				this._destroyHtmlBridge();
@@ -898,11 +1040,11 @@
 			return block;
 		},
 		_restrictNativeVideoControls: function() {
-			// Fallback to noFullScreen when nativeVideoControls is true and audio media is being used. Affects when both media types are used.
+			// Fallback to noFullWindow when nativeVideoControls is true and audio media is being used. Affects when both media types are used.
 			if(this.require.audio) {
 				if(this.status.nativeVideoControls) {
 					this.status.nativeVideoControls = false;
-					this.status.noFullScreen = true;
+					this.status.noFullWindow = true;
 				}
 			}
 		},
@@ -1256,10 +1398,10 @@
 				}
 			}
 			if(this.css.jq.restoreScreen.length && this.css.jq.fullScreen.length) {
-				if(this.status.noFullScreen) {
+				if(this.status.noFullWindow) {
 					this.css.jq.fullScreen.hide();
 					this.css.jq.restoreScreen.hide();
-				} else if(this.options.fullScreen) {
+				} else if(this.options.fullWindow) {
 					this.css.jq.fullScreen.hide();
 					this.css.jq.restoreScreen.show();
 				} else {
@@ -1285,12 +1427,13 @@
 				this.css.jq.playBar.width(this.status.currentPercentRelative+"%");
 			}
 			if(this.css.jq.currentTime.length) {
-				this.css.jq.currentTime.text($.jPlayer.convertTime(this.status.currentTime));
+				this.css.jq.currentTime.text(this._convertTime(this.status.currentTime));
 			}
 			if(this.css.jq.duration.length) {
-				this.css.jq.duration.text($.jPlayer.convertTime(this.status.duration));
+				this.css.jq.duration.text(this._convertTime(this.status.duration));
 			}
 		},
+		_convertTime: ConvertTime.prototype.time,
 		_seeking: function() {
 			if(this.css.jq.seekBar.length) {
 				this.css.jq.seekBar.addClass("jp-seeking-bg");
@@ -1805,20 +1948,38 @@
 					break;
 				case "fullScreen" :
 					if(this.options[key] !== value) { // if changed
+						var wkv = $.jPlayer.nativeFeatures.fullscreen.used.webkitVideo;
+						if(!wkv || wkv && !this.status.waitForPlay) {
+							if(!wkv) { // No sensible way to unset option on these devices.
+								this.options[key] = value;
+							}
+							if(value) {
+								this._requestFullscreen();
+							} else {
+								this._exitFullscreen();
+							}
+							if(!wkv) {
+								this._setOption("fullWindow", value);
+							}
+						}
+					}
+					break;
+				case "fullWindow" :
+					if(this.options[key] !== value) { // if changed
 						this._removeUiClass();
 						this.options[key] = value;
 						this._refreshSize();
 					}
 					break;
 				case "size" :
-					if(!this.options.fullScreen && this.options[key].cssClass !== value.cssClass) {
+					if(!this.options.fullWindow && this.options[key].cssClass !== value.cssClass) {
 						this._removeUiClass();
 					}
 					this.options[key] = $.extend({}, this.options[key], value); // store a merged copy of it, incase not all properties changed.
 					this._refreshSize();
 					break;
 				case "sizeFull" :
-					if(this.options.fullScreen && this.options[key].cssClass !== value.cssClass) {
+					if(this.options.fullWindow && this.options[key].cssClass !== value.cssClass) {
 						this._removeUiClass();
 					}
 					this.options[key] = $.extend({}, this.options[key], value); // store a merged copy of it, incase not all properties changed.
@@ -1837,10 +1998,10 @@
 					this._restrictNativeVideoControls();
 					this._updateNativeVideoControls();
 					break;
-				case "noFullScreen" :
+				case "noFullWindow" :
 					this.options[key] = $.extend({}, this.options[key], value); // store a merged copy of it, incase not all properties changed.
-					this.status.nativeVideoControls = this._uaBlocklist(this.options.nativeVideoControls); // Need to check again as noFullScreen can depend on this flag and the restrict() can override it.
-					this.status.noFullScreen = this._uaBlocklist(this.options.noFullScreen);
+					this.status.nativeVideoControls = this._uaBlocklist(this.options.nativeVideoControls); // Need to check again as noFullWindow can depend on this flag and the restrict() can override it.
+					this.status.noFullWindow = this._uaBlocklist(this.options.noFullWindow);
 					this._restrictNativeVideoControls();
 					this._updateButtons();
 					break;
@@ -1860,6 +2021,9 @@
 						}
 					}
 					break;
+				case "timeFormat" :
+					this.options[key] = $.extend({}, this.options[key], value); // store a merged copy of it, incase not all properties changed.
+					break;
 			}
 
 			return this;
@@ -1876,7 +2040,7 @@
 		},
 		_setSize: function() {
 			// Determine the current size from the options
-			if(this.options.fullScreen) {
+			if(this.options.fullWindow) {
 				this.status.width = this.options.sizeFull.width;
 				this.status.height = this.options.sizeFull.height;
 				this.status.cssClass = this.options.sizeFull.cssClass;
@@ -1938,7 +2102,7 @@
 				this.css.jq.gui.unbind(namespace);
 
 				if(!this.status.nativeVideoControls) {
-					if(this.options.fullScreen && this.options.autohide.full || !this.options.fullScreen && this.options.autohide.restored) {
+					if(this.options.fullWindow && this.options.autohide.full || !this.options.fullWindow && this.options.autohide.restored) {
 						this.element.bind(eventType, handler);
 						this.css.jq.gui.bind(eventType, handler);
 						this.css.jq.gui.hide();
@@ -1956,7 +2120,81 @@
 		restoreScreen: function() {
 			this._setOption("fullScreen", false);
 		},
-		_html_initMedia: function() {
+		_fullscreenAddEventListeners: function() {
+			var self = this,
+				fs = $.jPlayer.nativeFeatures.fullscreen;
+
+			if(fs.api.fullscreenEnabled) {
+				if(fs.event.fullscreenchange) {
+					// Create the event handler function and store it for removal.
+					if(typeof this.internal.fullscreenchangeHandler !== 'function') {
+						this.internal.fullscreenchangeHandler = function() {
+							self._fullscreenchange();
+						};
+					}
+					document.addEventListener(fs.event.fullscreenchange, this.internal.fullscreenchangeHandler, false);
+				}
+				// No point creating handler for fullscreenerror.
+				// Either logic avoids fullscreen occurring (w3c/moz), or their is no event on the browser (webkit).
+			}
+		},
+		_fullscreenRemoveEventListeners: function() {
+			var fs = $.jPlayer.nativeFeatures.fullscreen;
+			if(this.internal.fullscreenchangeHandler) {
+				document.addEventListener(fs.event.fullscreenchange, this.internal.fullscreenchangeHandler, false);
+			}
+		},
+		_fullscreenchange: function() {
+			// If nothing is fullscreen, then we cannot be in fullscreen mode.
+			if(this.options.fullScreen && !$.jPlayer.nativeFeatures.fullscreen.api.fullscreenElement()) {
+				this._setOption("fullScreen", false);
+			}
+		},
+		_requestFullscreen: function() {
+			// Either the container or the jPlayer div
+			var e = this.ancestorJq.length ? this.ancestorJq[0] : this.element[0],
+				fs = $.jPlayer.nativeFeatures.fullscreen;
+
+			// This method needs the video element. For iOS and Android.
+			if(fs.used.webkitVideo) {
+				e = this.htmlElement.video;
+			}
+
+			if(fs.api.fullscreenEnabled) {
+				fs.api.requestFullscreen(e);
+			}
+		},
+		_exitFullscreen: function() {
+
+			var fs = $.jPlayer.nativeFeatures.fullscreen,
+				e;
+
+			// This method needs the video element. For iOS and Android.
+			if(fs.used.webkitVideo) {
+				e = this.htmlElement.video;
+			}
+
+			if(fs.api.fullscreenEnabled) {
+				fs.api.exitFullscreen(e);
+			}
+		},
+		_html_initMedia: function(media) {
+			// Remove any existing track elements
+			var $media = $(this.htmlElement.media).empty();
+
+			// Create any track elements given with the media, as an Array of track Objects.
+			$.each(media.track || [], function(i,v) {
+				var track = document.createElement('track');
+				track.setAttribute("kind", v.kind ? v.kind : "");
+				track.setAttribute("src", v.src ? v.src : "");
+				track.setAttribute("srclang", v.srclang ? v.srclang : "");
+				track.setAttribute("label", v.label ? v.label : "");
+				if(v.def) {
+					track.setAttribute("default", v.def);
+				}
+				$media.append(track);
+			});
+
 			this.htmlElement.media.src = this.status.src;
 
 			if(this.options.preload !== 'none') {
@@ -1964,7 +2202,7 @@
 			}
 			this._trigger($.jPlayer.event.timeupdate); // The flash generates this event for its solution.
 		},
-		_html_setAudio: function(media) {
+		_html_setFormat: function(media) {
 			var self = this;
 			// Always finds a format due to checks in setMedia()
 			$.each(this.formats, function(priority, format) {
@@ -1975,25 +2213,19 @@
 					return false;
 				}
 			});
+		},
+		_html_setAudio: function(media) {
+			this._html_setFormat(media);
 			this.htmlElement.media = this.htmlElement.audio;
-			this._html_initMedia();
+			this._html_initMedia(media);
 		},
 		_html_setVideo: function(media) {
-			var self = this;
-			// Always finds a format due to checks in setMedia()
-			$.each(this.formats, function(priority, format) {
-				if(self.html.support[format] && media[format]) {
-					self.status.src = media[format];
-					self.status.format[format] = true;
-					self.status.formatType = format;
-					return false;
-				}
-			});
+			this._html_setFormat(media);
 			if(this.status.nativeVideoControls) {
 				this.htmlElement.video.poster = this._validString(media.poster) ? media.poster : "";
 			}
 			this.htmlElement.media = this.htmlElement.video;
-			this._html_initMedia();
+			this._html_initMedia(media);
 		},
 		_html_resetMedia: function() {
 			if(this.htmlElement.media) {
@@ -2005,7 +2237,9 @@
 		},
 		_html_clearMedia: function() {
 			if(this.htmlElement.media) {
-				this.htmlElement.media.src = "";
+				this.htmlElement.media.src = "about:blank";
+				// The following load() is only required for Firefox 3.6 (PowerMacs).
+				// Recent HTMl5 browsers only require the src change. Due to changes in W3C spec and load() effect.
 				this.htmlElement.media.load(); // Stops an old, "in progress" download from continuing the download. Triggers the loadstart, error and emptied events, due to the empty src. Also an abort event if a download was in progress.
 			}
 		},
@@ -2258,30 +2492,40 @@
 		_getMovie: function() {
 			return document[this.internal.flash.id];
 		},
-		_checkForFlash: function (version) {
-			// Function checkForFlash adapted from FlashReplace by Robert Nyman
-			// http://code.google.com/p/flashreplace/
-			var flashIsInstalled = false;
-			var flash;
-			if(window.ActiveXObject){
-				try{
-					flash = new ActiveXObject(("ShockwaveFlash.ShockwaveFlash." + version));
-					flashIsInstalled = true;
-				}
-				catch(e){
-					// Throws an error if the version isn't available			
-				}
-			}
-			else if(navigator.plugins && navigator.mimeTypes.length > 0){
-				flash = navigator.plugins["Shockwave Flash"];
-				if(flash){
-					var flashVersion = navigator.plugins["Shockwave Flash"].description.replace(/.*\s(\d+\.\d+).*/, "$1");
-					if(flashVersion >= version){
-						flashIsInstalled = true;
+		_getFlashPluginVersion: function() {
+
+			// _getFlashPluginVersion() code influenced by:
+			// - FlashReplace 1.01: http://code.google.com/p/flashreplace/
+			// - SWFObject 2.2: http://code.google.com/p/swfobject/
+
+			var version = 0,
+				flash;
+			if(window.ActiveXObject) {
+				try {
+					flash = new ActiveXObject("ShockwaveFlash.ShockwaveFlash");
+					if (flash) { // flash will return null when ActiveX is disabled
+						var v = flash.GetVariable("$version");
+						if(v) {
+							v = v.split(" ")[1].split(",");
+							version = parseInt(v[0], 10) + "." + parseInt(v[1], 10);
+						}
 					}
+				} catch(e) {}
+			}
+			else if(navigator.plugins && navigator.mimeTypes.length > 0) {
+				flash = navigator.plugins["Shockwave Flash"];
+				if(flash) {
+					version = navigator.plugins["Shockwave Flash"].description.replace(/.*\s(\d+\.\d+).*/, "$1");
 				}
 			}
-			return flashIsInstalled;
+			return version * 1; // Converts to a number
+		},
+		_checkForFlash: function (version) {
+			var flashOk = false;
+			if(this._getFlashPluginVersion() >= version) {
+				flashOk = true;
+			}
+			return flashOk;
 		},
 		_validString: function(url) {
 			return (url && typeof url === "string"); // Empty strings return false

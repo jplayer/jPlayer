@@ -10,8 +10,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Silvia Benvenuti
- * Skin Version: 4.2 (jPlayer 2.2.0)
- * Date: 22nd October 2012
+ * Skin Version: 4.3 (jPlayer 2.2.0)
+ * Date: 19th November 2012
  */
 
 div.jp-audio,
@@ -47,7 +47,7 @@ div.jp-video-full {
 	width:480px;
 	height:270px;
 	/* Rules for IE7 (full-screen) - Otherwise the relative container causes other page items that are not position:static (default) to appear over the video/gui. */
-	position:static !important; position:relative
+	position:static !important; position:relative;
 }
 
 /* The z-index rule is defined in this manner to enable Popcorn plugins that add overlays to video area. EG. Subtitles. */
