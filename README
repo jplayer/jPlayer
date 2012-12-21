@@ -2,4 +2,4 @@ jPlayer : With HD Support!
 
 After a couple of hours of work, I fianlly got it all set up. Now, if you were to load up jPlayer on an HD capable device (i.e. iPhone 4, 42, 5, MacBook Pro, iPod Touch 4G, 5G), all the buttons and icons will look simply beautiful!
 
-I aso modified the CSS slightly so that the background image is set only once and each selector only sets the background position. This makes it much less tedious to change the jplayer.blue.monday.png image when swtiching skins.
+I also modified the CSS slightly so that the background image is called only once and each selector only sets the background position. This makes it much less tedious to change the jplayer.blue.monday.png image when switching skins.
