@@ -152,18 +152,30 @@ a.jp-pause {
 	height:40px;
 }
 
+a.jp-play, a.jp-play:hover, a.jp-pause, a.jp-pause:hover, a.jp-stop, a.jp-stop:hover, a.jp-previous, a.jp-previous:hover, a.jp-next, a.jp-next:hover, div.jp-seek-bar, div.jp-play-bar, a.jp-mute, a.jp-mute:hover, a.jp-unmute, a.jp-unmute:hover, a.jp-volume-max, a.jp-volume-max:hover, div.jp-volume-bar, div.jp-audio, div.jp-volume-bar, div.jp-volume-bar-value, a.jp-full-screen, a.jp-full-screen:hover, a.jp-restore-screen, a.jp-restore-screen:hover, a.jp-repeat, a.jp-repeat:hover, a.jp-repeat-off, a.jp-repeat-off:hover, a.jp-shuffle, a.jp-shuffle:hover, a.jp-shuffle-off, a.jp-shuffle-off:hover {
+	background: url("jplayer.blue.monday.jpg") no-repeat;
+}
+
+/* HD CSS */
+@media only screen and (-webkit-min-device-pixel-ratio : 1.5), only screen and (min-device-pixel-ratio : 1.5) {
+	a.jp-play, a.jp-play:hover, a.jp-pause, a.jp-pause:hover, a.jp-stop, a.jp-stop:hover, a.jp-previous, a.jp-previous:hover, a.jp-next, a.jp-next:hover, div.jp-seek-bar, div.jp-play-bar, a.jp-mute, a.jp-mute:hover, a.jp-unmute, a.jp-unmute:hover, a.jp-volume-max, a.jp-volume-max:hover, div.jp-volume-bar, div.jp-audio, div.jp-volume-bar, div.jp-volume-bar-value, a.jp-full-screen, a.jp-full-screen:hover, a.jp-restore-screen, a.jp-restore-screen:hover, a.jp-repeat, a.jp-repeat:hover, a.jp-repeat-off, a.jp-repeat-off:hover, a.jp-shuffle, a.jp-shuffle:hover, a.jp-shuffle-off, a.jp-shuffle-off:hover {
+		background: url("jplayer.blue.monday.hd.png") no-repeat;
+		background-size: 200px 400px;
+	}
+}
+
 a.jp-play {
-	background: url("jplayer.blue.monday.jpg") 0 0 no-repeat;
+	background-position: 0 0;
 }
 a.jp-play:hover {
-	background: url("jplayer.blue.monday.jpg") -41px 0 no-repeat;
+	background-position: -41px 0;
 }
 a.jp-pause {
-	background: url("jplayer.blue.monday.jpg") 0 -42px no-repeat;
+	background-position: 0 -42px;
 	display: none;
 }
 a.jp-pause:hover {
-	background: url("jplayer.blue.monday.jpg") -41px -42px no-repeat;
+	background-position: -41px -42px;
 }
 
 a.jp-stop, a.jp-previous, a.jp-next {
@@ -173,26 +185,26 @@ a.jp-stop, a.jp-previous, a.jp-next {
 }
 
 a.jp-stop {
-	background: url("jplayer.blue.monday.jpg") 0 -83px no-repeat;
+	background-position: 0 -83px;
 	margin-left:10px;
 }
 
 a.jp-stop:hover {
-	background: url("jplayer.blue.monday.jpg") -29px -83px no-repeat;
+	background-position: -29px -83px;
 }
 
 a.jp-previous {
-	background: url("jplayer.blue.monday.jpg") 0 -112px no-repeat;
+	background-position: 0 -112px;
 }
 a.jp-previous:hover {
-	background: url("jplayer.blue.monday.jpg") -29px -112px no-repeat;
+	background-position: -29px -112px;
 }
 
 a.jp-next {
-	background: url("jplayer.blue.monday.jpg") 0 -141px no-repeat;
+	background-position: 0 -141px;
 }
 a.jp-next:hover {
-	background: url("jplayer.blue.monday.jpg") -29px -141px no-repeat;
+	background-position: -29px -141px;
 }
 
 /* @end */
@@ -223,13 +235,15 @@ div.jp-video div.jp-progress {
 	height:10px;
 }
 div.jp-seek-bar {
-	background: url("jplayer.blue.monday.jpg") 0 -202px repeat-x;
+	background-repeat: repeat-x;
+	background-position: 0 -202px;
 	width:0px;
 	height:100%;
 	cursor: pointer;
 }
 div.jp-play-bar {
-	background: url("jplayer.blue.monday.jpg") 0 -218px repeat-x ;
+	background-repeat: repeat-x;
+	background-position: 0 -218px;
 	width:0px;
 	height:100%;
 }
@@ -289,29 +303,30 @@ div.jp-video a.jp-volume-max {
 }
 
 a.jp-mute {
-	background: url("jplayer.blue.monday.jpg") 0 -170px no-repeat;
+	background-position: 0 -170px;
 }
 a.jp-mute:hover {
-	background: url("jplayer.blue.monday.jpg") -19px -170px no-repeat;
+	background-position: -19px -170px;
 }
 a.jp-unmute {
-	background: url("jplayer.blue.monday.jpg") -60px -170px no-repeat;
+	background-position: -60px -170px;
 	display: none;
 }
 a.jp-unmute:hover {
-	background: url("jplayer.blue.monday.jpg") -79px -170px no-repeat;
+	background-position: -79px -170px;
 }
 a.jp-volume-max {
-	background: url("jplayer.blue.monday.jpg") 0 -186px no-repeat;
+	background-position: 0 -186px;
 }
 a.jp-volume-max:hover {
-	background: url("jplayer.blue.monday.jpg") -19px -186px no-repeat;
+	background-position: -19px -186px;
 }
 
 div.jp-volume-bar {
 	position: absolute;
 	overflow:hidden;
-	background: url("jplayer.blue.monday.jpg") 0 -250px repeat-x;
+	background-repeat: repeat-x;
+	background-position: 0 -250px;
 	width:46px;
 	height:5px;
 	cursor: pointer;
@@ -329,7 +344,8 @@ div.jp-video div.jp-volume-bar {
 	left:72px;
 }
 div.jp-volume-bar-value {
-	background: url("jplayer.blue.monday.jpg") 0 -256px repeat-x;
+	background-repeat: repeat-x;
+	background-position: 0 -256px;
 	width:0px;
 	height:5px;
 }
@@ -561,55 +577,55 @@ ul.jp-toggles li a {
 }
 
 a.jp-full-screen {
-	background: url("jplayer.blue.monday.jpg") 0 -310px no-repeat;
+	background-position: 0 -310px;
 	margin-left: 20px;
 }
 
 a.jp-full-screen:hover {
-	background: url("jplayer.blue.monday.jpg") -30px -310px no-repeat;
+	background-position: -30px -310px;
 }
 
 a.jp-restore-screen {
-	background: url("jplayer.blue.monday.jpg") -60px -310px no-repeat;
+	background-position: -60px -310px;
 	margin-left: 20px;
 }
 
 a.jp-restore-screen:hover {
-	background: url("jplayer.blue.monday.jpg") -90px -310px no-repeat;
+	background-position: -90px -310px;
 }
 
 a.jp-repeat {
-	background: url("jplayer.blue.monday.jpg") 0 -290px no-repeat;
+	background-position: 0 -290px;
 }
 
 a.jp-repeat:hover {
-	background: url("jplayer.blue.monday.jpg") -30px -290px no-repeat;
+	background-position: -30px -290px;
 }
 
 a.jp-repeat-off {
-	background: url("jplayer.blue.monday.jpg") -60px -290px no-repeat;
+	background-position: -60px -290px;
 }
 
 a.jp-repeat-off:hover {
-	background: url("jplayer.blue.monday.jpg") -90px -290px no-repeat;
+	background-position: -90px -290px;
 }
 
 a.jp-shuffle {
-	background: url("jplayer.blue.monday.jpg") 0 -270px no-repeat;
+	background-position: 0 -270px;
 	margin-left: 5px;
 }
 
 a.jp-shuffle:hover {
-	background: url("jplayer.blue.monday.jpg") -30px -270px no-repeat;
+	background-position: -30px -270px;
 }
 
 a.jp-shuffle-off {
-	background: url("jplayer.blue.monday.jpg") -60px -270px no-repeat;
+	background-position: -60px -270px;
 	margin-left: 5px;
 }
 
 a.jp-shuffle-off:hover {
-	background: url("jplayer.blue.monday.jpg") -90px -270px no-repeat;
+	background-position: -90px -270px;
 }
 
 
