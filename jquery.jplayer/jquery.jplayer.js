@@ -2,14 +2,14 @@
  * jPlayer Plugin for jQuery JavaScript Library
  * http://www.jplayer.org
  *
- * Copyright (c) 2009 - 2012 Happyworm Ltd
+ * Copyright (c) 2009 - 2013 Happyworm Ltd
  * Dual licensed under the MIT and GPL licenses.
  *  - http://www.opensource.org/licenses/mit-license.php
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.16
- * Date: 21st November 2012
+ * Version: 2.2.17
+ * Date: 24th January 2013
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -401,10 +401,60 @@
 	};
 	$.jPlayer.nativeFeatures.init();
 
+	// The keyboard control system.
+
+	// The current jPlayer instance in focus.
+	$.jPlayer.focus = null;
+
+	// The list of element node names to ignore with key controls.
+	$.jPlayer.keyIgnoreElementNames = "INPUT TEXTAREA";
+
+	// The function that deals with key presses.
+	var keyBindings = function(event) {
+
+		var f = $.jPlayer.focus,
+			ignoreKey;
+
+		// A jPlayer instance must be in focus. ie., keyEnabled and the last one played.
+		if(f) {
+			// What generated the key press?
+			$.each( $.jPlayer.keyIgnoreElementNames.split(/\s+/g), function(i, name) {
+				// The strings should already be uppercase.
+				if(event.target.nodeName.toUpperCase() === name.toUpperCase()) {
+					ignoreKey = true;
+					return false; // exit each.
+				}
+			});
+			if(!ignoreKey) {
+				// See if the key pressed matches any of the bindings.
+				$.each(f.options.keyBindings, function(action, binding) {
+					// The binding could be a null when the default has been disabled. ie., 1st clause in if()
+					if(binding && event.which === binding.key && $.isFunction(binding.fn)) {
+						event.preventDefault(); // Key being used by jPlayer, so prevent default operation.
+						binding.fn(f);
+						return false; // exit each.
+					}
+				});
+			}
+		}
+	};
+
+	$.jPlayer.keys = function(en) {
+		var event = "keydown.jPlayer";
+		// Remove any binding, just in case enabled more than once.
+		$(document.documentElement).unbind(event);
+		if(en) {
+			$(document.documentElement).bind(event, keyBindings);
+		}
+	};
+
+	// Enable the global key control handler ready for any jPlayer instance with the keyEnabled option enabled.
+	$.jPlayer.keys(true);
+
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.2.16",
+			script: "2.2.17",
 			needFlash: "2.2.0",
 			flash: "unknown"
 		},
@@ -489,6 +539,48 @@
 			timeFormat: {
 				// Specific time format for this instance. The supported options are defined in $.jPlayer.timeFormat
 				// For the undefined options we use the default from $.jPlayer.timeFormat
+			},
+			keyEnabled: false, // Enables keyboard controls.
+			audioFullScreen: false, // Enables keyboard controls to enter full screen with audio media.
+			keyBindings: { // The key control object, defining the key codes and the functions to execute.
+				// The parameter, f = $.jPlayer.focus, will be checked truethy before attempting to call any of these functions.
+				// Properties may be added to this object, in key/fn pairs, to enable other key controls. EG, for the playlist add-on.
+				play: {
+					key: 32, // space
+					fn: function(f) {
+						if(f.status.paused) {
+							f.play();
+						} else {
+							f.pause();
+						}
+					}
+				},
+				fullScreen: {
+					key: 13, // enter
+					fn: function(f) {
+						if(f.status.video || f.options.audioFullScreen) {
+							f._setOption("fullScreen", !f.options.fullScreen);
+						}
+					}
+				},
+				muted: {
+					key: 8, // backspace
+					fn: function(f) {
+						f._muted(!f.options.muted);
+					}
+				},
+				volumeUp: {
+					key: 38, // UP
+					fn: function(f) {
+						f.volume(f.options.volume + 0.1);
+					}
+				},
+				volumeDown: {
+					key: 40, // DOWN
+					fn: function(f) {
+						f.volume(f.options.volume - 0.1);
+					}
+				}
 			},
 			verticalVolume: false, // Calculate volume from the bottom of the volume bar. Default is from the left. Also volume affects either width or height.
 			// globalVolume: false, // Not implemented: Set to make volume changes affect all jPlayer instances
@@ -644,6 +736,11 @@
 			this.internal.cmdsIgnored = $.jPlayer.platform.ipad || $.jPlayer.platform.iphone || $.jPlayer.platform.ipod;
 
 			this.internal.domNode = this.element.get(0);
+
+			// Add key bindings focus to 1st jPlayer instanced with key control enabled.
+			if(this.options.keyEnabled && !$.jPlayer.focus) {
+				$.jPlayer.focus = this;
+			}
 
 			this.formats = []; // Array based on supplied string option. Order defines priority.
 			this.solutions = []; // Array based on solution string option. Order defines priority.
@@ -1000,6 +1097,10 @@
 			}
 			// Remove the fullscreen event handlers
 			this._fullscreenRemoveEventListeners();
+			// Remove key bindings
+			if(this === $.jPlayer.focus) {
+				$.jPlayer.focus = null;
+			}
 			// Destroy the HTML bridge.
 			if(this.options.emulateHtml) {
 				this._destroyHtmlBridge();
@@ -1580,9 +1681,15 @@
 				this._urlNotSetError("load");
 			}
 		},
+		focus: function() {
+			if(this.options.keyEnabled) {
+				$.jPlayer.focus = this;
+			}
+		},
 		play: function(time) {
 			time = (typeof time === "number") ? time : NaN; // Remove jQuery event from click handler
 			if(this.status.srcSet) {
+				this.focus();
 				if(this.html.active) {
 					this._html_play(time);
 				} else if(this.flash.active) {
@@ -2023,6 +2130,18 @@
 					break;
 				case "timeFormat" :
 					this.options[key] = $.extend({}, this.options[key], value); // store a merged copy of it, incase not all properties changed.
+					break;
+				case "keyEnabled" :
+					this.options[key] = value;
+					if(!value && this === $.jPlayer.focus) {
+						$.jPlayer.focus = null;
+					}
+					break;
+				case "keyBindings" :
+					this.options[key] = $.extend(true, {}, this.options[key], value); // store a merged DEEP copy of it, incase not all properties changed.
+					break;
+				case "audioFullScreen" :
+					this.options[key] = value;
 					break;
 			}
 
