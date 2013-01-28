@@ -1,15 +1,15 @@
 /*
  * jPlayer Plugin for jQuery JavaScript Library
- * http://www.happyworm.com/jquery/jplayer
+ * http://www.jplayer.org
  *
- * Copyright (c) 2009 - 2012 Happyworm Ltd
+ * Copyright (c) 2009 - 2013 Happyworm Ltd
  * Dual licensed under the MIT and GPL licenses.
  *  - http://www.opensource.org/licenses/mit-license.php
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.0
- * Date: 13th August 2012
+ * Version: 2.2.18
+ * Date: 28th January 2013
  *
  * FlashVars expected: (AS3 property of: loaderInfo.parameters)
  *	id: 	(URL Encoded: String) Id of jPlayer instance
@@ -120,7 +120,7 @@ package {
 			var myContextMenu:ContextMenu = new ContextMenu();
 			myContextMenu.hideBuiltInItems();
 			var menuItem_jPlayer:ContextMenuItem = new ContextMenuItem("jPlayer " + JplayerStatus.VERSION);
-			var menuItem_happyworm:ContextMenuItem = new ContextMenuItem("© 2009-2012 Happyworm Ltd", true);
+			var menuItem_happyworm:ContextMenuItem = new ContextMenuItem("© 2009-2013 Happyworm Ltd", true);
 			menuItem_jPlayer.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, menuSelectHandler_jPlayer);
 			menuItem_happyworm.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, menuSelectHandler_happyworm);
 			myContextMenu.customItems.push(menuItem_jPlayer, menuItem_happyworm);
