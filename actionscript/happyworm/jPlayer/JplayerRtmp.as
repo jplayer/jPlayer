@@ -363,8 +363,8 @@ package happyworm.jPlayer
 			{
 				//this.dispatchEvent(new JplayerEvent(JplayerEvent.DEBUG_MSG,myStatus,"onMetaDataHandler: " + myStatus.duration));
 
-				// Allow multiple onResult Handlers to affect size. As per PR #131 and #98.
-				// myStatus.metaDataReady = true;
+				//  Allow multiple onResult Handlers to affect size. As per PR #131 and #98.
+				//  myStatus.metaDataReady = true;
 
 				/*var info:Object = new Object();
 				info.duration=myStatus.duration
