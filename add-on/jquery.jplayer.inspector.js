@@ -1,17 +1,17 @@
 /*
- * jPlayerInspector Plugin for jPlayer (2.0.0+) Plugin for jQuery JavaScript Library
- * http://www.happyworm.com/jquery/jplayer
+ * jPlayerInspector Plugin for jPlayer Plugin for jQuery JavaScript Library
+ * http://www.jplayer.org
  *
- * Copyright (c) 2009 - 2011 Happyworm Ltd
+ * Copyright (c) 2009 - 2013 Happyworm Ltd
  * Dual licensed under the MIT and GPL licenses.
  *  - http://www.opensource.org/licenses/mit-license.php
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 1.0.3
- * Date: 7th August 2011
+ * Version: 1.0.4
+ * Date: 29th January 2013
  *
- * For use with jPlayer Version: 2.0.29
+ * For use with jPlayer Version: 2.2.19+
  *
  * Note: Declare inspector instances after jPlayer instances. ie., Otherwise the jPlayer instance is nonsense.
  */
@@ -255,6 +255,13 @@
 				jPlayerInfo += "&nbsp;" + prop + ": " + $(this).data("jPlayerInspector").jPlayer.data("jPlayer").status.media[prop] + "<br />"; // Some are strings
 			}
 			jPlayerInfo += "};</code></p>"
+
+			jPlayerInfo += "<p>";
+			jPlayerInfo += "<code>status.videoWidth = '" + $(this).data("jPlayerInspector").jPlayer.data("jPlayer").status.videoWidth + "'</code>";
+			jPlayerInfo += " | <code>status.videoHeight = '" + $(this).data("jPlayerInspector").jPlayer.data("jPlayer").status.videoHeight + "'</code>";
+			jPlayerInfo += "<br /><code>status.width = '" + $(this).data("jPlayerInspector").jPlayer.data("jPlayer").status.width + "'</code>";
+			jPlayerInfo += " | <code>status.height = '" + $(this).data("jPlayerInspector").jPlayer.data("jPlayer").status.height + "'</code>";
+			jPlayerInfo += "</p>";
 
 			+ "<p>Raw browser test for HTML5 support. Should equal a function if HTML5 is available.<br />";
 			if($(this).data("jPlayerInspector").jPlayer.data("jPlayer").html.audio.available) {
