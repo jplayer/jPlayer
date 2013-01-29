@@ -1,8 +1,8 @@
 ﻿/*
  * jPlayer Plugin for jQuery JavaScript Library
- * http://www.happyworm.com/jquery/jplayer
+ * http://www.jplayer.org
  *
- * Copyright (c) 2009 - 2011 Happyworm Ltd
+ * Copyright (c) 2009 - 2013 Happyworm Ltd
  * Dual licensed under the MIT and GPL licenses.
  *  - http://www.opensource.org/licenses/mit-license.php
  *  - http://www.gnu.org/copyleft/gpl.html

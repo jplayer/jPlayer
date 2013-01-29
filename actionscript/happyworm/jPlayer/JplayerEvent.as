@@ -1,8 +1,8 @@
 ﻿/*
  * jPlayer Plugin for jQuery JavaScript Library
- * http://www.happyworm.com/jquery/jplayer
+ * http://www.jplayer.org
  *
- * Copyright (c) 2009 - 2011 Happyworm Ltd
+ * Copyright (c) 2009 - 2013 Happyworm Ltd
  * Dual licensed under the MIT and GPL licenses.
  *  - http://www.opensource.org/licenses/mit-license.php
  *  - http://www.gnu.org/copyleft/gpl.html
@@ -52,7 +52,7 @@ package happyworm.jPlayer {
 		public static const DEBUG_MSG:String = "debug_msg";
 
 		public var data:JplayerStatus;
-		public var msg:String = ""
+		public var msg:String = "";
 
 		public function JplayerEvent(type:String, data:JplayerStatus, msg:String = "", bubbles:Boolean = false, cancelable:Boolean = false) {
 			super(type, bubbles, cancelable);
