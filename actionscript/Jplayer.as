@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.18
- * Date: 28th January 2013
+ * Version: 2.2.19
+ * Date: 29th January 2013
  *
  * FlashVars expected: (AS3 property of: loaderInfo.parameters)
  *	id: 	(URL Encoded: String) Id of jPlayer instance
@@ -498,6 +498,8 @@ package {
 				currentPercentAbsolute: data.currentPercentAbsolute,
 				currentTime: data.currentTime / 1000, // JavaScript uses seconds
 				duration: data.duration / 1000, // JavaScript uses seconds
+				videoWidth: data.videoWidth,
+				videoHeight: data.videoHeight,
 				volume: commonStatus.volume,
 				muted: commonStatus.muted
 			};

@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.18
- * Date: 28th January 2013
+ * Version: 2.2.19
+ * Date: 29th January 2013
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -454,8 +454,8 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.2.18",
-			needFlash: "2.2.18",
+			script: "2.2.19",
+			needFlash: "2.2.19",
 			flash: "unknown"
 		},
 		options: { // Instanced in $.jPlayer() constructor
@@ -631,6 +631,8 @@
 			currentPercentAbsolute: 0,
 			currentTime: 0,
 			duration: 0,
+			videoWidth: 0, // Intrinsic width of the video in pixels.
+			videoHeight: 0, // Intrinsic height of the video in pixels.
 			readyState: 0,
 			networkState: 0,
 			playbackRate: 1,
@@ -1333,6 +1335,9 @@
 			this.status.currentPercentAbsolute = cpa;
 			this.status.currentTime = ct;
 
+			this.status.videoWidth = media.videoWidth;
+			this.status.videoHeight = media.videoHeight;
+
 			this.status.readyState = media.readyState;
 			this.status.networkState = media.networkState;
 			this.status.playbackRate = media.playbackRate;
@@ -1478,6 +1483,9 @@
 			this.status.currentPercentAbsolute = status.currentPercentAbsolute;
 			this.status.currentTime = status.currentTime;
 			this.status.duration = status.duration;
+
+			this.status.videoWidth = status.videoWidth;
+			this.status.videoHeight = status.videoHeight;
 
 			// The Flash does not generate this information in this release
 			this.status.readyState = 4; // status.readyState;

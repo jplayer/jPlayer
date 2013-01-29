@@ -1,14 +1,14 @@
 ﻿/*
  * jPlayer Plugin for jQuery JavaScript Library
- * http://www.happyworm.com/jquery/jplayer
+ * http://www.jplayer.org
  *
- * Copyright (c) 2009 - 2011 Happyworm Ltd
+ * Copyright (c) 2009 - 2013 Happyworm Ltd
  * Dual licensed under the MIT and GPL licenses.
  *  - http://www.opensource.org/licenses/mit-license.php
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Date: 7th August 2011
+ * Date: 29th January 2013
  */
 
 package happyworm.jPlayer {
@@ -388,10 +388,10 @@ package happyworm.jPlayer {
 				myStatus.metaData = info;
 				myStatus.duration = info.duration * 1000; // Only available via Meta Data.
 				if(info.width != undefined) {
-					myVideo.width = info.width;
+					myVideo.width = myStatus.videoWidth = info.width;
 				}
 				if(info.height != undefined) {
-					myVideo.height = info.height;
+					myVideo.height = myStatus.videoHeight = info.height;
 				}
 
 				if(myStatus.playOnLoad) {

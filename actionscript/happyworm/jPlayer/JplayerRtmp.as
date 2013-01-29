@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Robert M. Hall
- * Date: 28th January 2013
+ * Date: 29th January 2013
  * Based on JplayerMp4.as with modifications for rtmp
  */
 
@@ -950,11 +950,11 @@ package happyworm.jPlayer
 			myStatus.duration = info.duration * 1000;// Only available via Meta Data.
 			if (info.width != undefined)
 			{
-				myVideo.width = info.width;
+				myVideo.width = myStatus.videoWidth = info.width;
 			}
 			if (info.height != undefined)
 			{
-				myVideo.height = info.height;
+				myVideo.height = myStatus.videoHeight = info.height;
 			}
 
 			if (myStatus.playOnLoad)
