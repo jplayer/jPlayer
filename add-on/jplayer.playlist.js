@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.1.0 (jPlayer 2.1.0)
- * Date: 1st September 2011
+ * Version: 2.2.0 (jPlayer 2.2.0)
+ * Date: 14th January 2013
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -248,8 +248,8 @@
 		},
 		_createItemHandlers: function() {
 			var self = this;
-			// Create .live() handlers for the playlist items
-			$(this.cssSelector.playlist + " a." + this.options.playlistOptions.itemClass).die("click").live("click", function() {
+			// Create live handlers for the playlist items
+			$(this.cssSelector.playlist).off("click", "a." + this.options.playlistOptions.itemClass).on("click", "a." + this.options.playlistOptions.itemClass, function() {
 				var index = $(this).parent().parent().index();
 				if(self.current !== index) {
 					self.play(index);
@@ -260,15 +260,15 @@
 				return false;
 			});
 
-			// Create .live() handlers that disable free media links to force access via right click
-			$(self.cssSelector.playlist + " a." + this.options.playlistOptions.freeItemClass).die("click").live("click", function() {
+			// Create live handlers that disable free media links to force access via right click
+			$(this.cssSelector.playlist).off("click", "a." + this.options.playlistOptions.freeItemClass).on("click", "a." + this.options.playlistOptions.freeItemClass, function() {
 				$(this).parent().parent().find("." + self.options.playlistOptions.itemClass).click();
 				$(this).blur();
 				return false;
 			});
 
-			// Create .live() handlers for the remove controls
-			$(self.cssSelector.playlist + " a." + this.options.playlistOptions.removeItemClass).die("click").live("click", function() {
+			// Create live handlers for the remove controls
+			$(this.cssSelector.playlist).off("click", "a." + this.options.playlistOptions.removeItemClass).on("click", "a." + this.options.playlistOptions.removeItemClass, function() {
 				var index = $(this).parent().parent().index();
 				self.remove(index);
 				$(this).blur();
