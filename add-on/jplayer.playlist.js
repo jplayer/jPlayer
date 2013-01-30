@@ -2,14 +2,18 @@
  * Playlist Object for the jPlayer Plugin
  * http://www.jplayer.org
  *
- * Copyright (c) 2009 - 2011 Happyworm Ltd
+ * Copyright (c) 2009 - 2013 Happyworm Ltd
  * Dual licensed under the MIT and GPL licenses.
  *  - http://www.opensource.org/licenses/mit-license.php
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.0 (jPlayer 2.2.0)
+ * Version: 2.2.0
  * Date: 14th January 2013
+ *
+ * Requires:
+ *  - jQuery 1.7.0+
+ *  - jPlayer 2.1.0+
  */
 
 /* Code verified using http://www.jshint.com/ */
