@@ -8,12 +8,12 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.0
- * Date: 14th January 2013
+ * Version: 2.2.1
+ * Date: 30th January 2013
  *
  * Requires:
  *  - jQuery 1.7.0+
- *  - jPlayer 2.1.0+
+ *  - jPlayer 2.2.19+
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -31,7 +31,22 @@
 		this.removing = false; // Flag is true during remove animation, disabling the remove() method until complete.
 
 		this.cssSelector = $.extend({}, this._cssSelector, cssSelector); // Object: Containing the css selectors for jPlayer and its cssSelectorAncestor
-		this.options = $.extend(true, {}, this._options, options); // Object: The jPlayer constructor options for this playlist and the playlist options
+		this.options = $.extend(true, {
+			keyBindings: {
+				next: {
+					key: 39, // RIGHT
+					fn: function(f) {
+						self.next();
+					}
+				},
+				previous: {
+					key: 37, // LEFT
+					fn: function(f) {
+						self.previous();
+					}
+				}
+			}
+		}, this._options, options); // Object: The jPlayer constructor options for this playlist and the playlist options
 
 		this.playlist = []; // Array of Objects: The current playlist displayed (Un-shuffled or Shuffled)
 		this.original = []; // Array of Objects: The original playlist
@@ -108,7 +123,7 @@
 		// Remove the empty <li> from the page HTML. Allows page to be valid HTML, while not interfereing with display animations
 		$(this.cssSelector.playlist + " ul").empty();
 
-		// Create .live() handlers for the playlist items along with the free media and remove controls.
+		// Create .on() handlers for the playlist items along with the free media and remove controls.
 		this._createItemHandlers();
 
 		// Instance jPlayer
