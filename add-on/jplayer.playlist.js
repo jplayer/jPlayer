@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.1
+ * Version: 2.2.2
  * Date: 30th January 2013
  *
  * Requires:
@@ -17,8 +17,8 @@
  */
 
 /* Code verified using http://www.jshint.com/ */
-/*jshint asi:false, bitwise:false, boss:false, browser:true, curly:true, debug:false, eqeqeq:true, eqnull:false, evil:false, forin:false, immed:false, jquery:true, laxbreak:false, newcap:true, noarg:true, noempty:true, nonew:true, nomem:false, onevar:false, passfail:false, plusplus:false, regexp:false, undef:true, sub:false, strict:false, white:false */
-/*global  jPlayerPlaylist: true, jQuery:false, alert:false */
+/*jshint asi:false, bitwise:false, boss:false, browser:true, curly:true, debug:false, eqeqeq:true, eqnull:false, evil:false, forin:false, immed:false, jquery:true, laxbreak:false, newcap:true, noarg:true, noempty:true, nonew:true, onevar:false, passfail:false, plusplus:false, regexp:false, undef:true, sub:false, strict:false, white:false smarttabs:true */
+/*global  jPlayerPlaylist: true */
 
 (function($, undefined) {
 
@@ -35,13 +35,13 @@
 			keyBindings: {
 				next: {
 					key: 39, // RIGHT
-					fn: function(f) {
+					fn: function() {
 						self.next();
 					}
 				},
 				previous: {
 					key: 37, // LEFT
-					fn: function(f) {
+					fn: function() {
 						self.previous();
 					}
 				}
@@ -70,17 +70,17 @@
 		};
 
 		// Create a ready event handler to initialize the playlist
-		$(this.cssSelector.jPlayer).bind($.jPlayer.event.ready, function(event) {
+		$(this.cssSelector.jPlayer).bind($.jPlayer.event.ready, function() {
 			self._init();
 		});
 
 		// Create an ended event handler to move to the next item
-		$(this.cssSelector.jPlayer).bind($.jPlayer.event.ended, function(event) {
+		$(this.cssSelector.jPlayer).bind($.jPlayer.event.ended, function() {
 			self.next();
 		});
 
 		// Create a play event handler to pause other instances
-		$(this.cssSelector.jPlayer).bind($.jPlayer.event.play, function(event) {
+		$(this.cssSelector.jPlayer).bind($.jPlayer.event.play, function() {
 			$(this).jPlayer("pauseOthers");
 		});
 
@@ -193,7 +193,7 @@
 			var self = this;
 			this.playlist = [];
 			// Make both arrays point to the same object elements. Gives us 2 different arrays, each pointing to the same actual object. ie., Not copies of the object.
-			$.each(this.original, function(i,v) {
+			$.each(this.original, function(i) {
 				self.playlist[i] = self.original[i];
 			});
 		},
@@ -207,7 +207,7 @@
 
 			if(instant && !$.isFunction(instant)) {
 				$(this.cssSelector.playlist + " ul").empty();
-				$.each(this.playlist, function(i,v) {
+				$.each(this.playlist, function(i) {
 					$(self.cssSelector.playlist + " ul").append(self._createListItem(self.playlist[i]));
 				});
 				this._updateControls();
@@ -218,7 +218,7 @@
 					var $this = $(this);
 					$(this).empty();
 					
-					$.each(self.playlist, function(i,v) {
+					$.each(self.playlist, function(i) {
 						$this.append(self._createListItem(self.playlist[i]));
 					});
 					self._updateControls();
@@ -356,7 +356,7 @@
 
 							if(self.shuffled) {
 								var item = self.playlist[index];
-								$.each(self.original, function(i,v) {
+								$.each(self.original, function(i) {
 									if(self.original[i] === item) {
 										self.original.splice(i, 1);
 										return false; // Exit $.each
