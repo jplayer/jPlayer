@@ -2376,7 +2376,18 @@
 			// This command should be removed and actually causes minor undesirable effects on some browsers. Such as loading the whole file and not only the metadata.
 			if(this.status.waitForLoad) {
 				this.status.waitForLoad = false;
-				this.htmlElement.media.load();
+
+				// Android browser would raise INVALID_STATE_ERR exception here and cause jPlayer in wrong state
+				// but the audio/video element has been ready to play at this time 
+				// just ignore the exception for Android browser to make jPlayer work
+				try {
+					this.htmlElement.media.load();
+				} catch (e) { 
+					var isAndroid = /Android/i.test(navigator.userAgent);	
+					if (!(e.code == DOMException.INVALID_STATE_ERR && isAndroid)) {
+						throw e;
+					}
+				}
 			}
 			clearTimeout(this.internal.htmlDlyCmdId);
 		},
