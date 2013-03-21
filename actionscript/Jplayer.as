@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.19
- * Date: 29th January 2013
+ * Version: 2.2.20
+ * Date: 21st March 2013
  *
  * FlashVars expected: (AS3 property of: loaderInfo.parameters)
  *	id: 	(URL Encoded: String) Id of jPlayer instance
@@ -70,7 +70,7 @@ package {
 		private var isVideo:Boolean = false;
 
 		private var securityIssue:Boolean = false; // When SWF parameters contain illegal characters
-		private var directAccess:Boolean = false; // When SWF visited directly with no parameters
+		private var directAccess:Boolean = false; // When SWF visited directly with no parameters (or when security issue detected)
 
 		private var txLog:TextField;
 		private var debug:Boolean = false; // Set debug to false for release compile!
@@ -233,12 +233,12 @@ package {
 				}
 				i++;
 			}
-			if(i === 0) {
+			if(i === 0 || securityIssue) {
 				directAccess = true;
 			}
 		}
 		private function illegalChar(s:String):Boolean {
-			var illegals:String = "' \" ( ) { } * + /";
+			var illegals:String = "' \" ( ) { } * + / \\ < > = document";
 			if(Boolean(s)) { // Otherwise exception if parameter null.
 				for each (var illegal:String in illegals.split(' ')) {
 					if(s.indexOf(illegal) >= 0) {
