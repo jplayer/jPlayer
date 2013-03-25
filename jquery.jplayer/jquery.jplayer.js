@@ -160,6 +160,7 @@
 	];
 
 	$.jPlayer.pause = function() {
+		$.jPlayer.prototype.destroyRemoved();
 		$.each($.jPlayer.prototype.instances, function(i, element) {
 			if(element.data("jPlayer").status.srcSet) { // Check that media is set otherwise would cause error event.
 				element.jPlayer("pause");
@@ -1113,6 +1114,17 @@
 			
 			delete this.instances[this.internal.instance]; // Clear the instance on the static instance object
 		},
+		destroyRemoved: function() { // Destroy any instances that have gone away.
+			var self = this;
+			$.each(this.instances, function(i, element) {
+				if(self.element !== element) { // Do not destroy this instance.
+					if(!element.data("jPlayer")) { // Check that element is a real jPlayer.
+						element.jPlayer("destroy");
+						delete self.instances[i];
+					}
+				}
+			});
+		},
 		enable: function() { // Plan to implement
 			// options.disabled = false
 		},
@@ -1724,6 +1736,7 @@
 		},
 		pauseOthers: function() {
 			var self = this;
+			$.jPlayer.prototype.destroyRemoved();
 			$.each(this.instances, function(i, element) {
 				if(self.element !== element) { // Do not this instance.
 					if(element.data("jPlayer").status.srcSet) { // Check that media is set otherwise would cause error event.
