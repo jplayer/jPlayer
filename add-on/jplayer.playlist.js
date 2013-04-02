@@ -183,10 +183,14 @@
 			});
 		},
 		_initPlaylist: function(playlist) {
+			var self = this;
 			this.current = 0;
 			this.shuffled = false;
 			this.removing = false;
 			this.original = $.extend(true, [], playlist); // Copy the Array of Objects
+			$.each(this.original, function(i){
+				self.original[i]._element = self._createListItem(this);
+			});
 			this._originalPlaylist();
 		},
 		_originalPlaylist: function() {
@@ -208,7 +212,7 @@
 			if(instant && !$.isFunction(instant)) {
 				$(this.cssSelector.playlist + " ul").empty();
 				$.each(this.playlist, function(i) {
-					$(self.cssSelector.playlist + " ul").append(self._createListItem(self.playlist[i]));
+					$(self.cssSelector.playlist + " ul").append(self.playlist[i]._element);
 				});
 				this._updateControls();
 			} else {
@@ -219,7 +223,7 @@
 					$(this).empty();
 					
 					$.each(self.playlist, function(i) {
-						$this.append(self._createListItem(self.playlist[i]));
+						$this.append(self.playlist[i]._element);
 					});
 					self._updateControls();
 					if($.isFunction(instant)) {
@@ -263,7 +267,7 @@
 			listItem += "<a href='javascript:;' class='" + this.options.playlistOptions.itemClass + "' tabindex='1'>" + media.title + (media.artist ? " <span class='jp-artist'>by " + media.artist + "</span>" : "") + "</a>";
 			listItem += "</div></li>";
 
-			return listItem;
+			return $(listItem);
 		},
 		_createItemHandlers: function() {
 			var self = this;
@@ -311,7 +315,7 @@
 		_highlight: function(index) {
 			if(this.playlist.length && index !== undefined) {
 				$(this.cssSelector.playlist + " .jp-playlist-current").removeClass("jp-playlist-current");
-				$(this.cssSelector.playlist + " li:nth-child(" + (index + 1) + ")").addClass("jp-playlist-current").find(".jp-playlist-item").addClass("jp-playlist-current");
+				this.playlist[index]._element.addClass("jp-playlist-current").find(".jp-playlist-item").addClass("jp-playlist-current");
 				$(this.cssSelector.title + " li").html(this.playlist[index].title + (this.playlist[index].artist ? " <span class='jp-artist'>by " + this.playlist[index].artist + "</span>" : ""));
 			}
 		},
@@ -320,7 +324,10 @@
 			this._init();
 		},
 		add: function(media, playNow) {
-			$(this.cssSelector.playlist + " ul").append(this._createListItem(media)).find("li:last-child").hide().slideDown(this.options.playlistOptions.addTime);
+			el = this._createListItem(media);
+			$(this.cssSelector.playlist + " ul").append(el);
+			el.hide().slideDown(this.options.playlistOptions.addTime);
+			media._element = el;
 			this._updateControls();
 			this.original.push(media);
 			this.playlist.push(media); // Both array elements share the same object pointer. Comforms with _initPlaylist(p) system.
@@ -343,50 +350,41 @@
 				});
 				return true;
 			} else {
+				index = (index < 0) ? self.original.length + index : index; // Negative index relates to end of array.
+				if(0 <= index && index < this.playlist.length) {
+					this.playlist[index]._element.slideUp(this.options.playlistOptions.removeTime, function() {
+						this.remove();
+					});
 
-				if(this.removing) {
-					return false;
-				} else {
-					index = (index < 0) ? self.original.length + index : index; // Negative index relates to end of array.
-					if(0 <= index && index < this.playlist.length) {
-						this.removing = true;
-
-						$(this.cssSelector.playlist + " li:nth-child(" + (index + 1) + ")").slideUp(this.options.playlistOptions.removeTime, function() {
-							$(this).remove();
-
-							if(self.shuffled) {
-								var item = self.playlist[index];
-								$.each(self.original, function(i) {
-									if(self.original[i] === item) {
-										self.original.splice(i, 1);
-										return false; // Exit $.each
-									}
-								});
-								self.playlist.splice(index, 1);
-							} else {
-								self.original.splice(index, 1);
-								self.playlist.splice(index, 1);
+					if(self.shuffled) {
+						var item = self.playlist[index];
+						$.each(self.original, function(i) {
+							if(self.original[i] === item) {
+								self.original.splice(i, 1);
+								return false; // Exit $.each
 							}
-
-							if(self.original.length) {
-								if(index === self.current) {
-									self.current = (index < self.original.length) ? self.current : self.original.length - 1; // To cope when last element being selected when it was removed
-									self.select(self.current);
-								} else if(index < self.current) {
-									self.current--;
-								}
-							} else {
-								$(self.cssSelector.jPlayer).jPlayer("clearMedia");
-								self.current = 0;
-								self.shuffled = false;
-								self._updateControls();
-							}
-
-							self.removing = false;
 						});
+						self.playlist.splice(index, 1);
+					} else {
+						self.original.splice(index, 1);
+						self.playlist.splice(index, 1);
 					}
-					return true;
+
+					if(self.original.length) {
+						if(index === self.current) {
+							self.current = (index < self.original.length) ? self.current : self.original.length - 1; // To cope when last element being selected when it was removed
+							self.select(self.current);
+						} else if(index < self.current) {
+							self.current--;
+						}
+					} else {
+						$(self.cssSelector.jPlayer).jPlayer("clearMedia");
+						self.current = 0;
+						self.shuffled = false;
+						self._updateControls();
+					}
 				}
+				return true;
 			}
 		},
 		select: function(index) {
