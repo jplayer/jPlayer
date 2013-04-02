@@ -387,6 +387,53 @@
 				return true;
 			}
 		},
+		insert: function(index, media, playNow) {
+			var self = this;
+
+			if(this.playlist.length == 0) {
+				return this.add(media, playNow)
+			} else if(index === undefined) {
+				return true;
+			}
+
+			index = (index < 0) ? this.original.length + index : index; // Negative index relates to end of array.
+			if(0 <= index && index < this.playlist.length) {
+				el = $(this._createListItem(media));
+				this.playlist[index]._element.before(el);
+				el.hide().slideDown(this.options.playlistOptions.addTime);
+				media._element = el;
+				this._updateControls();
+
+				if(this.shuffled) {
+					var item = this.playlist[index];
+					$.each(this.original, function(i) {
+						if(self.original[i] === item) {
+							self.original.splice(i, 0, media);
+							return false; // Exit $.each
+						}
+					});
+					this.playlist.splice(index, 0, media);
+				} else {
+					this.original.splice(index, 0, media);
+					this.playlist.splice(index, 0, media);
+				}
+			}
+			return true;
+		},
+		replace: function(index, media, playNow) {
+			if(index === undefined) {
+				return true;
+			} else if (!this.insert(index, media, playNow)) {
+				return false;
+			}
+			removed = this.remove(index + 1);
+			if(removed) {
+				if(this.current == index) {
+					this.select(index);
+				}
+			}
+			return removed;
+		},
 		select: function(index) {
 			index = (index < 0) ? this.original.length + index : index; // Negative index relates to end of array.
 			if(0 <= index && index < this.playlist.length) {
