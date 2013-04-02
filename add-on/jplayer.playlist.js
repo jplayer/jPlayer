@@ -141,6 +141,7 @@
 				loopOnPrevious: false,
 				shuffleOnLoop: true,
 				enableRemoveControls: false,
+				retainPositionOnShuffle: false,
 				displayTime: 'slow',
 				addTime: 'fast',
 				removeTime: 'fast',
@@ -448,6 +449,7 @@
 
 				$(this.cssSelector.playlist + " ul").slideUp(this.options.playlistOptions.shuffleTime, function() {
 					self.shuffled = shuffled;
+					current = self.playlist[self.current]
 					if(shuffled) {
 						self.playlist.sort(function() {
 							return 0.5 - Math.random();
@@ -457,12 +459,21 @@
 					}
 					self._refresh(true); // Instant
 
-					if(playNow || !$(self.cssSelector.jPlayer).data("jPlayer").status.paused) {
-						self.play(0);
-					} else {
-						self.select(0);
-					}
 
+					if(self.options.playlistOptions.retainPositionOnShuffle) {
+						$.each(self.playlist, function(i) {
+							if(self.playlist[i] === current) {
+								self.current = i;
+							}
+						});
+					} else {
+						self.current = 0
+					}
+					if(playNow || !$(self.cssSelector.jPlayer).data("jPlayer").status.paused) {
+						self.play(self.current);
+					} else {
+						self.select(self.current);
+					}
 					$(this).slideDown(self.options.playlistOptions.shuffleTime);
 				});
 			}
