@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.2.20
- * Date: 21st March 2013
+ * Version: 2.2.23
+ * Date: 12th April 2013
  *
  * FlashVars expected: (AS3 property of: loaderInfo.parameters)
  *	id: 	(URL Encoded: String) Id of jPlayer instance
@@ -86,13 +86,14 @@ package {
 			// Fix to the security exploit reported by Jason Calvert http://appsec.ws/
 			checkFlashVars(loaderInfo.parameters);
 
+			stage.scaleMode = StageScaleMode.NO_SCALE;
+			stage.align = StageAlign.TOP_LEFT;
+
 			if(!securityIssue) {
 				jQuery = loaderInfo.parameters.jQuery + "('#" + loaderInfo.parameters.id + "').jPlayer";
 				commonStatus.volume = Number(loaderInfo.parameters.vol);
 				commonStatus.muted = loaderInfo.parameters.muted == "true";
 
-				stage.scaleMode = StageScaleMode.NO_SCALE;
-				stage.align = StageAlign.TOP_LEFT;
 				stage.addEventListener(Event.RESIZE, resizeHandler);
 				stage.addEventListener(MouseEvent.CLICK, clickHandler);
 
