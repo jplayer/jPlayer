@@ -2215,12 +2215,34 @@
 				namespace = ".jPlayerAutohide",
 				eventType = event + namespace,
 				handler = function() {
-					self.css.jq.gui.fadeIn(self.options.autohide.fadeIn, function() {
-						clearTimeout(self.internal.autohideId);
-						self.internal.autohideId = setTimeout( function() {
-							self.css.jq.gui.fadeOut(self.options.autohide.fadeOut);
+					if((self.options.fullScreen && self.options.autohide.full) || (!self.options.fullScreen && self.options.autohide.restored) ) {
+						self.css.jq.gui.fadeIn(self.options.autohide.fadeIn, function() {
+							clearTimeout(self.internal.autohideId);
+							self.internal.autohideId = setTimeout( function() {
+								self.css.jq.gui.fadeOut(self.options.autohide.fadeOut);
+							}, self.options.autohide.hold);
+						});
+					}
+				},
+				touchhandlerTimeout = setTimeout(function(){},0),
+				touchstartHandler = function(){
+					if((self.options.fullScreen && self.options.autohide.full) || (!self.options.fullScreen && self.options.autohide.restored) ) {
+						clearTimeout(touchhandlerTimeout);
+						self.css.jq.gui.fadeIn(self.options.autohide.fadeIn);
+					}
+				},
+				touchendHandler = function() {
+					if((self.options.fullScreen && self.options.autohide.full) || (!self.options.fullScreen && self.options.autohide.restored) ) {
+						touchhandlerTimeout = setTimeout( function() {
+							if(self.options.fullScreen && self.options.autohide.full || !self.options.fullScreen && self.options.autohide.restored) {
+								self.css.jq.gui.fadeOut(self.options.autohide.fadeOut, function(){
+									if(!(self.options.fullScreen && self.options.autohide.full || !self.options.fullScreen && self.options.autohide.restored)) {
+										self.css.jq.gui.fadeIn();
+									}
+								});
+							}
 						}, self.options.autohide.hold);
-					});
+					}
 				};
 
 			if(this.css.jq.gui.length) {
@@ -2237,8 +2259,15 @@
 
 				if(!this.status.nativeVideoControls) {
 					if(this.options.fullWindow && this.options.autohide.full || !this.options.fullWindow && this.options.autohide.restored) {
-						this.element.bind(eventType, handler);
-						this.css.jq.gui.bind(eventType, handler);
+						if (!($.jPlayer.uaPlatform(navigator.userAgent).tablet || $.jPlayer.uaPlatform(navigator.userAgent).platform)) {
+							this.element.bind(eventType, handler);
+							this.css.jq.gui.bind(eventType, handler);
+						} else {
+							this.element.bind("touchend", touchendHandler);
+							this.element.bind("touchstart", touchstartHandler);
+							this.css.jq.gui.bind("touchend", touchendHandler);
+							this.css.jq.gui.bind("touchstart", touchstartHandler);
+						}
 						this.css.jq.gui.hide();
 					} else {
 						this.css.jq.gui.show();
