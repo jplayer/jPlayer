@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.3.1
+ * Version: 2.3.2
  * Date: 14th May 2013
  *
  * FlashVars expected: (AS3 property of: loaderInfo.parameters)
@@ -223,10 +223,15 @@ package {
 			}
 		}
 		private function checkFlashVars(p:Object):void {
-			// Check for direct access. Inspired by mediaelement.js - Also added name to object for non-IE browsers.
+			// Check for direct access. Inspired by mediaelement.js - Also added name to HTML object for non-IE browsers.
 			if(ExternalInterface.objectID != null && ExternalInterface.objectID.toString() != "") {
 				for each (var s:String in p) {
-					if(illegalChar(s) || illegalWord(s)) {
+					if(illegalChar(s)) {
+						securityIssue = true; // Found a security concern.
+					}
+				}
+				if(!securityIssue) {
+					if(jQueryIllegal(p.jQuery)) {
 						securityIssue = true; // Found a security concern.
 					}
 				}
@@ -239,17 +244,10 @@ package {
 			var validParam:RegExp = /^[-A-Za-z0-9_.]+$/;
 			return !validParam.test(s);
 		}
-		private function illegalWord(s:String):Boolean {
-			// A blacklist of JavaScript commands that are a security concern.
-			var illegals:String = "eval document alert confirm prompt console";
-			if(Boolean(s)) { // Otherwise exception if parameter null.
-				for each (var illegal:String in illegals.split(' ')) {
-					if(s.indexOf(illegal) >= 0) {
-						return true; // Illegal word found
-					}
-				}
-			}
-			return false;
+		private function jQueryIllegal(s:String):Boolean {
+			// Check param contains the term jQuery.
+			var validParam:RegExp = /(jQuery)/;
+			return !validParam.test(s);
 		}
 		// switchType() here
 		private function listenToMp3(active:Boolean):void {
