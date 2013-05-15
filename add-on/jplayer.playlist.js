@@ -270,10 +270,20 @@
 			// Create live handlers for the playlist items
 			$(this.cssSelector.playlist).off("click", "a." + this.options.playlistOptions.itemClass).on("click", "a." + this.options.playlistOptions.itemClass, function() {
 				var index = $(this).parent().parent().index();
+				var playing = $(this).is('.jp-playlist-playing');
+
 				if(self.current !== index) {
-					self.play(index);
+					if ( playing ) {
+						self.pause();
+					} else {
+						self.play(index);
+					}
 				} else {
-					$(self.cssSelector.jPlayer).jPlayer("play");
+					if ( playing ) {
+						$(self.cssSelector.jPlayer).jPlayer("pause");
+					} else {
+						$(self.cssSelector.jPlayer).jPlayer("play");
+					}
 				}
 				$(this).blur();
 				return false;
