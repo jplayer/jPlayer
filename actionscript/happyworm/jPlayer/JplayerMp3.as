@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Date: 1st September 2011
+ * Date: 20th May 2013
  */
 
 package happyworm.jPlayer {
@@ -33,6 +33,8 @@ package happyworm.jPlayer {
 		private var timeUpdateTimer:Timer = new Timer(250, 0); // Matched to HTML event freq
 		private var progressTimer:Timer = new Timer(250, 0); // Matched to HTML event freq
 		private var seekingTimer:Timer = new Timer(100, 0); // Internal: How often seeking is checked to see if it is over.
+		private var playingTimer:Timer = new Timer(100, 0); // Internal: How often waiting/playing is checked.
+		private var waitingTimer:Timer = new Timer(3000, 0); // Internal: Check from loadstart to loadOpen. Generates a waiting event.
 		
 		public var myStatus:JplayerStatus = new JplayerStatus();
 
@@ -40,15 +42,17 @@ package happyworm.jPlayer {
 			timeUpdateTimer.addEventListener(TimerEvent.TIMER, timeUpdateHandler);
 			progressTimer.addEventListener(TimerEvent.TIMER, progressHandler);
 			seekingTimer.addEventListener(TimerEvent.TIMER, seekingHandler);
+			playingTimer.addEventListener(TimerEvent.TIMER, playingHandler);
+			waitingTimer.addEventListener(TimerEvent.TIMER, waitingHandler);
 			setVolume(volume);
 		}
 		public function setFile(src:String):void {
 			this.dispatchEvent(new JplayerEvent(JplayerEvent.DEBUG_MSG, myStatus, "setFile: " + src));
 			if(myStatus.isPlaying) {
 				myChannel.stop();
-				progressUpdates(false);
-				timeUpdates(false);
 			}
+			progressUpdates(false);
+			timeUpdates(false);
 			try {
 				mySound.close();
 			} catch (err:IOError) {
@@ -79,13 +83,14 @@ package happyworm.jPlayer {
 		}
 		private function loadOpen(e:Event):void {
 			this.dispatchEvent(new JplayerEvent(JplayerEvent.DEBUG_MSG, myStatus, "loadOpen:"));
+			waitingTimer.stop();
 			myStatus.loading();
 			if(myStatus.playOnLoad) {
 				myStatus.playOnLoad = false; // Capture the flag
-				this.dispatchEvent(new JplayerEvent(JplayerEvent.JPLAYER_LOADSTART, myStatus)); // So loadstart event happens before play event occurs.
+				// this.dispatchEvent(new JplayerEvent(JplayerEvent.JPLAYER_LOADSTART, myStatus)); // So loadstart event happens before play event occurs.
 				play();
 			} else {
-				this.dispatchEvent(new JplayerEvent(JplayerEvent.JPLAYER_LOADSTART, myStatus));
+				// this.dispatchEvent(new JplayerEvent(JplayerEvent.JPLAYER_LOADSTART, myStatus));
 				pause();
 			}
 			progressUpdates(true);
@@ -95,6 +100,7 @@ package happyworm.jPlayer {
 			myStatus.loaded();
 			progressUpdates(false);
 			progressEvent();
+			this.dispatchEvent(new JplayerEvent(JplayerEvent.JPLAYER_CANPLAYTHROUGH, myStatus));
 		}
 		private function soundCompleteHandler(e:Event):void {
 			myStatus.pausePosition = 0;
@@ -122,8 +128,10 @@ package happyworm.jPlayer {
 		private function timeUpdates(active:Boolean):void {
 			if(active) {
 				timeUpdateTimer.start();
+				playingTimer.start();
 			} else {
 				timeUpdateTimer.stop();
+				playingTimer.stop();
 			}
 		}
 		private function timeUpdateHandler(e:TimerEvent):void {
@@ -135,10 +143,9 @@ package happyworm.jPlayer {
 		}
 		private function seeking(active:Boolean):void {
 			if(active) {
-				if(!myStatus.isSeeking) {
-					seekingEvent();
-					seekingTimer.start();
-				}
+				seekingEvent();
+				waitingEvent();
+				seekingTimer.start();
 			} else {
 				seekingTimer.stop();
 			}
@@ -168,9 +175,40 @@ package happyworm.jPlayer {
 			updateStatusValues();
 			this.dispatchEvent(new JplayerEvent(JplayerEvent.JPLAYER_SEEKED, myStatus));
 		}
+		private function playingHandler(e:TimerEvent):void {
+			checkPlaying(false); // Without forcing playing event.
+		}
+		private function checkPlaying(force:Boolean):void {
+			if(mySound.isBuffering) {
+				if(!myStatus.isWaiting) {
+					waitingEvent();
+				}
+			} else {
+				if(myStatus.isWaiting || force) {
+					playingEvent();
+				}
+			}
+		}
+		private function waitingEvent():void {
+			myStatus.isWaiting = true;
+			this.dispatchEvent(new JplayerEvent(JplayerEvent.JPLAYER_WAITING, myStatus));
+		}
+		private function playingEvent():void {
+			myStatus.isWaiting = false;
+			this.dispatchEvent(new JplayerEvent(JplayerEvent.JPLAYER_CANPLAY, myStatus));
+			this.dispatchEvent(new JplayerEvent(JplayerEvent.JPLAYER_PLAYING, myStatus));
+		}
+		private function waitingHandler(e:TimerEvent):void {
+			waitingTimer.stop();
+			if(myStatus.playOnLoad) {
+				waitingEvent();
+			}
+		}
 		public function load():Boolean {
 			if(myStatus.loadRequired()) {
 				myStatus.startingDownload();
+				this.dispatchEvent(new JplayerEvent(JplayerEvent.JPLAYER_LOADSTART, myStatus));
+				waitingTimer.start();
 				mySound.load(myRequest, myContext);
 				return true;
 			} else {
@@ -214,6 +252,7 @@ package happyworm.jPlayer {
 					if(!wasPlaying) {
 						this.dispatchEvent(new JplayerEvent(JplayerEvent.JPLAYER_PLAY, myStatus));
 					}
+					checkPlaying(true); // Force the playing event unless waiting, which will be dealt with in the playingTimer.
 				}
 				return true;
 			} else {

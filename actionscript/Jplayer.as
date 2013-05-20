@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.3.2
- * Date: 14th May 2013
+ * Version: 2.3.3
+ * Date: 20th May 2013
  *
  * FlashVars expected: (AS3 property of: loaderInfo.parameters)
  *	id: 	(URL Encoded: String) Id of jPlayer instance
@@ -263,6 +263,12 @@ package {
 
 				myMp3Player.addEventListener(JplayerEvent.JPLAYER_SEEKING, jPlayerFlashEvent);
 				myMp3Player.addEventListener(JplayerEvent.JPLAYER_SEEKED, jPlayerFlashEvent);
+
+				myMp3Player.addEventListener(JplayerEvent.JPLAYER_WAITING, jPlayerFlashEvent); // only MP3 atm
+				myMp3Player.addEventListener(JplayerEvent.JPLAYER_PLAYING, jPlayerFlashEvent); // only MP3 atm
+
+				myMp3Player.addEventListener(JplayerEvent.JPLAYER_CANPLAY, jPlayerFlashEvent); // only MP3 atm
+				myMp3Player.addEventListener(JplayerEvent.JPLAYER_CANPLAYTHROUGH, jPlayerFlashEvent); // only MP3 atm
 			} else {
 				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_ERROR, jPlayerFlashEvent);
 				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_PROGRESS, jPlayerFlashEvent);
@@ -275,6 +281,12 @@ package {
 
 				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_SEEKING, jPlayerFlashEvent);
 				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_SEEKED, jPlayerFlashEvent);
+
+				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_WAITING, jPlayerFlashEvent); // only MP3 atm
+				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_PLAYING, jPlayerFlashEvent); // only MP3 atm
+
+				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_CANPLAY, jPlayerFlashEvent); // only MP3 atm
+				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_CANPLAYTHROUGH, jPlayerFlashEvent); // only MP3 atm
 			}
 		}
 		private function listenToMp4(active:Boolean):void {
@@ -585,6 +597,10 @@ package {
 				localAIRDebug = traceOut.localAIRDebug();
 				if(localAIRDebug) {
 					tracer(t);
+				}
+
+				if(ExternalInterface.available && !securityIssue) {
+					ExternalInterface.call("console.log", t);
 				}
 			}
 		}

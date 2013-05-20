@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Date: 8th August 2011
+ * Date: 20th May 2013
  */
 
 package happyworm.jPlayer {
@@ -36,10 +36,10 @@ package happyworm.jPlayer {
 		public static const JPLAYER_PAUSE:String = "jPlayer_pause";
 		public static const JPLAYER_LOADEDMETADATA:String = "jPlayer_loadedmetadata"; // MP3 has no equivilent
 		public static const JPLAYER_LOADEDDATA:String = "jPlayer_loadeddata"; // Not implemented
-		public static const JPLAYER_WAITING:String = "jPlayer_waiting"; // Not implemented
-		public static const JPLAYER_PLAYING:String = "jPlayer_playing"; // Not implemented
-		public static const JPLAYER_CANPLAY:String = "jPlayer_canplay"; // Not implemented
-		public static const JPLAYER_CANPLAYTHROUGH:String = "jPlayer_canplaythrough"; // Not implemented
+		public static const JPLAYER_WAITING:String = "jPlayer_waiting"; // Not implemented (Done in: MP3)
+		public static const JPLAYER_PLAYING:String = "jPlayer_playing"; // Not implemented (Done in: MP3)
+		public static const JPLAYER_CANPLAY:String = "jPlayer_canplay"; // Not implemented (Done in: MP3)
+		public static const JPLAYER_CANPLAYTHROUGH:String = "jPlayer_canplaythrough"; // Not implemented (Done in: MP3)
 		public static const JPLAYER_SEEKING:String = "jPlayer_seeking";
 		public static const JPLAYER_SEEKED:String = "jPlayer_seeked";
 		public static const JPLAYER_TIMEUPDATE:String = "jPlayer_timeupdate";
