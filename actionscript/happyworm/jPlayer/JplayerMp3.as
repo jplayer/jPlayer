@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Date: 20th May 2013
+ * Date: 28th May 2013
  */
 
 package happyworm.jPlayer {
@@ -53,6 +53,7 @@ package happyworm.jPlayer {
 			}
 			progressUpdates(false);
 			timeUpdates(false);
+			waitingTimer.stop();
 			try {
 				mySound.close();
 			} catch (err:IOError) {
