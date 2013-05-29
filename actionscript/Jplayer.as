@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.3.4
- * Date: 28th May 2013
+ * Version: 2.3.5
+ * Date: 29th May 2013
  *
  * FlashVars expected: (AS3 property of: loaderInfo.parameters)
  *	id: 	(URL Encoded: String) Id of jPlayer instance
@@ -70,6 +70,8 @@ package {
 		private var isVideo:Boolean = false;
 
 		private var securityIssue:Boolean = false; // On direct access and when SWF parameters contain illegal characters
+
+		private var contextMenuFix:Sprite = new Sprite(); // A sprite that will be on top and fix the content menu over video bug. (A Flash plugin bug.)
 
 		private var txLog:TextField;
 		private var debug:Boolean = false; // Set debug to false for release compile!
@@ -156,6 +158,13 @@ package {
 					myRtmpPlayer.addEventListener(JplayerEvent.DEBUG_MSG, debugMsgHandler);
 				}
 			}
+
+			// Known Flash problem with contextMenu over video player.
+			// Add a transparent rectangle into the sprite.
+			contextMenuFix.graphics.beginFill(0x000000, 0); // Transparent black
+			contextMenuFix.graphics.drawRect(0, 0, 10, 10); // Arbitary rectangle
+			contextMenuFix.graphics.endFill();
+			addChild(contextMenuFix); // Put the sprite on the top layer.
 
 			if(!securityIssue) {
 				// Delay init() because Firefox 3.5.7+ developed a bug with local testing in Firebug.
@@ -568,6 +577,11 @@ package {
 				txLog.width = stage.stageWidth - 10;
 				txLog.height = stage.stageHeight - 10;
 			}
+			// Resize the sprite so it covers the entire stage area
+			contextMenuFix.x = 0;
+			contextMenuFix.y = 0;
+			contextMenuFix.width = stage.stageWidth;
+			contextMenuFix.height = stage.stageHeight;
 		}
 		private function resizeEntity(entity:Sprite, mediaX:Number, mediaY:Number, mediaWidth:Number, mediaHeight:Number):void {
 			entity.x = mediaX;
