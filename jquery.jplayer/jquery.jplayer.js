@@ -52,7 +52,6 @@
 
 		if ( isMethodCall ) {
 			this.each(function() {
-				// var instance = $.data( this, name ),
 				var instance = $(this).data( name ),
 					methodValue = instance && $.isFunction( instance[options] ) ?
 						instance[ options ].apply( instance, args ) :
@@ -64,13 +63,11 @@
 			});
 		} else {
 			this.each(function() {
-				// var instance = $.data( this, name );
 				var instance = $(this).data( name );
 				if ( instance ) {
 					// instance.option( options || {} )._init(); // Orig jquery.ui.widget.js code: Not recommend for jPlayer. ie., Applying new options to an existing instance (via the jPlayer constructor) and performing the _init(). The _init() is what concerns me. It would leave a lot of event handlers acting on jPlayer instance and the interface.
 					instance.option( options || {} ); // The new constructor only changes the options. Changing options only has basic support atm.
 				} else {
-					// $.data( this, name, new $.jPlayer( options, this ) );
 					$(this).data( name, new $.jPlayer( options, this ) );
 				}
 			});
