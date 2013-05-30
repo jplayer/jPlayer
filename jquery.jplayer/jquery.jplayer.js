@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.3.7
+ * Version: 2.3.8
  * Date: 30th May 2013
  */
 
@@ -16,17 +16,24 @@
 /*jshint asi:false, bitwise:false, boss:false, browser:true, curly:true, debug:false, eqeqeq:true, eqnull:false, evil:false, forin:false, immed:false, jquery:true, laxbreak:false, newcap:true, noarg:true, noempty:true, nonew:true, onevar:false, passfail:false, plusplus:false, regexp:false, undef:true, sub:false, strict:false, white:false, smarttabs:true */
 /*global define:false, ActiveXObject:false, alert:false */
 
+/* Support for Zepto 1.0 compiled with optional data module.
+ * You will need to manually switch the 2 sets of lines in the code below.
+ * Search terms: "jQuery Switch" and "Zepto Switch"
+ */
+
 (function (root, factory) {
 	if (typeof define === 'function' && define.amd) {
 		// AMD. Register as an anonymous module.
-		define(['jquery'], factory);
+		define(['jquery'], factory); // jQuery Switch
+		// define(['zepto'], factory); // Zepto Switch
 	} else {
 		// Browser globals
-		factory(root.jQuery);
+		factory(root.jQuery); // jQuery Switch
+		// factory(root.Zepto); // Zepto Switch
 	}
 }(this, function ($, undefined) {
 
-	// Adapted from jquery.ui.widget.js (1.8.7): $.widget.bridge
+	// Adapted from jquery.ui.widget.js (1.8.7): $.widget.bridge - Tweaked $.data(this,XYZ) to $(this).data(XYZ) for Zepto
 	$.fn.jPlayer = function( options ) {
 		var name = "jPlayer";
 		var isMethodCall = typeof options === "string",
@@ -45,7 +52,8 @@
 
 		if ( isMethodCall ) {
 			this.each(function() {
-				var instance = $.data( this, name ),
+				// var instance = $.data( this, name ),
+				var instance = $(this).data( name ),
 					methodValue = instance && $.isFunction( instance[options] ) ?
 						instance[ options ].apply( instance, args ) :
 						instance;
@@ -56,12 +64,14 @@
 			});
 		} else {
 			this.each(function() {
-				var instance = $.data( this, name );
+				// var instance = $.data( this, name );
+				var instance = $(this).data( name );
 				if ( instance ) {
 					// instance.option( options || {} )._init(); // Orig jquery.ui.widget.js code: Not recommend for jPlayer. ie., Applying new options to an existing instance (via the jPlayer constructor) and performing the _init(). The _init() is what concerns me. It would leave a lot of event handlers acting on jPlayer instance and the interface.
 					instance.option( options || {} ); // The new constructor only changes the options. Changing options only has basic support atm.
 				} else {
-					$.data( this, name, new $.jPlayer( options, this ) );
+					// $.data( this, name, new $.jPlayer( options, this ) );
+					$(this).data( name, new $.jPlayer( options, this ) );
 				}
 			});
 		}
@@ -85,6 +95,11 @@
 		}
 	};
 	// End of: (Adapted from jquery.ui.widget.js (1.8.7))
+
+	// Zepto is missing one of the animation methods.
+	if(typeof $.fn.stop !== 'function') {
+		$.fn.stop = function() {};
+	}
 
 	// Emulated HTML5 methods and properties
 	$.jPlayer.emulateMethods = "load play pause";
@@ -454,7 +469,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.3.7",
+			script: "2.3.8",
 			needFlash: "2.3.5",
 			flash: "unknown"
 		},
