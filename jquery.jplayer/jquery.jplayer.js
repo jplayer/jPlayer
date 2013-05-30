@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.3.5
- * Date: 29th May 2013
+ * Version: 2.3.6
+ * Date: 30th May 2013
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -454,7 +454,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.3.5",
+			script: "2.3.6",
 			needFlash: "2.3.5",
 			flash: "unknown"
 		},
@@ -1060,12 +1060,8 @@
 			}
 
 			// Initialize the interface components with the options.
-			this._updateNativeVideoControls(); // Must do this first, otherwise there is a bizarre bug in iOS 4.3.2, where the native controls are not shown. Fails in iOS if called after _updateButtons() below. Works if called later in setMedia too, so it odd.
-			this._updateInterface();
-			this._updateButtons(false);
-			this._updateAutohide();
-			this._updateVolume(this.options.volume);
-			this._updateMute(this.options.muted);
+			this._updateNativeVideoControls();
+			// The other controls are now setup in _cssSelectorAncestor()
 			if(this.css.jq.videoPlay.length) {
 				this.css.jq.videoPlay.hide();
 			}
@@ -1496,16 +1492,18 @@
 			this.status.ended = false; // status.ended;
 		},
 		_updateButtons: function(playing) {
-			if(playing !== undefined) {
+			if(playing === undefined) {
+				playing = !this.status.paused;
+			} else {
 				this.status.paused = !playing;
-				if(this.css.jq.play.length && this.css.jq.pause.length) {
-					if(playing) {
-						this.css.jq.play.hide();
-						this.css.jq.pause.show();
-					} else {
-						this.css.jq.play.show();
-						this.css.jq.pause.hide();
-					}
+			}
+			if(this.css.jq.play.length && this.css.jq.pause.length) {
+				if(playing) {
+					this.css.jq.play.hide();
+					this.css.jq.pause.show();
+				} else {
+					this.css.jq.play.show();
+					this.css.jq.pause.hide();
 				}
 			}
 			if(this.css.jq.restoreScreen.length && this.css.jq.fullScreen.length) {
@@ -1894,6 +1892,13 @@
 			$.each(this.options.cssSelector, function(fn, cssSel) {
 				self._cssSelector(fn, cssSel);
 			});
+
+			// Set the GUI to the current state.
+			this._updateInterface();
+			this._updateButtons();
+			this._updateAutohide();
+			this._updateVolume();
+			this._updateMute();
 		},
 		_cssSelector: function(fn, cssSel) {
 			var self = this;
