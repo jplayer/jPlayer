@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.3.8
+ * Version: 2.3.9
  * Date: 30th May 2013
  */
 
@@ -469,7 +469,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.3.8",
+			script: "2.3.9",
 			needFlash: "2.3.5",
 			flash: "unknown"
 		},
@@ -1836,12 +1836,13 @@
 		},
 		volumeBar: function(e) { // Handles clicks on the volumeBar
 			if(this.css.jq.volumeBar.length) {
-				var	offset = this.css.jq.volumeBar.offset(),
+				// Using $(e.currentTarget) to enable multiple volume bars
+				var $bar = $(e.currentTarget),
+					offset = $bar.offset(),
 					x = e.pageX - offset.left,
-					w = this.css.jq.volumeBar.width(),
-					y = this.css.jq.volumeBar.height() - e.pageY + offset.top,
-					h = this.css.jq.volumeBar.height();
-
+					w = $bar.width(),
+					y = $bar.height() - e.pageY + offset.top,
+					h = $bar.height();
 				if(this.options.verticalVolume) {
 					this.volume(y/h);
 				} else {
@@ -1852,9 +1853,8 @@
 				this._muted(false);
 			}
 		},
-		volumeBarValue: function(e) { // Handles clicks on the volumeBarValue
-			e.stopPropagation(); // Avoids duplicate call by the volumeBar parent.
-			this.volumeBar(e);
+		volumeBarValue: function() { // Handles clicks on the volumeBarValue
+			// The volumeBar handles this event as the event propagates up the DOM.
 		},
 		_updateVolume: function(v) {
 			if(v === undefined) {
@@ -1967,17 +1967,18 @@
 			}
 		},
 		seekBar: function(e) { // Handles clicks on the seekBar
-			if(this.css.jq.seekBar) {
-				var offset = this.css.jq.seekBar.offset();
-				var x = e.pageX - offset.left;
-				var w = this.css.jq.seekBar.width();
-				var p = 100*x/w;
+			if(this.css.jq.seekBar.length) {
+				// Using $(e.currentTarget) to enable multiple seek bars
+				var $bar = $(e.currentTarget),
+					offset = $bar.offset(),
+					x = e.pageX - offset.left,
+					w = $bar.width(),
+					p = 100 * x / w;
 				this.playHead(p);
 			}
 		},
-		playBar: function(e) { // Handles clicks on the playBar
-			e.stopPropagation(); // Avoids duplicate call by the seekBar parent.
-			this.seekBar(e);
+		playBar: function() { // Handles clicks on the playBar
+			// The seekBar handles this event as the event propagates up the DOM.
 		},
 		repeat: function() { // Handle clicks on the repeat button
 			this._loop(true);
