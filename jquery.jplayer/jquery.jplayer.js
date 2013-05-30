@@ -8,7 +8,7 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.3.6
+ * Version: 2.3.7
  * Date: 30th May 2013
  */
 
@@ -454,7 +454,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.3.6",
+			script: "2.3.7",
 			needFlash: "2.3.5",
 			flash: "unknown"
 		},
@@ -1838,6 +1838,7 @@
 			}
 		},
 		volumeBarValue: function(e) { // Handles clicks on the volumeBarValue
+			e.stopPropagation(); // Avoids duplicate call by the volumeBar parent.
 			this.volumeBar(e);
 		},
 		_updateVolume: function(v) {
@@ -1960,6 +1961,7 @@
 			}
 		},
 		playBar: function(e) { // Handles clicks on the playBar
+			e.stopPropagation(); // Avoids duplicate call by the seekBar parent.
 			this.seekBar(e);
 		},
 		repeat: function() { // Handle clicks on the repeat button
