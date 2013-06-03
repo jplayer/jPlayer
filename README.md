@@ -1,6 +1,6 @@
-# jPlayer : HTML5 Audio & Video for jQuery
+# [jPlayer](http://jplayer.org/) : HTML5 Audio & Video for [jQuery](http://jquery.com/)
 
-[jPlayer.org](http://jplayer.org/)
+Support for [Zepto](http://zeptojs.com/) 1.0+ with data module.
 
 ## What is jPlayer?
 
@@ -13,15 +13,17 @@ jPlayer is a jQuery plugin that allows you to:
 * control media on your website using a JavaScript API
 
 jPlayer supports:
-* HTML5: mp3, m4a (AAC), m4v (H.264), ogv*, oga*, wav*, webm*
-* Flash: mp3, m4a (AAC), m4v (H.264)
-(*) Optional counterpart formats to increase HTML5 x-browser support.
+* HTML5: **mp3, m4a (AAC), m4v (H.264),** ogv*, oga*, wav*, webm*
+* Flash: **mp3, m4a (AAC), m4v (H.264),** rtmp, flv.
+
+__(*) Optional counterpart formats to increase HTML5 x-browser support.__
 
 Licensed under the [MIT license](http://opensource.org/licenses/MIT).
 
 More information:
+* [jPlayer.org](http://jplayer.org/)
 * [Quick Start Guide](http://www.jplayer.org/latest/quick-start-guide/)
 * [Developer Guide and API Reference](http://www.jplayer.org/latest/developer-guide/)
 
-Author: Mark J Panaghiston
+Author: Mark J Panaghiston [@thepag](http://twitter.com/thepag)
 [happyworm.com](http://happyworm.com/)
