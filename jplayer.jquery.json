@@ -1,10 +1,17 @@
 {
 	"name": "jplayer",
-	"title": "HTML5 Audio & Video for jQuery",
+	"title": "jPlayer",
+	"description": "HTML5 Audio & Video for jQuery",
+	"keywords": [
+		"audio",
+		"video",
+		"media",
+		"player"
+	],
 	"version": "2.3.9",
 	"author": {
 		"name": "Mark J Panaghiston",
-		"url": "http://happyworm.com"
+		"url": "http://happyworm.com/"
 	},
 	"licenses": [
 		{
@@ -14,5 +21,11 @@
 	],
 	"dependencies": {
 		"jquery": ">=1.7"
-	}
+	},
+	"homepage": "http://jplayer.org/",
+	"demo": "http://jplayer.org/latest/demos/",
+	"docs": "http://jplayer.org/latest/developer-guide/",
+	"download": "http://jplayer.org/download/",
+	"bugs": "https://github.com/happyworm/jPlayer/issues"
+
 }
