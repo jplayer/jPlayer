@@ -8,8 +8,8 @@
  *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Mark J Panaghiston
- * Version: 2.3.9
- * Date: 30th May 2013
+ * Version: 2.3.10
+ * Date: 3rd June 2013
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -17,7 +17,7 @@
 /*global define:false, ActiveXObject:false, alert:false */
 
 /* Support for Zepto 1.0 compiled with optional data module.
- * You will need to manually switch the 2 sets of lines in the code below.
+ * For AMD support, you will need to manually switch the 2 lines in the code below.
  * Search terms: "jQuery Switch" and "Zepto Switch"
  */
 
@@ -28,8 +28,11 @@
 		// define(['zepto'], factory); // Zepto Switch
 	} else {
 		// Browser globals
-		factory(root.jQuery); // jQuery Switch
-		// factory(root.Zepto); // Zepto Switch
+		if(root.jQuery) { // Use jQuery if available
+			factory(root.jQuery);
+		} else { // Otherwise, use Zepto
+			factory(root.Zepto);
+		}
 	}
 }(this, function ($, undefined) {
 
@@ -466,7 +469,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.3.9",
+			script: "2.3.10",
 			needFlash: "2.3.5",
 			flash: "unknown"
 		},

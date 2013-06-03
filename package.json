@@ -1,6 +1,6 @@
 {
   "name": "jplayer",
-  "version": "2.3.9",
+  "version": "2.3.10",
   "description": "The jQuery HTML5 Audio / Video Library",
   "homepage": "http://www.jplayer.org/",
   "keywords": [
@@ -8,7 +8,7 @@
     "video"
   ],
   "dependencies": {
-    "jquery": ">1.4.2"
+    "jquery": ">1.7.0"
   },
   "licenses": [
     {
