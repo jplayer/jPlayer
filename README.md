@@ -4,7 +4,7 @@ Support for [Zepto](http://zeptojs.com/) 1.0+ with data module.
 
 ## What is jPlayer?
 
-jPlayer is a jQuery plugin that allows you to:
+### jPlayer is a jQuery/Zepto plugin that allows you to:
 * play and control media files in your webpage
 * create and style a media player using just HTML and CSS
 * add audio and video to your jQuery projects
@@ -12,18 +12,20 @@ jPlayer is a jQuery plugin that allows you to:
 * support older browsers using a Flash Fallback
 * control media on your website using a JavaScript API
 
-jPlayer supports:
+### jPlayer supports:
 * HTML5: **mp3, m4a (AAC), m4v (H.264),** ogv*, oga*, wav*, webm*
 * Flash: **mp3, m4a (AAC), m4v (H.264),** rtmp, flv.
 
-__(*) Optional counterpart formats to increase HTML5 x-browser support.__
+_(*) Optional counterpart formats to increase HTML5 x-browser support._
 
-Licensed under the [MIT license](http://opensource.org/licenses/MIT).
+## License
+[jPlayer](http://jplayer.org/) is licensed under the [MIT license](http://opensource.org/licenses/MIT).
 
-More information:
+## More information:
 * [jPlayer.org](http://jplayer.org/)
 * [Quick Start Guide](http://www.jplayer.org/latest/quick-start-guide/)
 * [Developer Guide and API Reference](http://www.jplayer.org/latest/developer-guide/)
 
-Author: Mark J Panaghiston [@thepag](http://twitter.com/thepag)
+## Author:
+Mark J Panaghiston [@thepag](http://twitter.com/thepag)
 [happyworm.com](http://happyworm.com/)
