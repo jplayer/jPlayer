@@ -1,7 +1,7 @@
 {
 	"name": "jplayer",
 	"title": "HTML5 Audio & Video for jQuery",
-	"version": "2.3.8",
+	"version": "2.3.9",
 	"author": {
 		"name": "Mark J Panaghiston",
 		"url": "http://happyworm.com"
@@ -9,7 +9,7 @@
 	"licenses": [
 		{
 			"type": "MIT",
-			"url": "http://opensource.org/licenses/MIT"
+			"url": "https://github.com/happyworm/jPlayer/blob/master/MIT-LICENSE.txt"
 		}
 	],
 	"dependencies": {
