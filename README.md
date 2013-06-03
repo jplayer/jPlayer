@@ -1,6 +1,6 @@
 # [jPlayer](http://jplayer.org/) : HTML5 Audio & Video for [jQuery](http://jquery.com/)
 
-Support for [Zepto](http://zeptojs.com/) 1.0+ with data module.
+Support for [Zepto](http://zeptojs.com/) 1.0+ compiled with the data module.
 
 ## What is jPlayer?
 
