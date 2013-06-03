@@ -1,12 +1,15 @@
 {
 	"name": "jplayer",
-	"title": "jPlayer",
-	"description": "HTML5 Audio & Video for jQuery",
+	"title": "jPlayer : HTML5 Audio & Video",
+	"description": "jPlayer allows you to create a media player with a consistent interface and experience across all browsers.",
 	"keywords": [
 		"audio",
 		"video",
 		"media",
-		"player"
+		"player",
+		"jplayer",
+		"html5",
+		"streaming"
 	],
 	"version": "2.3.10",
 	"author": {
