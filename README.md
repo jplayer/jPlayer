@@ -6,11 +6,11 @@ Support for [Zepto](http://zeptojs.com/) 1.0+ compiled with the data module.
 
 ### jPlayer is a jQuery/Zepto plugin that allows you to:
 * **play and control media** files in your webpage.
-* create a **consistent interface** and experience across all browser.
+* create a **consistent interface** and experience across all browsers.
 * create and style a media player using **just HTML and CSS**.
 * add **audio** and **video** to your jQuery/Zepto projects.
 * support more devices using **HTML5**.
-* support older browsers using a Flash _Fallback/Fallforward_.
+* support older browsers using a Flash _fall-back/forward_.
 * control media on your website using a [JavaScript API](http://www.jplayer.org/latest/developer-guide/).
 
 ### jPlayer supports:
