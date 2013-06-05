@@ -3,13 +3,12 @@
  * http://www.jplayer.org
  *
  * Copyright (c) 2009 - 2013 Happyworm Ltd
- * Dual licensed under the MIT and GPL licenses.
- *  - http://www.opensource.org/licenses/mit-license.php
- *  - http://www.gnu.org/copyleft/gpl.html
+ * Licensed under the MIT license.
+ * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.3.10
- * Date: 3rd June 2013
+ * Version: 2.4.0
+ * Date: 5th June 2013
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -469,8 +468,8 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.3.10",
-			needFlash: "2.3.5",
+			script: "2.4.0",
+			needFlash: "2.4.0",
 			flash: "unknown"
 		},
 		options: { // Instanced in $.jPlayer() constructor

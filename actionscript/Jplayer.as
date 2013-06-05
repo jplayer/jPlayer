@@ -3,19 +3,18 @@
  * http://www.jplayer.org
  *
  * Copyright (c) 2009 - 2013 Happyworm Ltd
- * Dual licensed under the MIT and GPL licenses.
- *  - http://www.opensource.org/licenses/mit-license.php
- *  - http://www.gnu.org/copyleft/gpl.html
+ * Licensed under the MIT.
+ * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.3.5
- * Date: 29th May 2013
+ * Version: 2.4.0
+ * Date: 5th June 2013
  *
  * FlashVars expected: (AS3 property of: loaderInfo.parameters)
  *	id: 	(URL Encoded: String) Id of jPlayer instance
  *	vol:	(Number) Sets the initial volume
  *	muted:	(Boolean in a String) Sets the initial muted state
- *	jQuery:	(URL Encoded: String) Sets the jQuery var name. Used with: someVar = jQuery.noConflict(true);
+ *	jQuery:	(URL Encoded: String) Sets the jQuery var name. Used with: someVar = jQuery.noConflict(true); The someVar name must contain jQuery in it.
  *
  * Compiled using: Adobe Flex Compiler (mxmlc) Version 4.5.1 build 21328
  */

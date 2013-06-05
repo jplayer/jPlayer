@@ -3,16 +3,15 @@
  * http://www.jplayer.org
  *
  * Copyright (c) 2013 Happyworm Ltd
- * Dual licensed under the MIT and GPL licenses.
- *  - http://www.opensource.org/licenses/mit-license.php
- *  - http://www.gnu.org/copyleft/gpl.html
+ * Licensed under the MIT license.
+ * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 1.1.0
- * Date: 20th April 2013
+ * Version: 1.1.1
+ * Date: 5th June 2013
  *
  * For Popcorn Version: 1.3
- * For jPlayer Version: 2.3.0
+ * For jPlayer Version: 2.4.0
  * Requires: jQuery 1.3.2+
  * Note: jQuery dependancy cannot be removed since jPlayer 2 is a jQuery plugin. Use of jQuery will be kept to a minimum.
  */
@@ -24,13 +23,13 @@
 (function(Popcorn) {
 
 	var JQUERY_SCRIPT = 'http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js', // Used if jQuery not already present.
-	JPLAYER_SCRIPT = 'http://www.jplayer.org/2.3.0/js/jquery.jplayer.min.js', // Used if jPlayer not already present.
-	JPLAYER_SWFPATH = 'http://www.jplayer.org/2.3.0/js/Jplayer.swf', // Used if not specified in jPlayer options via SRC Object.
+	JPLAYER_SCRIPT = 'http://www.jplayer.org/2.4.0/js/jquery.jplayer.min.js', // Used if jPlayer not already present.
+	JPLAYER_SWFPATH = 'http://www.jplayer.org/2.4.0/js/Jplayer.swf', // Used if not specified in jPlayer options via SRC Object.
 	SOLUTION = 'html,flash', // The default solution option.
 	DEBUG = false, // Decided to leave the debugging option and console output in for the time being. Overhead is trivial.
 	jQueryDownloading = false, // Flag to stop multiple instances from each pulling in jQuery, thus corrupting it.
 	jPlayerDownloading = false, // Flag to stop multiple instances from each pulling in jPlayer, thus corrupting it.
-	format = { // Duplicate of jPlayer 2.3.0 object, to avoid always requiring jQuery and jPlayer to be loaded before performing the _canPlayType() test.
+	format = { // Duplicate of jPlayer 2.4.0 object, to avoid always requiring jQuery and jPlayer to be loaded before performing the _canPlayType() test.
 		mp3: {
 			codec: 'audio/mpeg; codecs="mp3"',
 			flashCanPlay: true,

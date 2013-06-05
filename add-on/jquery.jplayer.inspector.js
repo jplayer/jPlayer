@@ -3,9 +3,8 @@
  * http://www.jplayer.org
  *
  * Copyright (c) 2009 - 2013 Happyworm Ltd
- * Dual licensed under the MIT and GPL licenses.
- *  - http://www.opensource.org/licenses/mit-license.php
- *  - http://www.gnu.org/copyleft/gpl.html
+ * Licensed under the MIT license.
+ * http://www.opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
  * Version: 1.0.4
