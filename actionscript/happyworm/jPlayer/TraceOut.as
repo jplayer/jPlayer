@@ -10,6 +10,8 @@
  * Date: 7th August 2012
  */
 
+// This class was found to cause problems on OSX with Firefox and Safari where more than 8 instances of the SWF are on a page.
+
 package happyworm.jPlayer
 {
 	import flash.net.LocalConnection;

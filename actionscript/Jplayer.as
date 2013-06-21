@@ -7,8 +7,8 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.4.0
- * Date: 5th June 2013
+ * Version: 2.4.1
+ * Date: 21st June 2013
  *
  * FlashVars expected: (AS3 property of: loaderInfo.parameters)
  *	id: 	(URL Encoded: String) Id of jPlayer instance
@@ -76,12 +76,11 @@ package {
 		private var debug:Boolean = false; // Set debug to false for release compile!
 		private var localAIRDebug:Boolean = false; // This is autodetermined by AIR app - leave false!
 
-		private var traceOut:TraceOut;
+		private var traceOut:TraceOut; // This class was found to cause problems on OSX with Firefox and Safari where more than 8 instances of the SWF are on a page.
 
 		public function Jplayer() {
 
 			flash.system.Security.allowDomain("*");
-			traceOut = new TraceOut();
 
 			// Fix to the security exploit reported by Jason Calvert http://appsec.ws/
 			checkFlashVars(loaderInfo.parameters);
@@ -155,6 +154,8 @@ package {
 					myMp3Player.addEventListener(JplayerEvent.DEBUG_MSG, debugMsgHandler);
 					myMp4Player.addEventListener(JplayerEvent.DEBUG_MSG, debugMsgHandler);
 					myRtmpPlayer.addEventListener(JplayerEvent.DEBUG_MSG, debugMsgHandler);
+
+					traceOut = new TraceOut(); // Instance it only when in debug mode. See comment above at var declaration.
 				}
 			}
 
@@ -379,7 +380,6 @@ package {
 			}
 		}
 		private function fl_setAudio_rtmp(src:String):Boolean {
-			tracer("SET RTMP: "+src);
 			if (src != null) {
 				log("fl_setAudio_rtmp: "+src);
 				switchType("rtmpa");
@@ -394,7 +394,6 @@ package {
 		}
 		
 		private function fl_setVideo_rtmp(src:String):Boolean {
-			tracer("SET RTMP: "+src);
 			if (src != null) {
 				log("fl_setVideo_rtmp: "+src);
 				switchType("rtmpv");
@@ -498,14 +497,15 @@ package {
 		}
 		private function jPlayerFlashEvent(e:JplayerEvent):void {
 			log("jPlayer Flash Event: " + e.type + ": " + e.target);
-			//tracer("jPlayer Flash Event: " + e.type + ": " + e.target);
 			if(ExternalInterface.available && !securityIssue) {
 				ExternalInterface.call(jQuery, "jPlayerFlashEvent", e.type, extractStatusData(e.data));
 			}
 		}
 		
 		private function tracer(msg:String):void {
-			traceOut.tracer(msg);
+			if(debug) {
+				traceOut.tracer(msg);
+			}
 		}
 		
 		private function extractStatusData(data:JplayerStatus):Object {
