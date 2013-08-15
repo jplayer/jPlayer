@@ -2718,17 +2718,28 @@
 		_error: function(error) {
 			this._trigger($.jPlayer.event.error, error);
 			if(this.options.errorAlerts) {
-				this._alert("Error!" + (error.message ? "\n\n" + error.message : "") + (error.hint ? "\n\n" + error.hint : "") + "\n\nContext: " + error.context);
+				if (this.options.consoleAlerts) {
+					this._consoleMessage("Error!" + (error.message ? "\n\n" + error.message : "") + (error.hint ? "\n\n" + error.hint : "") + "\n\nContext: " + error.context);
+				} else {
+					this._alert("Error!" + (error.message ? "\n\n" + error.message : "") + (error.hint ? "\n\n" + error.hint : "") + "\n\nContext: " + error.context);
+				}
 			}
 		},
 		_warning: function(warning) {
 			this._trigger($.jPlayer.event.warning, undefined, warning);
 			if(this.options.warningAlerts) {
-				this._alert("Warning!" + (warning.message ? "\n\n" + warning.message : "") + (warning.hint ? "\n\n" + warning.hint : "") + "\n\nContext: " + warning.context);
+				if (this.options.consoleAlerts) {
+					this._consoleMessage("Warning!" + (warning.message ? "\n\n" + warning.message : "") + (warning.hint ? "\n\n" + warning.hint : "") + "\n\nContext: " + warning.context);
+				} else {
+					this._alert("Warning!" + (warning.message ? "\n\n" + warning.message : "") + (warning.hint ? "\n\n" + warning.hint : "") + "\n\nContext: " + warning.context);
+				}
 			}
 		},
 		_alert: function(message) {
 			alert("jPlayer " + this.version.script + " : id='" + this.internal.self.id +"' : " + message);
+		},
+		_consoleMessage:function(message) {
+			console.log("jPlayer " + this.version.script + " : id='" + this.internal.self.id +"' : " + message);
 		},
 		_emulateHtmlBridge: function() {
 			var self = this;
