@@ -603,6 +603,7 @@
 			idPrefix: "jp", // Prefix for the ids of html elements created by jPlayer. For flash, this must not include characters: . - + * / \
 			noConflict: "jQuery",
 			emulateHtml: false, // Emulates the HTML5 Media element on the jPlayer element.
+			consoleAlerts: true, // Alerts are sent to the console.log() instead of alert().
 			errorAlerts: false,
 			warningAlerts: false
 		},
@@ -2718,17 +2719,22 @@
 		_error: function(error) {
 			this._trigger($.jPlayer.event.error, error);
 			if(this.options.errorAlerts) {
-				this._alert("Error!" + (error.message ? "\n\n" + error.message : "") + (error.hint ? "\n\n" + error.hint : "") + "\n\nContext: " + error.context);
+				this._alert("Error!" + (error.message ? "\n" + error.message : "") + (error.hint ? "\n" + error.hint : "") + "\nContext: " + error.context);
 			}
 		},
 		_warning: function(warning) {
 			this._trigger($.jPlayer.event.warning, undefined, warning);
 			if(this.options.warningAlerts) {
-				this._alert("Warning!" + (warning.message ? "\n\n" + warning.message : "") + (warning.hint ? "\n\n" + warning.hint : "") + "\n\nContext: " + warning.context);
+				this._alert("Warning!" + (warning.message ? "\n" + warning.message : "") + (warning.hint ? "\n" + warning.hint : "") + "\nContext: " + warning.context);
 			}
 		},
 		_alert: function(message) {
-			alert("jPlayer " + this.version.script + " : id='" + this.internal.self.id +"' : " + message);
+			var msg = "jPlayer " + this.version.script + " : id='" + this.internal.self.id +"' : " + message;
+			if(!this.options.consoleAlerts) {
+				alert(msg);
+			} else if(console && console.log) {
+				console.log(msg);
+			}
 		},
 		_emulateHtmlBridge: function() {
 			var self = this;
