@@ -7,8 +7,8 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.4.1
- * Date: 21st June 2013
+ * Version: 2.4.2
+ * Date: 31st October 2013
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -468,7 +468,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.4.1",
+			script: "2.4.2",
 			needFlash: "2.4.1",
 			flash: "unknown"
 		},
@@ -1582,12 +1582,28 @@
 			this.html.active = false;
 			this.flash.active = false;
 		},
+		_escapeHtml: function(s) {
+			return s.split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;').split('"').join('&quot;');
+		},
+		_qualifyURL: function(url) {
+			var el = document.createElement('div');
+			el.innerHTML= '<a href="' + this._escapeHtml(url) + '">x</a>';
+			return el.firstChild.href;
+		},
+		_absoluteMediaUrls: function(media) {
+			var self = this;
+			$.each(media, function(type, url) {
+				if(self.format[type]) {
+					media[type] = self._qualifyURL(url);
+				}
+			});
+			return media;
+		},
 		setMedia: function(media) {
 		
 			/*	media[format] = String: URL of format. Must contain all of the supplied option's video or audio formats.
 			 *	media.poster = String: Video poster URL.
-			 *	media.subtitles = String: * NOT IMPLEMENTED * URL of subtitles SRT file
-			 *	media.chapters = String: * NOT IMPLEMENTED * URL of chapters SRT file
+			 *	media.track = Array: Of objects defining the track element: kind, src, srclang, label, def.
 			 *	media.stream = Boolean: * NOT IMPLEMENTED * Designating actual media streams. ie., "false/undefined" for files. Plan to refresh the flash every so often.
 			 */
 
@@ -1598,6 +1614,9 @@
 			this._resetMedia();
 			this._resetGate();
 			this._resetActive();
+
+			// Convert all media URLs to absolute URLs.
+			media = this._absoluteMediaUrls(media);
 
 			$.each(this.formats, function(formatPriority, format) {
 				var isVideo = self.format[format].media === 'video';
