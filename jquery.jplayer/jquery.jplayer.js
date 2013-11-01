@@ -693,6 +693,11 @@
 				flashCanPlay: false,
 				media: 'audio'
 			},
+			m3ua: { // M3U
+				codec: 'audio/mpegurl',
+				flashCanPlay: false,
+				media: 'audio'
+			},
 			oga: { // OGG
 				codec: 'audio/ogg; codecs="vorbis"',
 				flashCanPlay: false,
@@ -725,6 +730,11 @@
 			},
 			m3u8v: { // H.264 / AAC / MP4 / Apple HLS
 				codec: 'application/vnd.apple.mpegurl; codecs="avc1.42E01E, mp4a.40.2"',
+				flashCanPlay: false,
+				media: 'video'
+			},
+			m3uv: { // M3U
+				codec: 'audio/mpegurl',
 				flashCanPlay: false,
 				media: 'video'
 			},
