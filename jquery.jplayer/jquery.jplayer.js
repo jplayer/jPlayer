@@ -718,6 +718,11 @@
 				flashCanPlay: true,
 				media: 'video'
 			},
+			m3u8: { // H.264 / MP4 / Apple HLS
+				codec: 'application/vnd.apple.mpegurl; codecs="avc1.42E01E, mp4a.40.2"',
+				flashCanPlay: false,
+				media: 'video'
+			},
 			ogv: { // OGG
 				codec: 'video/ogg; codecs="theora, vorbis"',
 				flashCanPlay: false,
