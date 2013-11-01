@@ -678,27 +678,27 @@
 		// 'MPEG-4 support' : canPlayType('video/mp4; codecs="mp4v.20.8"')
 		format: { // Static Object
 			mp3: {
-				codec: 'audio/mpeg; codecs="mp3"',
+				codec: ['audio/mpeg; codecs="mp3"'],
 				flashCanPlay: true,
 				media: 'audio'
 			},
 			m4a: { // AAC / MP4
-				codec: 'audio/mp4; codecs="mp4a.40.2"',
+				codec: ['audio/mp4; codecs="mp4a.40.2"', 'audio/x-m4a; codecs="mp4a.40.2"'],
 				flashCanPlay: true,
 				media: 'audio'
 			},
 			oga: { // OGG
-				codec: 'audio/ogg; codecs="vorbis"',
+				codec: ['audio/ogg; codecs="vorbis"'],
 				flashCanPlay: false,
 				media: 'audio'
 			},
 			wav: { // PCM
-				codec: 'audio/wav; codecs="1"',
+				codec: ['audio/wav; codecs="1"'],
 				flashCanPlay: false,
 				media: 'audio'
 			},
 			webma: { // WEBM
-				codec: 'audio/webm; codecs="vorbis"',
+				codec: ['audio/webm; codecs="vorbis"'],
 				flashCanPlay: false,
 				media: 'audio'
 			},
@@ -713,17 +713,17 @@
 				media: 'audio'
 			},
 			m4v: { // H.264 / MP4
-				codec: 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"',
+				codec: ['video/mp4; codecs="avc1.42E01E, mp4a.40.2"'],
 				flashCanPlay: true,
 				media: 'video'
 			},
 			ogv: { // OGG
-				codec: 'video/ogg; codecs="theora, vorbis"',
+				codec: ['video/ogg; codecs="theora, vorbis"'],
 				flashCanPlay: false,
 				media: 'video'
 			},
 			webmv: { // WEBM
-				codec: 'video/webm; codecs="vorbis, vp8"',
+				codec: ['video/webm; codecs="vorbis, vp8"'],
 				flashCanPlay: false,
 				media: 'video'
 			},
@@ -918,7 +918,12 @@
 			this.html.canPlay = {};
 			this.flash.canPlay = {};
 			$.each(this.formats, function(priority, format) {
-				self.html.canPlay[format] = self.html[self.format[format].media].available && "" !== self.htmlElement[self.format[format].media].canPlayType(self.format[format].codec);
+				var codecAvailable = false;
+				for (var i = 0; i < self.format[format].codec.length; i++) {
+					var cur_elem = self.htmlElement[self.format[format].media];
+					codecAvailable |= cur_elem.canPlayType !== undefined && cur_elem.canPlayType(self.format[format].codec[i]) !== "";
+				}
+				self.html.canPlay[format] = self.html[self.format[format].media].available && codecAvailable;
 				self.flash.canPlay[format] = self.format[format].flashCanPlay && self.flash.available;
 			});
 			this.html.desired = false;
