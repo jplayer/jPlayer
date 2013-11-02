@@ -699,7 +699,12 @@
 				media: 'audio'
 			},
 			oga: { // OGG
-				codec: 'audio/ogg; codecs="vorbis"',
+				codec: 'audio/ogg; codecs="vorbis, opus"',
+				flashCanPlay: false,
+				media: 'audio'
+			},
+			flac: { // FLAC
+				codec: 'audio/x-flac',
 				flashCanPlay: false,
 				media: 'audio'
 			},
