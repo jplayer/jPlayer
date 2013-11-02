@@ -512,7 +512,13 @@ package happyworm.jPlayer
 			{
 				appName = rtmpSrc.substring(endHost,rtmpSrc.indexOf("mp3:"));
 				streamFileName = rtmpSrc.substr(rtmpSrc.indexOf("mp3:"));
-				streamFileName = streamFileName.substr(0,streamFileName.length - 4);
+				if ( streamFileName.indexOf("?") )
+                		{
+                    			var tmp:String = streamFileName.substring(streamFileName.indexOf("?")) ;
+                    			streamFileName = streamFileName.substr(0,streamFileName.indexOf("?")) + encodeURI(tmp) ;
+                		}
+                		else
+                    			streamFileName = streamFileName.substr(0,streamFileName.length - 4);
 			}
 			// rtmp://cp83813.edgefcs.net/ondemand/rob_hall/bruce_campbell_oldspice.flv
 			
@@ -521,7 +527,13 @@ package happyworm.jPlayer
 			{
 				appName = rtmpSrc.substring(endHost,rtmpSrc.indexOf("mp4:"));
 				streamFileName = rtmpSrc.substr(rtmpSrc.indexOf("mp4:"));
-				streamFileName = streamFileName.substr(0,streamFileName.length - 4);
+				if ( streamFileName.indexOf("?") )
+                		{
+                    			var tmpV:String = streamFileName.substring(streamFileName.indexOf("?")) ;
+                    			streamFileName = streamFileName.substr(0,streamFileName.indexOf("?")) + encodeURI(tmpV) ;
+                		}
+                		else
+                    			streamFileName = streamFileName.substr(0,streamFileName.length - 4);
 			}
 			
 			// .f4v streams with standard appname/no instance name, .flv extension
