@@ -1771,6 +1771,16 @@
 				}
 			});
 		},
+		stopOthers: function() {
+			var self = this;
+			$.each(this.instances, function(i, element) {
+				if(self.element !== element) { // Do not this instance.
+					if(element.data("jPlayer").status.srcSet) { // Check that media is set otherwise would cause error event.
+						element.jPlayer("stop");
+					}
+				}
+			});
+		},
 		stop: function() {
 			if(this.status.srcSet) {
 				if(this.html.active) {
