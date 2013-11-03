@@ -81,6 +81,7 @@ package {
 		public function Jplayer() {
 
 			flash.system.Security.allowDomain("*");
+			flash.system.Security.allowInsecureDomain("*");
 
 			// Fix to the security exploit reported by Jason Calvert http://appsec.ws/
 			checkFlashVars(loaderInfo.parameters);
