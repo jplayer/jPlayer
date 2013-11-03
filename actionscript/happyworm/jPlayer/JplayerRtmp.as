@@ -7,7 +7,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Robert M. Hall
- * Date: 29th January 2013
+ * Date: 3rd November 2013
  * Based on JplayerMp4.as with modifications for rtmp
  */
 
@@ -508,32 +508,28 @@ package happyworm.jPlayer
 			}
 			
 			// Mp3 streams with standard appname/no instance name, mp3: prefix
-			if (rtmpSrc.indexOf(".mp3") != -1)
-			{
+			if (rtmpSrc.indexOf("mp3:") != -1) {
 				appName = rtmpSrc.substring(endHost,rtmpSrc.indexOf("mp3:"));
 				streamFileName = rtmpSrc.substr(rtmpSrc.indexOf("mp3:"));
-				if ( streamFileName.indexOf("?") )
-                		{
-                    			var tmp:String = streamFileName.substring(streamFileName.indexOf("?")) ;
-                    			streamFileName = streamFileName.substr(0,streamFileName.indexOf("?")) + encodeURI(tmp) ;
-                		}
-                		else
-                    			streamFileName = streamFileName.substr(0,streamFileName.length - 4);
+				if ( streamFileName.indexOf("?") != -1 ) {
+					var tmp:String = streamFileName.substring(streamFileName.indexOf("?")) ;
+					streamFileName = streamFileName.substr(0,streamFileName.indexOf("?")) + encodeURI(tmp) ;
+				} else {
+					streamFileName = streamFileName.substr(0,streamFileName.length - 4);
+				}
 			}
 			// rtmp://cp83813.edgefcs.net/ondemand/rob_hall/bruce_campbell_oldspice.flv
 			
 			// Mp4 streams with standard appname/no instance name, mp4: prefix
-			if (rtmpSrc.indexOf("mp4:") != -1)
-			{
+			if (rtmpSrc.indexOf("mp4:") != -1) {
 				appName = rtmpSrc.substring(endHost,rtmpSrc.indexOf("mp4:"));
 				streamFileName = rtmpSrc.substr(rtmpSrc.indexOf("mp4:"));
-				if ( streamFileName.indexOf("?") )
-                		{
-                    			var tmpV:String = streamFileName.substring(streamFileName.indexOf("?")) ;
-                    			streamFileName = streamFileName.substr(0,streamFileName.indexOf("?")) + encodeURI(tmpV) ;
-                		}
-                		else
-                    			streamFileName = streamFileName.substr(0,streamFileName.length - 4);
+				if ( streamFileName.indexOf("?") != -1 ) {
+					var tmpV:String = streamFileName.substring(streamFileName.indexOf("?")) ;
+					streamFileName = streamFileName.substr(0,streamFileName.indexOf("?")) + encodeURI(tmpV) ;
+				} else {
+					streamFileName = streamFileName.substr(0,streamFileName.length - 4);
+				}
 			}
 			
 			// .f4v streams with standard appname/no instance name, .flv extension
