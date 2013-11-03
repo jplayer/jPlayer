@@ -1787,15 +1787,32 @@
 				this._urlNotSetError("pause");
 			}
 		},
-		pauseOthers: function() {
-			var self = this;
-			$.each(this.instances, function(i, element) {
-				if(self.element !== element) { // Do not this instance.
-					if(element.data("jPlayer").status.srcSet) { // Check that media is set otherwise would cause error event.
-						element.jPlayer("pause");
+		tellOthers: function(command, conditions) {
+			var self = this,
+				hasConditions = typeof conditions === 'function',
+				args = Array.prototype.slice.call(arguments); // Convert arguments to an Array.
+
+			if(typeof command !== 'string') { // Ignore, since no command.
+				return; // Return undefined to maintain chaining.
+			}
+			if(hasConditions) {
+				args.splice(1, 1); // Remove the conditions from the arguments
+			}
+
+			$.each(this.instances, function() {
+				// Remember that "this" is the instance's "element" in the $.each() loop.
+				if(self.element !== this) { // Do not tell my instance.
+					if(!hasConditions || conditions.call(this.data("jPlayer"), self)) {
+						this.jPlayer.apply(this, args);
 					}
 				}
 			});
+		},
+		pauseOthers: function(time) {
+			this.tellOthers("pause", function() {
+				// In the conditions function, the "this" context is the other instance's jPlayer object.
+				return this.status.srcSet;
+			}, time);
 		},
 		stop: function() {
 			if(this.status.srcSet) {
