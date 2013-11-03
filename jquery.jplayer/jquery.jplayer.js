@@ -598,7 +598,7 @@
 				}
 			},
 			verticalVolume: false, // Calculate volume from the bottom of the volume bar. Default is from the left. Also volume affects either width or height.
-			// globalVolume: false, // Not implemented: Set to make volume changes affect all jPlayer instances
+			globalVolume: false, // Set to make volume changes affect all jPlayer instances
 			// globalMute: false, // Not implemented: Set to make mute changes affect all jPlayer instances
 			idPrefix: "jp", // Prefix for the ids of html elements created by jPlayer. For flash, this must not include characters: . - + * / \
 			noConflict: "jQuery",
@@ -1879,6 +1879,15 @@
 			}
 		},
 		volume: function(v) {
+			this.volumeWorker(v);
+			if(this.options.globalVolume) {
+				this.tellOthers("volumeWorker", function() {
+					// Check the other instance has global volume enabled.
+					return this.options.globalVolume;
+				}, v);
+			}
+		},
+		volumeWorker: function(v) {
 			v = this._limitValue(v, 0, 1);
 			this.options.volume = v;
 
