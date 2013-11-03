@@ -1,0 +1,11 @@
+{
+	"name": "jPlayer",
+	"version": "2.4.2",
+	"main": [
+		"./jquery.jplayer/jquery.jplayer.js",
+		"./skin/pink.flag/jplayer.pink.flag.css"
+	],
+	"dependencies": {
+		"jquery": ">=1.7.2"
+	}
+}
