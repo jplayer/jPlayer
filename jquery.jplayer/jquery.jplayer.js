@@ -479,6 +479,10 @@
 			preload: 'metadata',  // HTML5 Spec values: none, metadata, auto.
 			volume: 0.8, // The volume. Number 0 to 1.
 			muted: false,
+			playbackRate: 1,
+			defaultPlaybackRate: 1,
+			minPlaybackRate: 0.5,
+			maxPlaybackRate: 4,
 			wmode: "opaque", // Valid wmode: window, transparent, opaque, direct, gpu. 
 			backgroundColor: "#000000", // To define the jPlayer div and Flash background color.
 			cssSelectorAncestor: "#jp_container_1",
@@ -494,6 +498,8 @@
 				volumeBar: ".jp-volume-bar",
 				volumeBarValue: ".jp-volume-bar-value",
 				volumeMax: ".jp-volume-max",
+				playbackRateBar: ".jp-playback-rate-bar",
+				playbackRateBarValue: ".jp-playback-rate-bar-value",
 				currentTime: ".jp-current-time",
 				duration: ".jp-duration",
 				fullScreen: ".jp-full-screen", // *
@@ -650,7 +656,7 @@
 			videoHeight: 0, // Intrinsic height of the video in pixels.
 			readyState: 0,
 			networkState: 0,
-			playbackRate: 1,
+			playbackRate: 1, // Warning - Now both an option and a status property
 			ended: 0
 
 /*		Persistant status properties created dynamically at _init():
@@ -660,6 +666,7 @@
 			nativeVideoControls
 			noFullWindow
 			noVolume
+			playbackRateEnabled // Warning - Technically, we can have both Flash and HTML, so this might not be correct if the Flash is active. That is a niche case.
 */
 		},
 
@@ -1057,7 +1064,17 @@
 				this.element.append(htmlObj);
 				this.internal.flash.jq = $(htmlObj);
 			}
-			
+
+			// Setup playbackRate ability before using _addHtmlEventListeners()
+			if(this.html.used && !this.flash.used) { // If only HTML
+				// Using the audio element capabilities for playbackRate. ie., Assuming video element is the same.
+				this.status.playbackRateEnabled = this._testPlaybackRate('audio');
+			} else {
+				this.status.playbackRateEnabled = false;
+			}
+
+			this._updatePlaybackRate();
+
 			// Add the HTML solution if being used.
 			if(this.html.used) {
 
@@ -1165,6 +1182,23 @@
 				return false;
 			}
 		},
+		_testPlaybackRate: function(type) {
+			// type: String 'audio' or 'video'
+			var el, rate = 0.5;
+			type = typeof type === 'string' ? type : 'audio';
+			el = document.createElement(type);
+			// Wrapping in a try/catch, just in case older HTML5 browsers throw and error.
+			try {
+				if('playbackRate' in el) {
+					el.playbackRate = rate;
+					return el.playbackRate === rate;
+				} else {
+					return false;
+				}
+			} catch(err) {
+				return false;
+			}
+		},
 		_uaBlocklist: function(list) {
 			// list : object with properties that are all regular expressions. Property names are irrelevant.
 			// Returns true if the user agent is matched in list.
@@ -1209,6 +1243,11 @@
 			mediaElement.preload = this.options.preload;
 			mediaElement.muted = this.options.muted;
 			mediaElement.volume = this.options.volume;
+
+			if(this.status.playbackRateEnabled) {
+				mediaElement.defaultPlaybackRate = this.options.defaultPlaybackRate;
+				mediaElement.playbackRate = this.options.playbackRate;
+			}
 
 			// Create the event listeners
 			// Only want the active entity to affect jPlayer and bubble events.
@@ -2058,6 +2097,51 @@
 		playBar: function() { // Handles clicks on the playBar
 			// The seekBar handles this event as the event propagates up the DOM.
 		},
+		playbackRate: function(pbr) {
+			this._setOption("playbackRate", pbr);
+		},
+		playbackRateBar: function(e) { // Handles clicks on the playbackRateBar
+			if(this.css.jq.playbackRateBar.length) {
+				// Using $(e.currentTarget) to enable multiple playbackRate bars
+				var $bar = $(e.currentTarget),
+					offset = $bar.offset(),
+					x = e.pageX - offset.left,
+					w = $bar.width(),
+					y = $bar.height() - e.pageY + offset.top,
+					h = $bar.height(),
+					ratio, pbr;
+				if(this.options.verticalPlaybackRate) {
+					ratio = y/h;
+				} else {
+					ratio = x/w;
+				}
+				pbr = ratio * (this.options.maxPlaybackRate - this.options.minPlaybackRate) + this.options.minPlaybackRate;
+				this.playbackRate(pbr);
+			}
+		},
+		playbackRateBarValue: function() { // Handles clicks on the playbackRateBarValue
+			// The playbackRateBar handles this event as the event propagates up the DOM.
+		},
+		_updatePlaybackRate: function() {
+			var pbr = this.options.playbackRate,
+				ratio = (pbr - this.options.minPlaybackRate) / (this.options.maxPlaybackRate - this.options.minPlaybackRate);
+			if(this.status.playbackRateEnabled) {
+				if(this.css.jq.playbackRateBar.length) {
+					this.css.jq.playbackRateBar.show();
+				}
+				if(this.css.jq.playbackRateBarValue.length) {
+					this.css.jq.playbackRateBarValue.show();
+					this.css.jq.playbackRateBarValue[this.options.verticalPlaybackRate ? "height" : "width"]((ratio*100)+"%");
+				}
+			} else {
+				if(this.css.jq.playbackRateBar.length) {
+					this.css.jq.playbackRateBar.hide();
+				}
+				if(this.css.jq.playbackRateBarValue.length) {
+					this.css.jq.playbackRateBarValue.hide();
+				}
+			}
+		},
 		repeat: function() { // Handle clicks on the repeat button
 			this._loop(true);
 		},
@@ -2169,6 +2253,28 @@
 					$.each(value, function(fn, cssSel) {
 						self._cssSelector(fn, cssSel); // NB: The option is set inside this function, after further validity checks.
 					});
+					break;
+				case "playbackRate" :
+					this.options[key] = value = this._limitValue(value, this.options.minPlaybackRate, this.options.maxPlaybackRate);
+					if(this.html.used) {
+						this._html_playbackRate(value);
+					}
+					this._updatePlaybackRate();
+					break;
+				case "defaultPlaybackRate" :
+					this.options[key] = value = this._limitValue(value, this.options.minPlaybackRate, this.options.maxPlaybackRate);
+					if(this.html.used) {
+						this._html_defaultPlaybackRate(value);
+					}
+					this._updatePlaybackRate();
+					break;
+				case "minPlaybackRate" :
+					this.options[key] = value = this._limitValue(value, 0.1, this.options.maxPlaybackRate - 0.1);
+					this._updatePlaybackRate();
+					break;
+				case "maxPlaybackRate" :
+					this.options[key] = value = this._limitValue(value, this.options.minPlaybackRate + 0.1, 16);
+					this._updatePlaybackRate();
 					break;
 				case "fullScreen" :
 					if(this.options[key] !== value) { // if changed
@@ -2587,6 +2693,23 @@
 					this.internal.poster.jq.hide();
 					this.internal.video.jq.css({'width': this.status.width, 'height': this.status.height});
 				}
+			}
+		},
+		// These (next 4) html media property methods could have a generic function to set them. ie., Duplicate (functional) code.
+		_html_defaultPlaybackRate: function(dpbr) {
+			if(this.html.audio.available) {
+				this.htmlElement.audio.defaultPlaybackRate = dpbr;
+			}
+			if(this.html.video.available) {
+				this.htmlElement.video.defaultPlaybackRate = dpbr;
+			}
+		},
+		_html_playbackRate: function(pbr) {
+			if(this.html.audio.available) {
+				this.htmlElement.audio.playbackRate = pbr;
+			}
+			if(this.html.video.available) {
+				this.htmlElement.video.playbackRate = pbr;
 			}
 		},
 		_html_volume: function(v) {
