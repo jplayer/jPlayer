@@ -163,12 +163,12 @@
 		// "waiting", // jPlayer uses internally before bubbling.
 		// "playing", // jPlayer uses internally before bubbling.
 		"canplay",
-		"canplaythrough",
+		"canplaythrough"
 		// "seeking", // jPlayer uses internally before bubbling.
 		// "seeked", // jPlayer uses internally before bubbling.
 		// "timeupdate", // jPlayer uses internally before bubbling.
 		// "ended", // jPlayer uses internally before bubbling.
-		"ratechange"
+		// "ratechange" // jPlayer uses internally before bubbling.
 		// "durationchange" // jPlayer uses internally before bubbling.
 		// "volumechange" // jPlayer uses internally before bubbling.
 	];
@@ -1324,6 +1324,14 @@
 					self._updateMute();
 					self._updateVolume();
 					self._trigger($.jPlayer.event.volumechange);
+				}
+			}, false);
+			mediaElement.addEventListener("ratechange", function() {
+				if(entity.gate) {
+					self.options.defaultPlaybackRate = mediaElement.defaultPlaybackRate;
+					self.options.playbackRate = mediaElement.playbackRate;
+					self._updatePlaybackRate();
+					self._trigger($.jPlayer.event.ratechange);
 				}
 			}, false);
 			mediaElement.addEventListener("suspend", function() { // Seems to be the only way of capturing that the iOS4 browser did not actually play the media from the page code. ie., It needs a user gesture.
