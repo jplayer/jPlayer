@@ -1895,7 +1895,7 @@
 		mutedWorker: function(muted) {
 			this.options.muted = muted;
 			if(this.html.used) {
-				this._html_mute(muted);
+				this._html_setProperty('muted', muted);
 			}
 			if(this.flash.used) {
 				this._flash_mute(muted);
@@ -1947,7 +1947,7 @@
 			this.options.volume = v;
 
 			if(this.html.used) {
-				this._html_volume(v);
+				this._html_setProperty('volume', v);
 			}
 			if(this.flash.used) {
 				this._flash_volume(v);
@@ -2265,14 +2265,14 @@
 				case "playbackRate" :
 					this.options[key] = value = this._limitValue(value, this.options.minPlaybackRate, this.options.maxPlaybackRate);
 					if(this.html.used) {
-						this._html_playbackRate(value);
+						this._html_setProperty('playbackRate', value);
 					}
 					this._updatePlaybackRate();
 					break;
 				case "defaultPlaybackRate" :
 					this.options[key] = value = this._limitValue(value, this.options.minPlaybackRate, this.options.maxPlaybackRate);
 					if(this.html.used) {
-						this._html_defaultPlaybackRate(value);
+						this._html_setProperty('defaultPlaybackRate', value);
 					}
 					this._updatePlaybackRate();
 					break;
@@ -2703,37 +2703,12 @@
 				}
 			}
 		},
-		// These (next 4) html media property methods could have a generic function to set them. ie., Duplicate (functional) code.
-		_html_defaultPlaybackRate: function(dpbr) {
+		_html_setProperty: function(property, value) {
 			if(this.html.audio.available) {
-				this.htmlElement.audio.defaultPlaybackRate = dpbr;
+				this.htmlElement.audio[property] = value;
 			}
 			if(this.html.video.available) {
-				this.htmlElement.video.defaultPlaybackRate = dpbr;
-			}
-		},
-		_html_playbackRate: function(pbr) {
-			if(this.html.audio.available) {
-				this.htmlElement.audio.playbackRate = pbr;
-			}
-			if(this.html.video.available) {
-				this.htmlElement.video.playbackRate = pbr;
-			}
-		},
-		_html_volume: function(v) {
-			if(this.html.audio.available) {
-				this.htmlElement.audio.volume = v;
-			}
-			if(this.html.video.available) {
-				this.htmlElement.video.volume = v;
-			}
-		},
-		_html_mute: function(m) {
-			if(this.html.audio.available) {
-				this.htmlElement.audio.muted = m;
-			}
-			if(this.html.video.available) {
-				this.htmlElement.video.muted = m;
+				this.htmlElement.video[property] = value;
 			}
 		},
 		_flash_setAudio: function(media) {
