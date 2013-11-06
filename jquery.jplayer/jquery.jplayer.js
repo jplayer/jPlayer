@@ -1478,6 +1478,7 @@
 								paused = this.status.paused; 
 
 							this.setMedia(this.status.media);
+							this.volumeWorker(this.options.volume);
 							if(currentTime > 0) {
 								if(paused) {
 									this.pause(currentTime);
