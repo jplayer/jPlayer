@@ -604,6 +604,7 @@
 				}
 			},
 			verticalVolume: false, // Calculate volume from the bottom of the volume bar. Default is from the left. Also volume affects either width or height.
+			verticalPlaybackRate: false,
 			globalVolume: false, // Set to make volume and muted changes affect all jPlayer instances with this option enabled
 			idPrefix: "jp", // Prefix for the ids of html elements created by jPlayer. For flash, this must not include characters: . - + * / \
 			noConflict: "jQuery",
