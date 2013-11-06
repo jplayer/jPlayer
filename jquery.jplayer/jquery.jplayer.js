@@ -2256,6 +2256,9 @@
 				case "muted" :
 					this._muted(value);
 					break;
+				case "globalVolume" :
+					this.options[key] = value;
+					break;
 				case "cssSelectorAncestor" :
 					this._cssSelectorAncestor(value); // Set and refresh all associations for the new ancestor.
 					break;
