@@ -7,13 +7,13 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Date: 21st June 2013
+ * Date: 7th November 2013
  */
 
 package happyworm.jPlayer {
 	public class JplayerStatus {
 
-		public static const VERSION:String = "2.4.1"; // The version of the Flash jPlayer entity.
+		public static const VERSION:String = "2.5.0"; // The version of the Flash jPlayer entity.
 
 		public var volume:Number = 0.5; // Not affected by reset()
 		public var muted:Boolean = false; // Not affected by reset()

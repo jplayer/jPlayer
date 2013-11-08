@@ -7,8 +7,8 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.4.2
- * Date: 31st October 2013
+ * Version: 2.5.0
+ * Date: 7th November 2013
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -468,8 +468,8 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.4.2",
-			needFlash: "2.4.1",
+			script: "2.5.0",
+			needFlash: "2.5.0",
 			flash: "unknown"
 		},
 		options: { // Instanced in $.jPlayer() constructor
