@@ -7,12 +7,12 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 1.1.1
- * Date: 5th June 2013
+ * Version: 1.1.2
+ * Date: 7th November 2013
  *
  * For Popcorn Version: 1.3
- * For jPlayer Version: 2.4.0
- * Requires: jQuery 1.3.2+
+ * For jPlayer Version: 2.5.0
+ * Requires: jQuery 1.7+
  * Note: jQuery dependancy cannot be removed since jPlayer 2 is a jQuery plugin. Use of jQuery will be kept to a minimum.
  */
 
@@ -22,14 +22,14 @@
 
 (function(Popcorn) {
 
-	var JQUERY_SCRIPT = 'http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js', // Used if jQuery not already present.
-	JPLAYER_SCRIPT = 'http://www.jplayer.org/2.4.0/js/jquery.jplayer.min.js', // Used if jPlayer not already present.
-	JPLAYER_SWFPATH = 'http://www.jplayer.org/2.4.0/js/Jplayer.swf', // Used if not specified in jPlayer options via SRC Object.
+	var JQUERY_SCRIPT = '//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js', // Used if jQuery not already present.
+	JPLAYER_SCRIPT = '//www.jplayer.org/2.5.0/js/jquery.jplayer.min.js', // Used if jPlayer not already present.
+	JPLAYER_SWFPATH = '//www.jplayer.org/2.5.0/js/Jplayer.swf', // Used if not specified in jPlayer options via SRC Object.
 	SOLUTION = 'html,flash', // The default solution option.
 	DEBUG = false, // Decided to leave the debugging option and console output in for the time being. Overhead is trivial.
 	jQueryDownloading = false, // Flag to stop multiple instances from each pulling in jQuery, thus corrupting it.
 	jPlayerDownloading = false, // Flag to stop multiple instances from each pulling in jPlayer, thus corrupting it.
-	format = { // Duplicate of jPlayer 2.4.0 object, to avoid always requiring jQuery and jPlayer to be loaded before performing the _canPlayType() test.
+	format = { // Duplicate of jPlayer 2.5.0 object, to avoid always requiring jQuery and jPlayer to be loaded before performing the _canPlayType() test.
 		mp3: {
 			codec: 'audio/mpeg; codecs="mp3"',
 			flashCanPlay: true,
@@ -40,8 +40,23 @@
 			flashCanPlay: true,
 			media: 'audio'
 		},
+		m3u8a: { // AAC / MP4 / Apple HLS
+			codec: 'application/vnd.apple.mpegurl; codecs="mp4a.40.2"',
+			flashCanPlay: false,
+			media: 'audio'
+		},
+		m3ua: { // M3U
+			codec: 'audio/mpegurl',
+			flashCanPlay: false,
+			media: 'audio'
+		},
 		oga: { // OGG
-			codec: 'audio/ogg; codecs="vorbis"',
+			codec: 'audio/ogg; codecs="vorbis, opus"',
+			flashCanPlay: false,
+			media: 'audio'
+		},
+		flac: { // FLAC
+			codec: 'audio/x-flac',
 			flashCanPlay: false,
 			media: 'audio'
 		},
@@ -68,6 +83,16 @@
 		m4v: { // H.264 / MP4
 			codec: 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"',
 			flashCanPlay: true,
+			media: 'video'
+		},
+		m3u8v: { // H.264 / AAC / MP4 / Apple HLS
+			codec: 'application/vnd.apple.mpegurl; codecs="avc1.42E01E, mp4a.40.2"',
+			flashCanPlay: false,
+			media: 'video'
+		},
+		m3uv: { // M3U
+			codec: 'audio/mpegurl',
+			flashCanPlay: false,
 			media: 'video'
 		},
 		ogv: { // OGG
