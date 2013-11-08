@@ -11,9 +11,10 @@
 		"html5",
 		"streaming"
 	],
-	"version": "2.4.2",
+	"version": "2.5.0",
 	"author": {
 		"name": "Mark J Panaghiston",
+		"email": "markp@happyworm.com",
 		"url": "http://happyworm.com/"
 	},
 	"licenses": [
