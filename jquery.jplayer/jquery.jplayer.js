@@ -1982,9 +1982,6 @@
 				this._muted(false);
 			}
 		},
-		volumeBarValue: function() { // Handles clicks on the volumeBarValue
-			// The volumeBar handles this event as the event propagates up the DOM.
-		},
 		_updateVolume: function(v) {
 			if(v === undefined) {
 				v = this.options.volume;
@@ -2061,7 +2058,7 @@
 						this.css.jq[fn] = []; // To comply with the css.jq[fn].length check before its use. As of jQuery 1.4 could have used $() for an empty set. 
 					}
 
-					if(this.css.jq[fn].length) {
+					if(this.css.jq[fn].length && this[fn]) {
 						var handler = function(e) {
 							e.preventDefault();
 							self[fn](e);
@@ -2106,9 +2103,6 @@
 				this.playHead(p);
 			}
 		},
-		playBar: function() { // Handles clicks on the playBar
-			// The seekBar handles this event as the event propagates up the DOM.
-		},
 		playbackRate: function(pbr) {
 			this._setOption("playbackRate", pbr);
 		},
@@ -2130,9 +2124,6 @@
 				pbr = ratio * (this.options.maxPlaybackRate - this.options.minPlaybackRate) + this.options.minPlaybackRate;
 				this.playbackRate(pbr);
 			}
-		},
-		playbackRateBarValue: function() { // Handles clicks on the playbackRateBarValue
-			// The playbackRateBar handles this event as the event propagates up the DOM.
 		},
 		_updatePlaybackRate: function() {
 			var pbr = this.options.playbackRate,
@@ -2166,21 +2157,6 @@
 				this._updateButtons();
 				this._trigger($.jPlayer.event.repeat);
 			}
-		},
-
-		// Plan to review the cssSelector method to cope with missing associated functions accordingly.
-
-		currentTime: function() { // Handles clicks on the text
-			// Added to avoid errors using cssSelector system for the text
-		},
-		duration: function() { // Handles clicks on the text
-			// Added to avoid errors using cssSelector system for the text
-		},
-		gui: function() { // Handles clicks on the gui
-			// Added to avoid errors using cssSelector system for the gui
-		},
-		noSolution: function() { // Handles clicks on the error message
-			// Added to avoid errors using cssSelector system for no-solution
 		},
 
 		// Options code adapted from ui.widget.js (1.8.7).  Made changes so the key can use dot notation. To match previous getData solution in jPlayer 1.
