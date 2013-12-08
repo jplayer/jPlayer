@@ -343,6 +343,8 @@
 						''
 					],
 					// http://developer.apple.com/library/safari/#documentation/AudioVideo/Reference/HTMLVideoElementClassReference/HTMLVideoElement/HTMLVideoElement.html
+					// https://developer.apple.com/library/safari/samplecode/HTML5VideoEventFlow/Listings/events_js.html#//apple_ref/doc/uid/DTS40010085-events_js-DontLinkElementID_5
+					// Events: 'webkitbeginfullscreen' and 'webkitendfullscreen'
 					webkitVideo: [
 						'webkitSupportsFullscreen',
 						'webkitDisplayingFullscreen',
