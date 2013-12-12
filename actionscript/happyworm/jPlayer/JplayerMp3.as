@@ -337,6 +337,8 @@ package happyworm.jPlayer {
 		public function getLoadRatio():Number {
 			if((myStatus.isLoading || myStatus.isLoaded) && mySound.bytesTotal > 0) {
 				return mySound.bytesLoaded / mySound.bytesTotal;
+			} else if (myStatus.isLoaded && mySound.bytesLoaded > 0) {
+				return 1;
 			} else {
 				return 0;
 			}

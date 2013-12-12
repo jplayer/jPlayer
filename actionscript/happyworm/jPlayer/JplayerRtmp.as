@@ -871,10 +871,11 @@ package happyworm.jPlayer
 		return 1;
 		/*trace("LoadRatio:"+myStream.bytesLoaded, myStream.bytesTotal);
 		if((myStatus.isLoading || myStatus.isLoaded) && myStream.bytesTotal > 0) {
-		
-		return myStream.bytesLoaded / myStream.bytesTotal;
+			return myStream.bytesLoaded / myStream.bytesTotal;
+		} else if (myStatus.isLoaded && myStream.bytesLoaded > 0) {
+			return 1;
 		} else {
-		return 0;
+			return 0;
 		}
 		*/
 
