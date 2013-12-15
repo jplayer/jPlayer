@@ -7,8 +7,8 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.5.0
- * Date: 7th November 2013
+ * Version: 2.5.2
+ * Date: 15th December 2013
  *
  * FlashVars expected: (AS3 property of: loaderInfo.parameters)
  *	id: 	(URL Encoded: String) Id of jPlayer instance
@@ -279,6 +279,9 @@ package {
 
 				myMp3Player.addEventListener(JplayerEvent.JPLAYER_CANPLAY, jPlayerFlashEvent); // only MP3 atm
 				myMp3Player.addEventListener(JplayerEvent.JPLAYER_CANPLAYTHROUGH, jPlayerFlashEvent); // only MP3 atm
+
+				myMp3Player.addEventListener(JplayerEvent.JPLAYER_LOADEDMETADATA, jPlayerFlashEvent);
+				myMp3Player.addEventListener(JplayerEvent.JPLAYER_DURATIONCHANGE, jPlayerFlashEvent); // only MP3 atm
 			} else {
 				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_ERROR, jPlayerFlashEvent);
 				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_PROGRESS, jPlayerFlashEvent);
@@ -297,6 +300,9 @@ package {
 
 				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_CANPLAY, jPlayerFlashEvent); // only MP3 atm
 				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_CANPLAYTHROUGH, jPlayerFlashEvent); // only MP3 atm
+
+				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_LOADEDMETADATA, jPlayerFlashEvent);
+				myMp3Player.removeEventListener(JplayerEvent.JPLAYER_DURATIONCHANGE, jPlayerFlashEvent); // only MP3 atm
 			}
 		}
 		private function listenToMp4(active:Boolean):void {
