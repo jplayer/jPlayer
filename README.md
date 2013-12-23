@@ -19,6 +19,10 @@ Support for [Zepto](http://zeptojs.com/) 1.0+ compiled with the data module.
 
 _(*) Optional counterpart formats to increase HTML5 cross-browser support._
 
+## Bower Install
+* simple install using `bower install jplayer`
+* see <http://bower.io/> for more information.
+
 ## License
 [jPlayer](http://jplayer.org/) is licensed under the [MIT license](http://opensource.org/licenses/MIT).
 
