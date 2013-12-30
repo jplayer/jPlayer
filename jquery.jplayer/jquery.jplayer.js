@@ -7,8 +7,8 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.5.2
- * Date: 15th December 2013
+ * Version: 2.5.3
+ * Date: 30th December 2013
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -470,7 +470,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.5.2",
+			script: "2.5.3",
 			needFlash: "2.5.2",
 			flash: "unknown"
 		},
@@ -2899,8 +2899,8 @@
 			var msg = "jPlayer " + this.version.script + " : id='" + this.internal.self.id +"' : " + message;
 			if(!this.options.consoleAlerts) {
 				alert(msg);
-			} else if(console && console.log) {
-				console.log(msg);
+			} else if(window.console && window.console.log) {
+				window.console.log(msg);
 			}
 		},
 		_emulateHtmlBridge: function() {
