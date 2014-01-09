@@ -2,13 +2,13 @@
  * jPlayer Plugin for jQuery JavaScript Library
  * http://www.jplayer.org
  *
- * Copyright (c) 2009 - 2013 Happyworm Ltd
+ * Copyright (c) 2009 - 2014 Happyworm Ltd
  * Licensed under the MIT license.
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.5.3
- * Date: 30th December 2013
+ * Version: 2.5.4
+ * Date: 9th January 2014
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -470,7 +470,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.5.3",
+			script: "2.5.4",
 			needFlash: "2.5.2",
 			flash: "unknown"
 		},
@@ -1669,7 +1669,7 @@
 		_absoluteMediaUrls: function(media) {
 			var self = this;
 			$.each(media, function(type, url) {
-				if(self.format[type]) {
+				if(url && self.format[type]) {
 					media[type] = self._qualifyURL(url);
 				}
 			});
