@@ -198,22 +198,23 @@
 		},
 		_refresh: function(instant) {
 			/* instant: Can be undefined, true or a function.
-			 *	undefined -> use animation timings
-			 *	true -> no animation
-			 *	function -> use animation timings and excute function at half way point.
+			 *  undefined -> use animation timings
+			 *  true -> no animation
+			 *  function -> use animation timings and excute function at half way point.
 			 */
 			var self = this;
+			var playlist_ul = $(self.cssSelector.playlist + " ul");
 
 			if(instant && !$.isFunction(instant)) {
 				$(this.cssSelector.playlist + " ul").empty();
+				
 				$.each(this.playlist, function(i) {
-					$(self.cssSelector.playlist + " ul").append(self._createListItem(self.playlist[i]));
+					playlist_ul.append(self._createListItem(self.playlist[i]));
 				});
 				this._updateControls();
 			} else {
-				var displayTime = $(this.cssSelector.playlist + " ul").children().length ? this.options.playlistOptions.displayTime : 0;
-
-				$(this.cssSelector.playlist + " ul").slideUp(displayTime, function() {
+				var displayTime = playlist_ul.children().length ? this.options.playlistOptions.displayTime : 0;
+				playlist_ul.slideUp(displayTime, function() {
 					var $this = $(this);
 					$(this).empty();
 					
