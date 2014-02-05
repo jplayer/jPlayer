@@ -2,16 +2,16 @@
  * Skin for jPlayer Plugin (jQuery JavaScript Library)
  * http://www.jplayer.org
  *
- * Skin Name: Pink Flag
+ * Skin Name: Pink Flag HD
  *
- * Copyright (c) 2012 Happyworm Ltd
+ * Copyright (c) 2013 Kasim Ahmic (http://kasimahmic.koding.com)
  * Dual licensed under the MIT and GPL licenses.
  *  - http://www.opensource.org/licenses/mit-license.php
  *  - http://www.gnu.org/copyleft/gpl.html
  *
- * Author: Silvia Benvenuti
- * Skin Version: 1.2 (jPlayer 2.2.0)
- * Date: 22nd October 2012
+ * Author: Kasim Ahmic (https://github.com/TheInfection)
+ * Skin Version: 1.0 (jPlayer 2.3.0)
+ * Date: 22nd April 2013
  */
 
 div.jp-audio,
@@ -110,8 +110,21 @@ div.jp-controls-holder {
 	overflow:hidden;
 }
 
+div.jp-interface ul.jp-controls, div.jp-type-single  .jp-play , div.jp-type-single  .jp-play:hover, div.jp-type-single  .jp-pause, div.jp-type-single  .jp-pause:hover, div.jp-type-single  .jp-stop, div.jp-type-single  .jp-stop:hover, div.jp-type-playlist .jp-play, div.jp-type-playlist .jp-play:hover, div.jp-type-playlist .jp-pause, div.jp-type-playlist .jp-pause:hover, div.jp-type-playlist .jp-stop, div.jp-type-playlist .jp-stop:hover, div.jp-type-playlist .jp-previous, div.jp-type-playlist .jp-previous:hover, div.jp-type-playlist .jp-next, div.jp-type-playlist .jp-next:hover,.jp-full-screen,.jp-full-screen:hover,.jp-restore-screen,.jp-restore-screen:hover,.jp-repeat,.jp-repeat:hover,.jp-repeat-off,.jp-repeat-off:hover,.jp-shuffle,.jp-shuffle:hover,.jp-shuffle-off,.jp-shuffle-off:hover,.jp-progress,.jp-seek-bar,.jp-play-bar, div.jp-interface ul.jp-controls a.jp-mute, div.jp-interface ul.jp-controls a.jp-unmute, div.jp-interface ul.jp-controls a.jp-volume-max, div.jp-interface ul.jp-controls a.jp-mute:hover, div.jp-interface ul.jp-controls a.jp-unmute, div.jp-interface ul.jp-controls a.jp-unmute:hover, div.jp-interface ul.jp-controls a.jp-volume-max, div.jp-interface ul.jp-controls a.jp-volume-max:hover,.jp-volume-bar,.jp-volume-bar-value {
+	background: url("jplayer.pink.flag.png") no-repeat;
+}
+
+/* HD CSS */
+@media only screen and (-webkit-min-device-pixel-ratio : 1.3), only screen and (min-device-pixel-ratio : 1.3) {
+	div.jp-interface ul.jp-controls, div.jp-type-single  .jp-play , div.jp-type-single  .jp-play:hover, div.jp-type-single  .jp-pause, div.jp-type-single  .jp-pause:hover, div.jp-type-single  .jp-stop, div.jp-type-single  .jp-stop:hover, div.jp-type-playlist .jp-play, div.jp-type-playlist .jp-play:hover, div.jp-type-playlist .jp-pause, div.jp-type-playlist .jp-pause:hover, div.jp-type-playlist .jp-stop, div.jp-type-playlist .jp-stop:hover, div.jp-type-playlist .jp-previous, div.jp-type-playlist .jp-previous:hover, div.jp-type-playlist .jp-next, div.jp-type-playlist .jp-next:hover,.jp-full-screen,.jp-full-screen:hover,.jp-restore-screen,.jp-restore-screen:hover,.jp-repeat,.jp-repeat:hover,.jp-repeat-off,.jp-repeat-off:hover,.jp-shuffle,.jp-shuffle:hover,.jp-shuffle-off,.jp-shuffle-off:hover,.jp-progress,.jp-seek-bar,.jp-play-bar, div.jp-interface ul.jp-controls a.jp-mute, div.jp-interface ul.jp-controls a.jp-unmute, div.jp-interface ul.jp-controls a.jp-volume-max, div.jp-interface ul.jp-controls a.jp-mute:hover, div.jp-interface ul.jp-controls a.jp-unmute, div.jp-interface ul.jp-controls a.jp-unmute:hover, div.jp-interface ul.jp-controls a.jp-volume-max, div.jp-interface ul.jp-controls a.jp-volume-max:hover,.jp-volume-bar,.jp-volume-bar-value {
+		background: url("jplayer.pink.flag.hd.png") no-repeat;
+		background-size: 210px 480px;
+	}
+}
+/* End HD CSS */
+
 div.jp-interface ul.jp-controls {
-	background: url("jplayer.pink.flag.jpg") 0 0 no-repeat;
+	background-position: 0 0 no-repeat;
 	list-style-type:none;
 	padding: 1px 0 2px 1px;
 	overflow:hidden;
@@ -155,19 +168,19 @@ div.jp-type-single  .jp-controls li a{
 }
 
 div.jp-type-single  .jp-play {
-	background: url("jplayer.pink.flag.jpg") 0px -40px no-repeat;
+	background-position: 0px -40px;
 }
 
 div.jp-type-single  .jp-play:hover {
-	background: url("jplayer.pink.flag.jpg") -100px -40px no-repeat;
+	background-position: -100px -40px;
 }
 
 div.jp-type-single  .jp-pause {
-	background: url("jplayer.pink.flag.jpg") 0px -120px no-repeat;
+	background-position: 0px -120px;
 }
 
 div.jp-type-single  .jp-pause:hover {
-	background: url("jplayer.pink.flag.jpg") -100px -120px no-repeat;
+	background-position: -100px -120px;
 }
 
 /* The right border is normally in the ul background image. */
@@ -177,11 +190,11 @@ div.jp-audio-stream .jp-pause {
 }
 
 div.jp-type-single  .jp-stop {
-	background: url("jplayer.pink.flag.jpg") 0px -80px no-repeat;
+	background-position: 0px -80px;
 }
 
 div.jp-type-single  .jp-stop:hover {
-	background: url("jplayer.pink.flag.jpg") -100px -80px no-repeat;
+	background-position: -100px -80px;
 }
 
 /* @end */
@@ -193,43 +206,43 @@ div.jp-type-playlist .jp-controls li a{
 }
 
 div.jp-type-playlist .jp-play {
-	background: url("jplayer.pink.flag.jpg") -24px -40px no-repeat;
+	background-position: -24px -40px;
 }
 
 div.jp-type-playlist .jp-play:hover {
-	background: url("jplayer.pink.flag.jpg") -124px -40px no-repeat;
+	background-position: -124px -40px;
 }
 
 div.jp-type-playlist .jp-pause {
-	background: url("jplayer.pink.flag.jpg") -24px -120px no-repeat;
+	background-position: -24px -120px;
 }
 
 div.jp-type-playlist .jp-pause:hover {
-	background: url("jplayer.pink.flag.jpg") -124px -120px no-repeat;
+	background-position: -124px -120px;
 }
 
 div.jp-type-playlist .jp-stop {
-	background: url("jplayer.pink.flag.jpg") -24px -80px no-repeat;
+	background-position: -25px -80px;
 }
 
 div.jp-type-playlist .jp-stop:hover {
-	background: url("jplayer.pink.flag.jpg") -124px -80px no-repeat;
+	background-position: -125px -80px;
 }
 
 div.jp-type-playlist .jp-previous {
-	background: url("jplayer.pink.flag.jpg") -24px -200px no-repeat;
+	background-position: -24px -200px;
 }
 
 div.jp-type-playlist .jp-previous:hover {
-	background: url("jplayer.pink.flag.jpg") -124px -200px no-repeat;
+	background-position: -124px -200px;
 }
 
 div.jp-type-playlist .jp-next {
-	background: url("jplayer.pink.flag.jpg") -24px -160px no-repeat;
+	background-position: -24px -160px;
 }
 
 div.jp-type-playlist .jp-next:hover {
-	background: url("jplayer.pink.flag.jpg") -124px -160px no-repeat;
+	background-position: -124px -160px;
 }
 
 /* @end */
@@ -275,55 +288,55 @@ ul.jp-toggles li a{
 }
 
 .jp-full-screen {
-	background: url("jplayer.pink.flag.jpg") 0 -420px no-repeat;
+	background-position: 0 -420px;
 	margin-left: 20px;
 }
 
 .jp-full-screen:hover {
-	background: url("jplayer.pink.flag.jpg") -30px -420px no-repeat;
+	background-position: -30px -420px;
 }
 
 .jp-restore-screen {
-	background: url("jplayer.pink.flag.jpg") -60px -420px no-repeat;
+	background-position: -60px -420px;
 	margin-left: 20px;
 }
 
 .jp-restore-screen:hover {
-	background: url("jplayer.pink.flag.jpg") -90px -420px no-repeat;
+	background-position: -90px -420px;
 }
 
 .jp-repeat {
-	background: url("jplayer.pink.flag.jpg") 0 -440px no-repeat;
+	background-position: 0 -440px;
 }
 
 .jp-repeat:hover {
-	background: url("jplayer.pink.flag.jpg") -30px -440px no-repeat;
+	background-position: -30px -440px;
 }
 
 .jp-repeat-off {
-	background: url("jplayer.pink.flag.jpg") -60px -440px no-repeat;
+	background-position: -60px -440px;
 }
 
 .jp-repeat-off:hover {
-	background: url("jplayer.pink.flag.jpg") -90px -440px no-repeat;
+	background-position: -90px -440px;
 }
 
 .jp-shuffle {
-	background: url("jplayer.pink.flag.jpg") 0 -460px no-repeat;
+	background-position: 0 -460px;
 	margin-left: 5px;
 }
 
 .jp-shuffle:hover {
-	background: url("jplayer.pink.flag.jpg") -30px -460px no-repeat;
+	background-position: -30px -460px;
 }
 
 .jp-shuffle-off {
-	background: url("jplayer.pink.flag.jpg") -60px -460px no-repeat;
+	background-position: -60px -460px;
 	margin-left: 5px;
 }
 
 .jp-shuffle-off:hover {
-	background: url("jplayer.pink.flag.jpg") -90px -460px no-repeat;
+	background-position: -90px -460px;
 }
 
 
@@ -337,7 +350,7 @@ div.jp-seeking-bg {
 }
 
 .jp-progress {
-	background: url("jplayer.pink.flag.jpg") 0px -240px no-repeat;
+	background-position: 0px -240px;
 	width: 197px;
 	height: 13px;
 	padding: 0 2px 2px 2px;
@@ -354,7 +367,8 @@ div.jp-video .jp-progress {
 }
 
 .jp-seek-bar {
-	background: url("jplayer.pink.flag.jpg") 0px -260px repeat-x;
+	background-position: 0px -260px;
+	background-repeat: repeat-x;
 	width:0px;
 	height: 100%;
 	overflow:hidden;
@@ -362,7 +376,8 @@ div.jp-video .jp-progress {
 }
 
 .jp-play-bar {
-	background: url("jplayer.pink.flag.jpg") 0px -280px repeat-x;
+	background-position: 0px -280px;
+	background-repeat: repeat-x;
 	width:0px;
 	height: 100%;
 	overflow:hidden;
@@ -376,7 +391,7 @@ div.jp-video .jp-progress {
 div.jp-interface ul.jp-controls a.jp-mute,
 div.jp-interface ul.jp-controls a.jp-unmute,
 div.jp-interface ul.jp-controls a.jp-volume-max {
-	background: url("jplayer.pink.flag.jpg") 0px -330px no-repeat;
+	background-position: 0px -330px;
 	position: absolute;
 	width: 16px;
 	height: 11px;
@@ -409,27 +424,28 @@ div.jp-video ul.jp-controls a.jp-volume-max {
 }
 
 div.jp-interface ul.jp-controls a.jp-mute:hover {
-	background: url("jplayer.pink.flag.jpg") -25px -330px no-repeat;
+	background-position: -25px -330px;
 }
 
 div.jp-interface ul.jp-controls a.jp-unmute {
-	background: url("jplayer.pink.flag.jpg") -60px -330px no-repeat;
+	background-position: -60px -330px;
 }
 
 div.jp-interface ul.jp-controls a.jp-unmute:hover {
-	background: url("jplayer.pink.flag.jpg") -85px -330px no-repeat;
+	background-position: -85px -330px;
 }
 
 div.jp-interface ul.jp-controls a.jp-volume-max {
-	background: url("jplayer.pink.flag.jpg") 0px -350px no-repeat;
+	background-position: 0px -350px;
 }
 
 div.jp-interface ul.jp-controls a.jp-volume-max:hover {
-	background: url("jplayer.pink.flag.jpg") -25px -350px no-repeat;
+	background-position: -25px -350px;
 }
 
 .jp-volume-bar {
-	background: url("jplayer.pink.flag.jpg") 0px -300px repeat-x;
+	background-position: 0px -300px;
+	background-repeat: repeat-x;
 	position: absolute;
 	width: 197px;
 	height: 4px;
@@ -464,7 +480,8 @@ div.jp-video .jp-volume-bar {
 }
 
 .jp-volume-bar-value {
-	background: url("jplayer.pink.flag.jpg") 0px -320px repeat-x;
+	background-position: 0px -320px;
+	background-repeat: repeat-x;
 	height: 4px;
 }
 
