@@ -479,6 +479,10 @@
 			solution: "html, flash", // Valid solutions: html, flash. Order defines priority. 1st is highest,
 			supplied: "mp3", // Defines which formats jPlayer will try and support and the priority by the order. 1st is highest,
 			preload: 'metadata',  // HTML5 Spec values: none, metadata, auto.
+			cancelDownloadOnStop: false,
+			allowPseudoStreaming: false, // Basically allow or deny pseudo streaming.
+			queryParameter: 'starttime', // Query parameter to add to media URLs when in pseudo streaming mode (e.g. transcode.php?file=test.mp3&starttime=10).
+			mediaDurationKey: 'duration', // Pseudo streaming mode is active if the given key is found in media and if the value contains a number (seconds).
 			volume: 0.8, // The volume. Number 0 to 1.
 			muted: false,
 			playbackRate: 1,
@@ -643,6 +647,9 @@
 		status: { // Instanced in _init()
 			src: "",
 			media: {},
+			initialMedia: {},
+			pseudoStreamingMode: false,
+			startTime: 0,
 			paused: true,
 			format: {},
 			formatType: "",
@@ -775,9 +782,9 @@
 		},
 		_init: function() {
 			var self = this;
-			
+
 			this.element.empty();
-			
+
 			this.status = $.extend({}, this.status); // Copy static to unique instance.
 			this.internal = $.extend({}, this.internal); // Copy static to unique instance.
 
@@ -797,13 +804,13 @@
 			this.formats = []; // Array based on supplied string option. Order defines priority.
 			this.solutions = []; // Array based on solution string option. Order defines priority.
 			this.require = {}; // Which media types are required: video, audio.
-			
+
 			this.htmlElement = {}; // DOM elements created by jPlayer
 			this.html = {}; // In _init()'s this.desired code and setmedia(): Accessed via this[solution], where solution from this.solutions array.
 			this.html.audio = {};
 			this.html.video = {};
 			this.flash = {}; // In _init()'s this.desired code and setmedia(): Accessed via this[solution], where solution from this.solutions array.
-			
+
 			this.css = {};
 			this.css.cs = {}; // Holds the css selector strings
 			this.css.jq = {}; // Holds jQuery selectors. ie., $(css.cs.method)
@@ -933,7 +940,7 @@
 			this.internal.poster.jq.bind("click.jPlayer", function() {
 				self._trigger($.jPlayer.event.click);
 			});
-			
+
 			// Generate the required media elements
 			this.html.audio.available = false;
 			if(this.require.audio) { // If a supplied format is audio
@@ -1001,7 +1008,7 @@
 
 			// Set up the css selectors for the control and feedback entities.
 			this._cssSelectorAncestor(this.options.cssSelectorAncestor);
-			
+
 			// If neither html nor flash are being used by this browser, then media playback is not possible. Trigger an error event.
 			if(!(this.html.used || this.flash.used)) {
 				this._error( {
@@ -1167,7 +1174,7 @@
 			this.element.removeData("jPlayer"); // Remove jPlayer data
 			this.element.unbind(".jPlayer"); // Remove all event handlers created by the jPlayer constructor
 			this.element.empty(); // Remove the inserted child elements
-			
+
 			delete this.instances[this.internal.instance]; // Clear the instance on the static instance object
 		},
 		enable: function() { // Plan to implement
@@ -1255,7 +1262,7 @@
 			// Create the event listeners
 			// Only want the active entity to affect jPlayer and bubble events.
 			// Using entity.gate so that object is referenced and gate property always current
-			
+
 			mediaElement.addEventListener("progress", function() {
 				if(entity.gate) {
 					if(self.internal.cmdsIgnored && this.readyState > 0) { // Detect iOS executed the command
@@ -1395,22 +1402,31 @@
 		_getHtmlStatus: function(media, override) {
 			var ct = 0, cpa = 0, sp = 0, cpr = 0;
 
-			// Fixes the duration bug in iOS, where the durationchange event occurs when media.duration is not always correct.
-			// Fixes the initial duration bug in BB OS7, where the media.duration is infinity and displays as NaN:NaN due to Date() using inifity.
-			if(isFinite(media.duration)) {
-				this.status.duration = media.duration;
+			if(this.status.pseudoStreamingMode) {
+				// In pseudo streaming mode, the start time must be added to the current time
+				sp = 100;
+				ct = media.currentTime + this.status.startTime;
+				cpa = (this.status.duration > 0) ? 100 * ct / this.status.duration : 0;
+				cpr = cpa;
+			} else {
+				// Fixes the duration bug in iOS, where the durationchange event occurs when media.duration is not always correct.
+				// Fixes the initial duration bug in BB OS7, where the media.duration is infinity and displays as NaN:NaN due to Date() using inifity.
+				if(isFinite(media.duration)) {
+					this.status.duration = media.duration;
+				}
+
+				ct = media.currentTime;
+				cpa = (this.status.duration > 0) ? 100 * ct / this.status.duration : 0;
+				if((typeof media.seekable === "object") && (media.seekable.length > 0)) {
+					sp = (this.status.duration > 0) ? 100 * media.seekable.end(media.seekable.length-1) / this.status.duration : 100;
+					// Duration conditional for iOS duration bug. ie., seekable.end is a NaN in that case.
+					cpr = (this.status.duration > 0) ? 100 * media.currentTime / media.seekable.end(media.seekable.length-1) : 0;
+				} else {
+					sp = 100;
+					cpr = cpa;
+				}
 			}
 
-			ct = media.currentTime;
-			cpa = (this.status.duration > 0) ? 100 * ct / this.status.duration : 0;
-			if((typeof media.seekable === "object") && (media.seekable.length > 0)) {
-				sp = (this.status.duration > 0) ? 100 * media.seekable.end(media.seekable.length-1) / this.status.duration : 100;
-				cpr = (this.status.duration > 0) ? 100 * media.currentTime / media.seekable.end(media.seekable.length-1) : 0; // Duration conditional for iOS duration bug. ie., seekable.end is a NaN in that case.
-			} else {
-				sp = 100;
-				cpr = cpa;
-			}
-			
 			if(override) {
 				ct = 0;
 				cpr = 0;
@@ -1566,12 +1582,25 @@
 			return false;
 		},
 		_getFlashStatus: function(status) {
-			this.status.seekPercent = status.seekPercent;
-			this.status.currentPercentRelative = status.currentPercentRelative;
-			this.status.currentPercentAbsolute = status.currentPercentAbsolute;
-			this.status.currentTime = status.currentTime;
-			this.status.duration = status.duration;
+			var ct = 0, cpa = 0, sp = 0, cpr = 0;
+			if(this.status.pseudoStreamingMode) {
+				// In pseudo streaming mode, the start time must be added to the current time
+				sp = 100;
+				ct = status.currentTime + this.status.startTime;
+				cpa = (this.status.duration > 0) ? 100 * ct / this.status.duration : 0;
+				cpr = cpa;
+			} else {
+				sp = status.seekPercent;
+				cpr = status.currentPercentRelative;
+				cpa = status.currentPercentAbsolute;
+				ct = status.currentTime;
+				this.status.duration = status.duration;
+			}
 
+			this.status.seekPercent = sp;
+			this.status.currentTime = ct;
+			this.status.currentPercentRelative = cpr;
+			this.status.currentPercentAbsolute = cpa;
 			this.status.videoWidth = status.videoWidth;
 			this.status.videoHeight = status.videoHeight;
 
@@ -1675,13 +1704,32 @@
 			});
 			return media;
 		},
-		setMedia: function(media) {
-		
+		setMedia: function(media, init) {
+
 			/*	media[format] = String: URL of format. Must contain all of the supplied option's video or audio formats.
 			 *	media.poster = String: Video poster URL.
 			 *	media.track = Array: Of objects defining the track element: kind, src, srclang, label, def.
+			 *	media[mediaDurationKey] = Number: Duration of the track in seconds. Used only if allowPseudoStreaming is set to true.
 			 *	media.stream = Boolean: * NOT IMPLEMENTED * Designating actual media streams. ie., "false/undefined" for files. Plan to refresh the flash every so often.
 			 */
+
+			if(typeof media === "undefined") {
+				media = false;
+			}
+			if(typeof init === "undefined") {
+				init = true;
+			}
+
+			// Revert initial media in case we play the same media again after the stop function was called and cancelDownloadOnStop option was set.
+			if(media === false) {
+				media = this.status.initialMedia;
+			}
+
+			this.status.seekPercent = status.seekPercent;
+			this.status.currentPercentRelative = status.currentPercentRelative;
+			this.status.currentPercentAbsolute = status.currentPercentAbsolute;
+			this.status.currentTime = status.currentTime;
+			this.status.duration = status.duration;
 
 			var	self = this,
 				supported = false,
@@ -1729,7 +1777,7 @@
 							}
 							self.status.video = false;
 						}
-						
+
 						supported = true;
 						return false; // Exit $.each
 					}
@@ -1755,6 +1803,19 @@
 				this.status.srcSet = true;
 				this.status.media = $.extend({}, media);
 				this._updateButtons(false);
+
+				// Save media when a new one was set
+				if(init === true) {
+					this.status.initialMedia = media;
+				}
+
+				if(typeof media[this.options.mediaDurationKey] === "number") {
+					// Found duration in media, activate pseudo streaming mode if allowed and set duration in status
+					this.status.pseudoStreamingMode = this.options.allowPseudoStreaming;
+					if(this.status.pseudoStreamingMode) {
+						this.status.duration = media[this.options.mediaDurationKey];
+					}
+				}
 				this._updateInterface();
 			} else { // jPlayer cannot support any formats provided in this browser
 				// Send an error event
@@ -1818,6 +1879,10 @@
 				} else if(this.flash.active) {
 					this._flash_play(time);
 				}
+			} else if (this.options.cancelDownloadOnStop) {
+				// Set initialMedia again
+				this.setMedia(false, false);
+				this.play();
 			} else {
 				this._urlNotSetError("play");
 			}
@@ -1866,10 +1931,25 @@
 		},
 		stop: function() {
 			if(this.status.srcSet) {
-				if(this.html.active) {
-					this._html_pause(0);
-				} else if(this.flash.active) {
-					this._flash_pause(0);
+				if(this.options.cancelDownloadOnStop) {
+					// Save some status variables, they will be resetted by clearMedia
+					var initialMedia = this.status.initialMedia;
+					var pseudoStreamingMode = this.status.pseudoStreamingMode;
+					this.clearMedia();
+					// Revert status variables
+					this.status.initialMedia = initialMedia;
+					this.status.pseudoStreamingMode = pseudoStreamingMode;
+					// Set the duration again, but only in pseudo streaming mode. Otherwise, seeking does not work
+					if(this.status.pseudoStreamingMode) {
+						this.status.duration = initialMedia[this.options.mediaDurationKey];
+						this._updateInterface();
+					}
+				} else {
+					if(this.html.active) {
+						this._html_pause(0);
+					} else if(this.flash.active) {
+						this._flash_pause(0);
+					}
 				}
 			} else {
 				this._urlNotSetError("stop");
@@ -2099,8 +2179,36 @@
 					offset = $bar.offset(),
 					x = e.pageX - offset.left,
 					w = $bar.width(),
-					p = 100 * x / w;
-				this.playHead(p);
+					p = x / w;
+				if(this.status.pseudoStreamingMode) {
+					// Save the new start time, needed for calculation of currentTime later on
+					var startTime = parseInt(this.status.duration * p),
+						media = this.status.initialMedia,
+						newMedia = {},
+						self = this;
+
+					// We need to build a new media with original duration and URLs with additional query parameter
+					newMedia[this.options.mediaDurationKey] = media[this.options.mediaDurationKey];
+					$.each(this.formats, function(priority, format) {
+						var newURL = media[format];
+						if(newURL.indexOf("?") !== -1) {
+							newURL = newURL + "&";
+						} else {
+							newURL = newURL + "?";
+						}
+						newMedia[format] = newURL + self.options.queryParameter + "=" + startTime.toString();
+					});
+
+					// Apply new media, init is false so setMedia will not overwrite initialMedia
+					this.setMedia(newMedia, false);
+					this.status.initialMedia = media;
+					this.status.startTime = startTime;
+					// Play new media
+					this.play();
+				} else {
+					p = p * 100;
+					this.playHead(p);
+				}
 			}
 		},
 		playbackRate: function(pbr) {
@@ -2622,7 +2730,7 @@
 		_html_pause: function(time) {
 			var self = this,
 				media = this.htmlElement.media;
-			
+
 			if(time > 0) { // We do not want the stop() command, which does pause(0), causing a load operation.
 				this._html_load(); // Loads if required and clears any delayed commands.
 			} else {
