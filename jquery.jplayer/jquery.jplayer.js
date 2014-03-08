@@ -7,8 +7,8 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.5.4
- * Date: 9th January 2014
+ * Version: 2.5.5
+ * Date: 8th March 2014
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -470,7 +470,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.5.4",
+			script: "2.5.5",
 			needFlash: "2.5.2",
 			flash: "unknown"
 		},
@@ -792,6 +792,17 @@
 			// Add key bindings focus to 1st jPlayer instanced with key control enabled.
 			if(this.options.keyEnabled && !$.jPlayer.focus) {
 				$.jPlayer.focus = this;
+			}
+
+			// A fix for Android where older (2.3) and even some 4.x devices fail to work when changing the *audio* SRC and then playing immediately.
+			this.androidFix = {
+				setMedia: false, // True when media set
+				play: false, // True when a progress event will instruct the media to play
+				pause: false, // True when a progress event will instruct the media to pause at a time.
+				time: NaN // The play(time) parameter
+			};
+			if($.jPlayer.platform.android) {
+				this.options.preload = this.options.preload !== 'auto' ? 'metadata' : 'auto'; // Default to metadata, but allow auto.
 			}
 
 			this.formats = []; // Array based on supplied string option. Order defines priority.
@@ -1261,6 +1272,15 @@
 					if(self.internal.cmdsIgnored && this.readyState > 0) { // Detect iOS executed the command
 						self.internal.cmdsIgnored = false;
 					}
+					self.androidFix.setMedia = false; // Disable the fix after the first progress event.
+					if(self.androidFix.play) { // Play Android audio - performing the fix.
+						self.androidFix.play = false;
+						self.play(self.androidFix.time);
+					}
+					if(self.androidFix.pause) { // Pause Android audio at time - performing the fix.
+						self.androidFix.pause = false;
+						self.pause(self.androidFix.time);
+					}
 					self._getHtmlStatus(mediaElement);
 					self._updateInterface();
 					self._trigger($.jPlayer.event.progress);
@@ -1691,6 +1711,11 @@
 			this._resetGate();
 			this._resetActive();
 
+			// Clear the Android Fix.
+			this.androidFix.setMedia = false;
+			this.androidFix.play = false;
+			this.androidFix.pause = false;
+
 			// Convert all media URLs to absolute URLs.
 			media = this._absoluteMediaUrls(media);
 
@@ -1719,6 +1744,11 @@
 								self.html.audio.gate = true;
 								self._html_setAudio(media);
 								self.html.active = true;
+
+								// Setup the Android Fix - Only for HTML audio.
+								if($.jPlayer.platform.android) {
+									self.androidFix.setMedia = true;
+								}
 							} else {
 								self.flash.gate = true;
 								self._flash_setAudio(media);
@@ -2590,9 +2620,16 @@
 			var self = this,
 				media = this.htmlElement.media;
 
+			this.androidFix.pause = false; // Cancel the pause fix.
+
 			this._html_load(); // Loads if required and clears any delayed commands.
 
-			if(!isNaN(time)) {
+			// Setup the Android Fix.
+			if(this.androidFix.setMedia) {
+				this.androidFix.play = true;
+				this.androidFix.time = time;
+
+			} else if(!isNaN(time)) {
 
 				// Attempt to play it, since iOS has been ignoring commands
 				if(this.internal.cmdsIgnored) {
@@ -2622,7 +2659,9 @@
 		_html_pause: function(time) {
 			var self = this,
 				media = this.htmlElement.media;
-			
+
+			this.androidFix.play = false; // Cancel the play fix.
+
 			if(time > 0) { // We do not want the stop() command, which does pause(0), causing a load operation.
 				this._html_load(); // Loads if required and clears any delayed commands.
 			} else {
@@ -2632,7 +2671,12 @@
 			// Order of these commands is important for Safari (Win) and IE9. Pause then change currentTime.
 			media.pause();
 
-			if(!isNaN(time)) {
+			// Setup the Android Fix.
+			if(this.androidFix.setMedia) {
+				this.androidFix.pause = true;
+				this.androidFix.time = time;
+
+			} else if(!isNaN(time)) {
 				try {
 					if(!media.seekable || typeof media.seekable === "object" && media.seekable.length > 0) {
 						media.currentTime = time;
@@ -2655,6 +2699,8 @@
 				media = this.htmlElement.media;
 
 			this._html_load(); // Loads if required and clears any delayed commands.
+
+			// This playHead() method needs a refactor to apply the android fix.
 
 			try {
 				if(typeof media.seekable === "object" && media.seekable.length > 0) {
