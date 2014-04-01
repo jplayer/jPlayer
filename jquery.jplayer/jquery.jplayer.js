@@ -113,6 +113,7 @@
 	$.each(
 		[
 			'ready',
+			'setmedia', // Fires when the media is set
 			'flashreset', // Similar to the ready event if the Flash solution is set to display:none and then shown again or if it's reloaded for another reason by the browser. For example, using CSS position:fixed on Firefox for the full screen feature.
 			'resize', // Occurs when the size changes through a full/restore screen operation or if the size/sizeFull options are changed.
 			'repeat', // Occurs when the repeat status changes. Usually through clicks on the repeat button of the interface.
@@ -1808,6 +1809,7 @@
 				this.status.media = $.extend({}, media);
 				this._updateButtons(false);
 				this._updateInterface();
+				this._trigger($.jPlayer.event.setmedia);
 			} else { // jPlayer cannot support any formats provided in this browser
 				// Send an error event
 				this._error( {
