@@ -7,8 +7,8 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.5.5
- * Date: 8th March 2014
+ * Version: 2.5.6
+ * Date: 1st April 2014
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -470,7 +470,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.5.5",
+			script: "2.5.6",
 			needFlash: "2.5.2",
 			flash: "unknown"
 		},
@@ -2504,7 +2504,7 @@
 		_fullscreenRemoveEventListeners: function() {
 			var fs = $.jPlayer.nativeFeatures.fullscreen;
 			if(this.internal.fullscreenchangeHandler) {
-				document.addEventListener(fs.event.fullscreenchange, this.internal.fullscreenchangeHandler, false);
+				document.removeEventListener(fs.event.fullscreenchange, this.internal.fullscreenchangeHandler, false);
 			}
 		},
 		_fullscreenchange: function() {
