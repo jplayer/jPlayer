@@ -481,6 +481,8 @@
 			preload: 'metadata',  // HTML5 Spec values: none, metadata, auto.
 			volume: 0.8, // The volume. Number 0 to 1.
 			muted: false,
+			remainingDuration: false, // When true, the remaining time is shown in the duration GUI element.
+			toggleDuration: false, // When true, clicks on the duration toggle between the duration and remaining display.
 			playbackRate: 1,
 			defaultPlaybackRate: 1,
 			minPlaybackRate: 0.5,
@@ -656,6 +658,7 @@
 			currentPercentAbsolute: 0,
 			currentTime: 0,
 			duration: 0,
+			remaining: 0,
 			videoWidth: 0, // Intrinsic width of the video in pixels.
 			videoHeight: 0, // Intrinsic height of the video in pixels.
 			readyState: 0,
@@ -1443,6 +1446,8 @@
 			this.status.currentPercentAbsolute = cpa;
 			this.status.currentTime = ct;
 
+			this.status.remaining = this.status.duration - this.status.currentTime;
+
 			this.status.videoWidth = media.videoWidth;
 			this.status.videoHeight = media.videoHeight;
 
@@ -1592,6 +1597,7 @@
 			this.status.currentPercentAbsolute = status.currentPercentAbsolute;
 			this.status.currentTime = status.currentTime;
 			this.status.duration = status.duration;
+			this.status.remaining = status.duration - status.currentTime;
 
 			this.status.videoWidth = status.videoWidth;
 			this.status.videoHeight = status.videoHeight;
@@ -1656,7 +1662,11 @@
 				this.css.jq.currentTime.text(this._convertTime(this.status.currentTime));
 			}
 			if(this.css.jq.duration.length) {
-				this.css.jq.duration.text(this._convertTime(this.status.duration));
+				if(this.options.remainingDuration) {
+					this.css.jq.duration.text((this.status.remaining > 0 ? '-' : '') + this._convertTime(this.status.remaining));
+				} else {
+					this.css.jq.duration.text(this._convertTime(this.status.duration));
+				}
 			}
 		},
 		_convertTime: ConvertTime.prototype.time,
@@ -2134,6 +2144,11 @@
 				});
 			}
 		},
+		duration: function(e) {
+			if(this.options.toggleDuration) {
+				this._setOption("remainingDuration", !this.options.remainingDuration);
+			}
+		},
 		seekBar: function(e) { // Handles clicks on the seekBar
 			if(this.css.jq.seekBar.length) {
 				// Using $(e.currentTarget) to enable multiple seek bars
@@ -2354,6 +2369,13 @@
 					break;
 				case "loop" :
 					this._loop(value);
+					break;
+				case "remainingDuration" :
+					this.options[key] = value;
+					this._updateInterface();
+					break;
+				case "toggleDuration" :
+					this.options[key] = value;
 					break;
 				case "nativeVideoControls" :
 					this.options[key] = $.extend({}, this.options[key], value); // store a merged copy of it, incase not all properties changed.
