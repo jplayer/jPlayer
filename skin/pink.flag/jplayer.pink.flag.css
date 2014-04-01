@@ -4,14 +4,13 @@
  *
  * Skin Name: Pink Flag
  *
- * Copyright (c) 2012 Happyworm Ltd
- * Dual licensed under the MIT and GPL licenses.
+ * Copyright (c) 2012 - 2014 Happyworm Ltd
+ * Licensed under the MIT license.
  *  - http://www.opensource.org/licenses/mit-license.php
- *  - http://www.gnu.org/copyleft/gpl.html
  *
  * Author: Silvia Benvenuti
- * Skin Version: 1.2 (jPlayer 2.2.0)
- * Date: 22nd October 2012
+ * Skin Version: 1.3 (jPlayer 2.6.0)
+ * Date: 1st April 2014
  */
 
 div.jp-audio,
@@ -499,7 +498,7 @@ div.jp-video .jp-volume-bar {
 
 /* @group playlist */
 
-.jp-title ul,
+.jp-details ul,
 .jp-playlist ul {
 	list-style-type:none;	
 	font-size:.7em;
@@ -507,7 +506,7 @@ div.jp-video .jp-volume-bar {
 	padding: 0;
 }
 
-.jp-video .jp-title ul {
+.jp-video .jp-details ul {
 	margin: 0 20px 10px;
 }
 
@@ -515,7 +514,7 @@ div.jp-video .jp-volume-bar {
 	margin: 0 20px;
 }
 
-.jp-title li,
+.jp-details li,
 .jp-playlist li {
 	position: relative;
 	padding: 2px 0;
@@ -524,7 +523,7 @@ div.jp-video .jp-volume-bar {
 	overflow: hidden;
 }
 
-.jp-title li{
+.jp-details li{
 	border-bottom:none;
 	border-top:none;
 	padding:0;

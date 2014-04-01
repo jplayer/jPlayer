@@ -504,6 +504,7 @@
 				playbackRateBarValue: ".jp-playback-rate-bar-value",
 				currentTime: ".jp-current-time",
 				duration: ".jp-duration",
+				title: ".jp-title",
 				fullScreen: ".jp-full-screen", // *
 				restoreScreen: ".jp-restore-screen", // *
 				repeat: ".jp-repeat",
@@ -1779,6 +1780,17 @@
 							this.htmlElement.poster.src = media.poster;
 						} else {
 							this.internal.poster.jq.show();
+						}
+					}
+				}
+				if(this.css.jq.title.length) {
+					if(typeof media.title === 'string') {
+						this.css.jq.title.html(media.title);
+						if(this.htmlElement.audio) {
+							this.htmlElement.audio.setAttribute('title', media.title);
+						}
+						if(this.htmlElement.video) {
+							this.htmlElement.video.setAttribute('title', media.title);
 						}
 					}
 				}
