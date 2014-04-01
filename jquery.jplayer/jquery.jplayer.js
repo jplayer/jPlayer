@@ -1659,14 +1659,22 @@
 					this.css.jq.playBar.width(this.status.currentPercentRelative+"%");
 				}
 			}
+			var currentTimeText = '';
 			if(this.css.jq.currentTime.length) {
-				this.css.jq.currentTime.text(this._convertTime(this.status.currentTime));
+				currentTimeText = this._convertTime(this.status.currentTime);
+				if(currentTimeText !== this.css.jq.currentTime.text()) {
+					this.css.jq.currentTime.text(this._convertTime(this.status.currentTime));
+				}
 			}
+			var durationText = '';
 			if(this.css.jq.duration.length) {
 				if(this.options.remainingDuration) {
-					this.css.jq.duration.text((this.status.remaining > 0 ? '-' : '') + this._convertTime(this.status.remaining));
+					durationText = (this.status.remaining > 0 ? '-' : '') + this._convertTime(this.status.remaining);
 				} else {
-					this.css.jq.duration.text(this._convertTime(this.status.duration));
+					durationText = this._convertTime(this.status.duration);
+				}
+				if(durationText !== this.css.jq.duration.text()) {
+					this.css.jq.duration.text(durationText);
 				}
 			}
 		},
