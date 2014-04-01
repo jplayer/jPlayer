@@ -1666,12 +1666,22 @@
 					this.css.jq.currentTime.text(this._convertTime(this.status.currentTime));
 				}
 			}
-			var durationText = '';
+			var durationText = '',
+				duration = this.status.duration,
+				remaining = this.status.remaining;
 			if(this.css.jq.duration.length) {
-				if(this.options.remainingDuration) {
-					durationText = (this.status.remaining > 0 ? '-' : '') + this._convertTime(this.status.remaining);
+				if(typeof this.status.media.duration === 'string') {
+					durationText = this.status.media.duration;
 				} else {
-					durationText = this._convertTime(this.status.duration);
+					if(typeof this.status.media.duration === 'number') {
+						duration = this.status.media.duration;
+						remaining = duration - this.status.currentTime;
+					}
+					if(this.options.remainingDuration) {
+						durationText = (remaining > 0 ? '-' : '') + this._convertTime(remaining);
+					} else {
+						durationText = this._convertTime(duration);
+					}
 				}
 				if(durationText !== this.css.jq.duration.text()) {
 					this.css.jq.duration.text(durationText);
