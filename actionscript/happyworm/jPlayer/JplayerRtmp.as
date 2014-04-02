@@ -2,7 +2,7 @@
  * jPlayer Plugin for jQuery JavaScript Library
  * http://www.jplayer.org
  *
- * Copyright (c) 2009 - 2013 Happyworm Ltd
+ * Copyright (c) 2009 - 2014 Happyworm Ltd
  * Licensed under the MIT license.
  * http://opensource.org/licenses/MIT
  *
