@@ -2,13 +2,13 @@
  * jPlayer Plugin for jQuery JavaScript Library
  * http://www.jplayer.org
  *
- * Copyright (c) 2009 - 2013 Happyworm Ltd
- * Licensed under the MIT.
+ * Copyright (c) 2009 - 2014 Happyworm Ltd
+ * Licensed under the MIT license.
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.5.2
- * Date: 15th December 2013
+ * Version: 2.6.0
+ * Date: 2nd April 2014
  *
  * FlashVars expected: (AS3 property of: loaderInfo.parameters)
  *	id: 	(URL Encoded: String) Id of jPlayer instance

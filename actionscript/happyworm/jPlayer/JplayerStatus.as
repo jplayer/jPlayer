@@ -2,18 +2,18 @@
  * jPlayer Plugin for jQuery JavaScript Library
  * http://www.jplayer.org
  *
- * Copyright (c) 2009 - 2013 Happyworm Ltd
+ * Copyright (c) 2009 - 2014 Happyworm Ltd
  * Licensed under the MIT license.
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Date: 15th Devember 2013
+ * Date: 2nd April 2014
  */
 
 package happyworm.jPlayer {
 	public class JplayerStatus {
 
-		public static const VERSION:String = "2.5.2"; // The version of the Flash jPlayer entity.
+		public static const VERSION:String = "2.6.0"; // The version of the Flash jPlayer entity.
 
 		public var volume:Number = 0.5; // Not affected by reset()
 		public var muted:Boolean = false; // Not affected by reset()
