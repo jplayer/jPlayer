@@ -122,7 +122,7 @@ package {
 			var myContextMenu:ContextMenu = new ContextMenu();
 			myContextMenu.hideBuiltInItems();
 			var menuItem_jPlayer:ContextMenuItem = new ContextMenuItem("jPlayer " + JplayerStatus.VERSION);
-			var menuItem_happyworm:ContextMenuItem = new ContextMenuItem("© 2009-2013 Happyworm Ltd", true);
+			var menuItem_happyworm:ContextMenuItem = new ContextMenuItem("© 2009-2014 Happyworm Ltd", true);
 			menuItem_jPlayer.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, menuSelectHandler_jPlayer);
 			menuItem_happyworm.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, menuSelectHandler_happyworm);
 			myContextMenu.customItems.push(menuItem_jPlayer, menuItem_happyworm);
