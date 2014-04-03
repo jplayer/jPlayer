@@ -7,8 +7,8 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.6.0
- * Date: 2nd April 2014
+ * Version: 2.6.1
+ * Date: 3rd April 2014
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -471,7 +471,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.6.0",
+			script: "2.6.1",
 			needFlash: "2.6.0",
 			flash: "unknown"
 		},
@@ -484,6 +484,7 @@
 			muted: false,
 			remainingDuration: false, // When true, the remaining time is shown in the duration GUI element.
 			toggleDuration: false, // When true, clicks on the duration toggle between the duration and remaining display.
+			captureDuration: true, // When true, clicks on the duration are captured and no longer propagate up the DOM.
 			playbackRate: 1,
 			defaultPlaybackRate: 1,
 			minPlaybackRate: 0.5,
@@ -2166,6 +2167,9 @@
 		},
 		duration: function(e) {
 			if(this.options.toggleDuration) {
+				if(this.options.captureDuration) {
+					e.stopPropagation();
+				}
 				this._setOption("remainingDuration", !this.options.remainingDuration);
 			}
 		},
