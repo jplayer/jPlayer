@@ -1083,6 +1083,15 @@
 
 				this.element.append(htmlObj);
 				this.internal.flash.jq = $(htmlObj);
+
+				// Workaround for bug in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=836786
+				// FF does not bubble the mousemove event on a flash object which prevents being
+				// able to view controls in fullscreen on certain FF versions.
+				if($.jPlayer.browser.mozilla) {
+					htmlObj.addEventListener('mousemove', function() {
+						self.element.trigger('mousemove');
+					});
+				}
 			}
 
 			// Setup playbackRate ability before using _addHtmlEventListeners()
