@@ -358,19 +358,19 @@ package happyworm.jPlayer
 			
 			//myStatus.loaded();
 			//myStatus.isPlaying=true; 
-			if (! myStatus.metaDataReady)
+			if (! videoBinding && ! myStatus.metaDataReady) // set metaDataReady only for Audio RTMP, otherwise pause doesn't work #199
 			{
 				//this.dispatchEvent(new JplayerEvent(JplayerEvent.DEBUG_MSG,myStatus,"onMetaDataHandler: " + myStatus.duration));
 
 				//  Allow multiple onResult Handlers to affect size. As per PR #131 and #98.
-				//  myStatus.metaDataReady = true;
+				myStatus.metaDataReady = true;
 
-				/*var info:Object = new Object();
-				info.duration=myStatus.duration
+				var info:Object = new Object();
+				info.duration=myStatus.duration;
 				info.width=undefined;
 				info.height=undefined;
 				myStatus.metaData = info;
-				*/
+
 				if (myStatus.playOnLoad)
 				{
 					myStatus.playOnLoad = false;// Capture the flag
