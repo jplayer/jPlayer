@@ -353,13 +353,22 @@
 						'webkitExitFullscreen',
 						'',
 						''
+					],
+					ms: [
+						'',
+						'msFullscreenElement',
+						'msRequestFullscreen',
+						'msExitFullscreen',
+						'MSFullscreenChange',
+						'MSFullscreenError'
 					]
 				},
 				specOrder = [
 					'w3c',
 					'moz',
 					'webkit',
-					'webkitVideo'
+					'webkitVideo',
+					'ms'
 				],
 				fs, i, il;
 
@@ -368,7 +377,8 @@
 					w3c: !!d[spec.w3c[0]],
 					moz: !!d[spec.moz[0]],
 					webkit: typeof d[spec.webkit[3]] === 'function',
-					webkitVideo: typeof v[spec.webkitVideo[2]] === 'function'
+					webkitVideo: typeof v[spec.webkitVideo[2]] === 'function',
+					ms: typeof v[spec.ms[2]] === 'function'
 				},
 				used: {}
 			};
