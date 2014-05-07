@@ -997,8 +997,14 @@
 			this.html.support = {};
 			this.flash.support = {};
 			$.each(this.formats, function(priority, format) {
-				self.html.support[format] = self.html.canPlay[format] && self.html.desired;
-				self.flash.support[format] = self.flash.canPlay[format] && self.flash.desired;
+				var formatSupported = false;
+
+				$.each(self.solutions, function(solutionPriority, solution) {
+					if (!formatSupported && self[solution].canPlay[format]) {
+						self[solution].support[format] = true;
+						formatSupported = true;
+					}
+				});
 			});
 			// If jPlayer is supporting any format in a solution, then the solution is used.
 			this.html.used = false;
