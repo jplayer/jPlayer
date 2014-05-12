@@ -1882,6 +1882,18 @@
 				$.jPlayer.focus = this;
 			}
 		},
+		download: function() {
+			time = (typeof time === "number") ? time : NaN; // Remove jQuery event from click handler
+			if(this.status.srcSet) {
+				this.focus();
+				var media = this.htmlElement.media;
+				console.debug("downladFile requested for " + media.src);
+				// this._download_file(media);
+			} else {
+				console.debug("downladFile missing url");
+				this._urlNotSetError("play");
+			}
+		},
 		play: function(time) {
 			time = (typeof time === "number") ? time : NaN; // Remove jQuery event from click handler
 			if(this.status.srcSet) {
