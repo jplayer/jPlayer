@@ -28,6 +28,7 @@
 		this.loop = false; // Flag used with the jPlayer repeat event
 		this.shuffled = false;
 		this.removing = false; // Flag is true during remove animation, disabling the remove() method until complete.
+		this.downloading = false; // Flag is true during download, disabling the download method until complete.
 
 		this.cssSelector = $.extend({}, this._cssSelector, cssSelector); // Object: Containing the css selectors for jPlayer and its cssSelectorAncestor
 		this.options = $.extend(true, {
@@ -147,7 +148,8 @@
 				itemClass: "jp-playlist-item",
 				freeGroupClass: "jp-free-media",
 				freeItemClass: "jp-playlist-item-free",
-				removeItemClass: "jp-playlist-item-remove"
+				removeItemClass: "jp-playlist-item-remove",
+				downloadItemClass: "jp-playlist-item-download"
 			}
 		},
 		option: function(option, value) { // For changing playlist options only
@@ -159,6 +161,7 @@
 
 			switch(option) {
 				case "enableRemoveControls":
+				case "enableDownloadControls":
 					this._updateControls();
 					break;
 				case "itemClass":
@@ -241,6 +244,8 @@
 			// Create remove control
 			listItem += "<a href='javascript:;' class='" + this.options.playlistOptions.removeItemClass + "'>&times;</a>";
 
+			// Create download control
+			listItem += "<a href='javascript:;' class='" + this.options.playlistOptions.downloadItemClass + "'>&dArr;</a>&nbsp;&nbsp;";
 			// Create links to free media
 			if(media.free) {
 				var first = true;
@@ -292,12 +297,25 @@
 				$(this).blur();
 				return false;
 			});
+
+			// Create live handlers for the download controls
+			$(this.cssSelector.playlist).off("click", "a." + this.options.playlistOptions.downloadItemClass).on("click", "a." + this.options.playlistOptions.downloadItemClass, function() {
+				var index = $(this).parent().parent().index();
+				self.download(index);
+				$(this).blur();
+				return false;
+			});
 		},
 		_updateControls: function() {
 			if(this.options.playlistOptions.enableRemoveControls) {
 				$(this.cssSelector.playlist + " ." + this.options.playlistOptions.removeItemClass).show();
 			} else {
 				$(this.cssSelector.playlist + " ." + this.options.playlistOptions.removeItemClass).hide();
+			}
+			if(this.options.playlistOptions.enableDownloadControls) {
+				$(this.cssSelector.playlist + " ." + this.options.playlistOptions.downloadItemClass).show();
+			} else {
+				$(this.cssSelector.playlist + " ." + this.options.playlistOptions.downloadItemClass).hide();
 			}
 			if(this.shuffled) {
 				$(this.cssSelector.shuffleOff).show();
@@ -396,6 +414,17 @@
 				$(this.cssSelector.jPlayer).jPlayer("setMedia", this.playlist[this.current]);
 			} else {
 				this.current = 0;
+			}
+		},
+		download: function(index) {
+			index = (index < 0) ? this.original.length + index : index; // Negative index relates to end of array.
+			if(0 <= index && index < this.playlist.length) {
+				if(this.playlist.length) {
+					this.select(index);
+					$(this.cssSelector.jPlayer).jPlayer("download");
+				}
+			} else if(index === undefined) {
+				$(this.cssSelector.jPlayer).jPlayer("download");
 			}
 		},
 		play: function(index) {
