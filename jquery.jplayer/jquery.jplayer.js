@@ -1887,10 +1887,10 @@
 			if(this.status.srcSet) {
 				this.focus();
 				var media = this.htmlElement.media;
-				console.debug("downladFile requested for " + media.src);
+				// console.debug("downladFile requested for " + media.src);
 				// this._download_file(media);
 			} else {
-				console.debug("downladFile missing url");
+				// console.debug("downladFile missing url");
 				this._urlNotSetError("play");
 			}
 		},
