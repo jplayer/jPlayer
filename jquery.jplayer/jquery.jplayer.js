@@ -685,6 +685,7 @@
 			// domNode: undefined
 			// htmlDlyCmdId: undefined
 			// autohideId: undefined
+			// lastMousePosition: undefined
 			// cmdsIgnored
 		},
 		solution: { // Static Object: Defines the solutions built in jPlayer.
@@ -2501,13 +2502,30 @@
 				event = "mousemove.jPlayer",
 				namespace = ".jPlayerAutohide",
 				eventType = event + namespace,
-				handler = function() {
+				handler = function(sourceEvent) {
+				var mouseMoved = false;
+				if (self.internal.lastMousePosition != undefined) {
+					//get the change from last position to this position
+			        var deltaX = self.internal.lastMousePosition.x - sourceEvent.clientX,
+			            deltaY = self.internal.lastMousePosition.y - sourceEvent.clientY;
+			        mouseMoved = (Math.abs(deltaX)>0) || (Math.abs(deltaY)>0); 
+				} else {
+					mouseMoved = true;
+				}
+				// store current position for next method execution
+				self.internal.lastMousePosition = {
+						x : sourceEvent.clientX,
+						y : sourceEvent.clientY
+				};
+				// if mouse has been actually moved, do the gui fadeIn/fadeOut
+				if (mouseMoved) {
 					self.css.jq.gui.fadeIn(self.options.autohide.fadeIn, function() {
 						clearTimeout(self.internal.autohideId);
 						self.internal.autohideId = setTimeout( function() {
 							self.css.jq.gui.fadeOut(self.options.autohide.fadeOut);
 						}, self.options.autohide.hold);
 					});
+				}
 				};
 
 			if(this.css.jq.gui.length) {
@@ -2518,6 +2536,8 @@
 
 				// Removes the fadeOut operation from the fadeIn callback.
 				clearTimeout(this.internal.autohideId);
+				// undefine lastMousePosition
+				delete this.internal.lastMousePosition;
 
 				this.element.unbind(namespace);
 				this.css.jq.gui.unbind(namespace);
