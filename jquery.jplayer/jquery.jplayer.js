@@ -524,6 +524,7 @@
 				gui: ".jp-gui", // The interface used with autohide feature.
 				noSolution: ".jp-no-solution" // For error feedback when jPlayer cannot find a solution.
 			},
+			autoBlur: true, // GUI control handlers will drop focus after clicks.
 			smoothPlayBar: false, // Smooths the play bar transitions, which affects clicks and short media with big changes per second.
 			fullScreen: false, // Native Full Screen
 			fullWindow: false,
@@ -2143,7 +2144,9 @@
 						var handler = function(e) {
 							e.preventDefault();
 							self[fn](e);
-							$(this).blur();
+							if(self.options.autoBlur) {
+								$(this).blur();
+							}
 						};
 						this.css.jq[fn].bind("click.jPlayer", handler); // Using jPlayer namespace
 					}
@@ -2451,6 +2454,9 @@
 					this.options[key] = $.extend(true, {}, this.options[key], value); // store a merged DEEP copy of it, incase not all properties changed.
 					break;
 				case "audioFullScreen" :
+					this.options[key] = value;
+					break;
+				case "autoBlur" :
 					this.options[key] = value;
 					break;
 			}
