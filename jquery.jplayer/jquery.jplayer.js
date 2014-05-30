@@ -7,8 +7,8 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.6.1
- * Date: 3rd April 2014
+ * Version: 2.6.2
+ * Date: 30th May 2014
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -423,25 +423,33 @@
 	// The current jPlayer instance in focus.
 	$.jPlayer.focus = null;
 
-	// The list of element node names to ignore with key controls.
-	$.jPlayer.keyIgnoreElementNames = "INPUT TEXTAREA";
+	// (fallback) The list of element node names to ignore with key controls.
+	$.jPlayer.keyIgnoreElementNames = "A INPUT TEXTAREA SELECT BUTTON";
 
 	// The function that deals with key presses.
 	var keyBindings = function(event) {
 
 		var f = $.jPlayer.focus,
+			pageFocus = document.activeElement,
 			ignoreKey;
 
 		// A jPlayer instance must be in focus. ie., keyEnabled and the last one played.
 		if(f) {
 			// What generated the key press?
-			$.each( $.jPlayer.keyIgnoreElementNames.split(/\s+/g), function(i, name) {
-				// The strings should already be uppercase.
-				if(event.target.nodeName.toUpperCase() === name.toUpperCase()) {
+			if(typeof pageFocus !== 'undefined') {
+				if(typeof pageFocus !== 'null' && pageFocus.nodeName.toUpperCase() !== "BODY") {
 					ignoreKey = true;
-					return false; // exit each.
 				}
-			});
+			} else {
+				// Fallback for no document.activeElement support.
+				$.each( $.jPlayer.keyIgnoreElementNames.split(/\s+/g), function(i, name) {
+					// The strings should already be uppercase.
+					if(event.target.nodeName.toUpperCase() === name.toUpperCase()) {
+						ignoreKey = true;
+						return false; // exit each.
+					}
+				});
+			}
 			if(!ignoreKey) {
 				// See if the key pressed matches any of the bindings.
 				$.each(f.options.keyBindings, function(action, binding) {
@@ -471,7 +479,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.6.1",
+			script: "2.6.2",
 			needFlash: "2.6.0",
 			flash: "unknown"
 		},
