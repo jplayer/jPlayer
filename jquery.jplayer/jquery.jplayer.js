@@ -7,7 +7,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.6.2
+ * Version: 2.6.3
  * Date: 30th May 2014
  */
 
@@ -437,7 +437,7 @@
 		if(f) {
 			// What generated the key press?
 			if(typeof pageFocus !== 'undefined') {
-				if(typeof pageFocus !== 'null' && pageFocus.nodeName.toUpperCase() !== "BODY") {
+				if(pageFocus !== null && pageFocus.nodeName.toUpperCase() !== "BODY") {
 					ignoreKey = true;
 				}
 			} else {
@@ -479,7 +479,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.6.2",
+			script: "2.6.3",
 			needFlash: "2.6.0",
 			flash: "unknown"
 		},
