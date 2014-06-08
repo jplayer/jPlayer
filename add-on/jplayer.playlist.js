@@ -92,26 +92,35 @@
 			}
 		});
 
+		// The blur function executes in the context of the click handler
+		var blur = function() {
+			if($(this.cssSelector.jPlayer).jPlayer("option", "autoBlur")) {
+				$(this).blur();
+			}
+		};
+
 		// Create click handlers for the extra buttons that do playlist functions.
-		$(this.cssSelector.previous).click(function() {
+		$(this.cssSelector.previous).click(function(e) {
+			e.preventDefault();
 			self.previous();
-			$(this).blur();
-			return false;
+			blur.call(this);
 		});
 
-		$(this.cssSelector.next).click(function() {
+		$(this.cssSelector.next).click(function(e) {
+			e.preventDefault();
 			self.next();
-			$(this).blur();
-			return false;
+			blur.call(this);
 		});
 
-		$(this.cssSelector.shuffle).click(function() {
+		$(this.cssSelector.shuffle).click(function(e) {
+			e.preventDefault();
 			self.shuffle(true);
-			return false;
+			blur.call(this);
 		});
-		$(this.cssSelector.shuffleOff).click(function() {
+		$(this.cssSelector.shuffleOff).click(function(e) {
+			e.preventDefault();
 			self.shuffle(false);
-			return false;
+			blur.call(this);
 		}).hide();
 
 		// Put the title in its initial display state
