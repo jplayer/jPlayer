@@ -524,6 +524,14 @@
 				gui: ".jp-gui", // The interface used with autohide feature.
 				noSolution: ".jp-no-solution" // For error feedback when jPlayer cannot find a solution.
 			},
+			stateClass: { // Classes added to the cssSelectorAncestor to indicate the state.
+				playing: "jp-state-playing",
+				seeking: "jp-state-seeking",
+				muted: "jp-state-muted",
+				looped: "jp-state-looped",
+				fullScreen: "jp-state-full-screen"
+			},
+			useStateClassSkin: false, // A state class skin relies on the state classes to change the visual appearance. The single control toggles the effect, for example: play then pause, mute then unmute.
 			autoBlur: true, // GUI control handlers will drop focus after clicks.
 			smoothPlayBar: false, // Smooths the play bar transitions, which affects clicks and short media with big changes per second.
 			fullScreen: false, // Native Full Screen
@@ -1625,6 +1633,23 @@
 			} else {
 				this.status.paused = !playing;
 			}
+			// Apply the state classes. (For the useStateClassSkin:true option)
+			if(playing) {
+				this.addStateClass('playing');
+			} else {
+				this.removeStateClass('playing');
+			}
+			if(!this.status.noFullWindow && this.options.fullWindow) {
+				this.addStateClass('fullScreen');
+			} else {
+				this.removeStateClass('fullScreen');
+			}
+			if(this.options.loop) {
+				this.addStateClass('looped');
+			} else {
+				this.removeStateClass('looped');
+			}
+			// Toggle the GUI element pairs. (For the useStateClassSkin:false option)
 			if(this.css.jq.play.length && this.css.jq.pause.length) {
 				if(playing) {
 					this.css.jq.play.hide();
@@ -1703,11 +1728,13 @@
 			if(this.css.jq.seekBar.length) {
 				this.css.jq.seekBar.addClass("jp-seeking-bg");
 			}
+			this.addStateClass('seeking');
 		},
 		_seeked: function() {
 			if(this.css.jq.seekBar.length) {
 				this.css.jq.seekBar.removeClass("jp-seeking-bg");
 			}
+			this.removeStateClass('seeking');
 		},
 		_resetGate: function() {
 			this.html.audio.gate = false;
@@ -1734,6 +1761,16 @@
 				}
 			});
 			return media;
+		},
+		addStateClass: function(state) {
+			if(this.ancestorJq.length) {
+				this.ancestorJq.addClass(this.options.stateClass[state]);
+			}
+		},
+		removeStateClass: function(state) {
+			if(this.ancestorJq.length) {
+				this.ancestorJq.removeClass(this.options.stateClass[state]);
+			}
 		},
 		setMedia: function(media) {
 		
@@ -1892,16 +1929,21 @@
 			}
 		},
 		play: function(time) {
-			time = (typeof time === "number") ? time : NaN; // Remove jQuery event from click handler
-			if(this.status.srcSet) {
-				this.focus();
-				if(this.html.active) {
-					this._html_play(time);
-				} else if(this.flash.active) {
-					this._flash_play(time);
-				}
+			var guiAction = typeof time === "object"; // Flags GUI click events so we know this was not a direct command, but an action taken by the user on the GUI.
+			if(guiAction && this.options.useStateClassSkin && !this.status.paused) {
+				this.pause(time); // The time would be the click event, but passing it over so info is not lost.
 			} else {
-				this._urlNotSetError("play");
+				time = (typeof time === "number") ? time : NaN; // Remove jQuery event from click handler
+				if(this.status.srcSet) {
+					this.focus();
+					if(this.html.active) {
+						this._html_play(time);
+					} else if(this.flash.active) {
+						this._flash_play(time);
+					}
+				} else {
+					this._urlNotSetError("play");
+				}
 			}
 		},
 		videoPlay: function() { // Handles clicks on the play button over the video poster
@@ -1995,8 +2037,13 @@
 			}
 		},
 		mute: function(mute) { // mute is either: undefined (true), an event object (true) or a boolean (muted).
-			mute = mute === undefined ? true : !!mute;
-			this._muted(mute);
+			var guiAction = typeof mute === "object"; // Flags GUI click events so we know this was not a direct command, but an action taken by the user on the GUI.
+			if(guiAction && this.options.useStateClassSkin && this.options.muted) {
+				this._muted(false);
+			} else {
+				mute = mute === undefined ? true : !!mute;
+				this._muted(mute);
+			}
 		},
 		unmute: function(unmute) { // unmute is either: undefined (true), an event object (true) or a boolean (!muted).
 			unmute = unmute === undefined ? true : !!unmute;
@@ -2005,6 +2052,11 @@
 		_updateMute: function(mute) {
 			if(mute === undefined) {
 				mute = this.options.muted;
+			}
+			if(mute) {
+				this.addStateClass('muted');
+			} else {
+				this.removeStateClass('muted');
 			}
 			if(this.css.jq.mute.length && this.css.jq.unmute.length) {
 				if(this.status.noVolume) {
@@ -2237,8 +2289,13 @@
 				}
 			}
 		},
-		repeat: function() { // Handle clicks on the repeat button
-			this._loop(true);
+		repeat: function(event) { // Handle clicks on the repeat button
+			var guiAction = typeof event === "object"; // Flags GUI click events so we know this was not a direct command, but an action taken by the user on the GUI.
+			if(guiAction && this.options.useStateClassSkin && this.options.loop) {
+				this._loop(false);
+			} else {
+				this._loop(true);
+			}
 		},
 		repeatOff: function() { // Handle clicks on the repeatOff button
 			this._loop(false);
@@ -2549,8 +2606,13 @@
 				}
 			}
 		},
-		fullScreen: function() {
-			this._setOption("fullScreen", true);
+		fullScreen: function(event) {
+			var guiAction = typeof event === "object"; // Flags GUI click events so we know this was not a direct command, but an action taken by the user on the GUI.
+			if(guiAction && this.options.useStateClassSkin && this.options.fullScreen) {
+				this._setOption("fullScreen", false);
+			} else {
+				this._setOption("fullScreen", true);
+			}
 		},
 		restoreScreen: function() {
 			this._setOption("fullScreen", false);
