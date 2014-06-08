@@ -2,17 +2,17 @@
  * Playlist Object for the jPlayer Plugin
  * http://www.jplayer.org
  *
- * Copyright (c) 2009 - 2013 Happyworm Ltd
+ * Copyright (c) 2009 - 2014 Happyworm Ltd
  * Licensed under the MIT license.
  * http://www.opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.3.0
- * Date: 20th April 2013
+ * Version: 2.3.1
+ * Date: 8th June 2014
  *
  * Requires:
  *  - jQuery 1.7.0+
- *  - jPlayer 2.3.0+
+ *  - jPlayer 2.7.0+
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -53,7 +53,7 @@
 		this._initPlaylist(playlist); // Copies playlist to this.original. Then mirrors this.original to this.playlist. Creating two arrays, where the element pointers match. (Enables pointer comparison.)
 
 		// Setup the css selectors for the extra interface items used by the playlist.
-		this.cssSelector.title = this.cssSelector.cssSelectorAncestor + " .jp-title"; // Note that the text is written to the decendant li node.
+		this.cssSelector.details = this.cssSelector.cssSelectorAncestor + " .jp-details"; // Note that jPlayer controls the text in the title element.
 		this.cssSelector.playlist = this.cssSelector.cssSelectorAncestor + " .jp-playlist";
 		this.cssSelector.next = this.cssSelector.cssSelectorAncestor + " .jp-next";
 		this.cssSelector.previous = this.cssSelector.cssSelectorAncestor + " .jp-previous";
@@ -86,9 +86,9 @@
 		// Create a resize event handler to show the title in full screen mode.
 		$(this.cssSelector.jPlayer).bind($.jPlayer.event.resize, function(event) {
 			if(event.jPlayer.options.fullScreen) {
-				$(self.cssSelector.title).show();
+				$(self.cssSelector.details).show();
 			} else {
-				$(self.cssSelector.title).hide();
+				$(self.cssSelector.details).hide();
 			}
 		});
 
@@ -116,7 +116,7 @@
 
 		// Put the title in its initial display state
 		if(!this.options.fullScreen) {
-			$(this.cssSelector.title).hide();
+			$(this.cssSelector.details).hide();
 		}
 
 		// Remove the empty <li> from the page HTML. Allows page to be valid HTML, while not interfereing with display animations
@@ -311,7 +311,7 @@
 			if(this.playlist.length && index !== undefined) {
 				$(this.cssSelector.playlist + " .jp-playlist-current").removeClass("jp-playlist-current");
 				$(this.cssSelector.playlist + " li:nth-child(" + (index + 1) + ")").addClass("jp-playlist-current").find(".jp-playlist-item").addClass("jp-playlist-current");
-				$(this.cssSelector.title + " li").html(this.playlist[index].title + (this.playlist[index].artist ? " <span class='jp-artist'>by " + this.playlist[index].artist + "</span>" : ""));
+				// $(this.cssSelector.details + " li").html("<span class='jp-title'>" + this.playlist[index].title + "</span>" + (this.playlist[index].artist ? " <span class='jp-artist'>by " + this.playlist[index].artist + "</span>" : ""));
 			}
 		},
 		setPlaylist: function(playlist) {
