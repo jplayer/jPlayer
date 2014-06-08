@@ -7,7 +7,7 @@
  * http://www.opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.3.1
+ * Version: 2.3.2
  * Date: 8th June 2014
  *
  * Requires:
@@ -44,6 +44,9 @@
 						self.previous();
 					}
 				}
+			},
+			stateClass: {
+				shuffled: "jp-state-shuffled"
 			}
 		}, this._options, options); // Object: The jPlayer constructor options for this playlist and the playlist options
 
@@ -94,7 +97,7 @@
 
 		// The blur function executes in the context of the click handler
 		var blur = function() {
-			if($(this.cssSelector.jPlayer).jPlayer("option", "autoBlur")) {
+			if($(self.cssSelector.jPlayer).jPlayer("option", "autoBlur")) {
 				$(this).blur();
 			}
 		};
@@ -114,7 +117,11 @@
 
 		$(this.cssSelector.shuffle).click(function(e) {
 			e.preventDefault();
-			self.shuffle(true);
+			if(self.shuffled && $(self.cssSelector.jPlayer).jPlayer("option", "useStateClassSkin")) {
+				self.shuffle(false);
+			} else {
+				self.shuffle(true);
+			}
 			blur.call(this);
 		});
 		$(this.cssSelector.shuffleOff).click(function(e) {
@@ -308,12 +315,20 @@
 			} else {
 				$(this.cssSelector.playlist + " ." + this.options.playlistOptions.removeItemClass).hide();
 			}
+
 			if(this.shuffled) {
-				$(this.cssSelector.shuffleOff).show();
-				$(this.cssSelector.shuffle).hide();
+				$(this.cssSelector.jPlayer).jPlayer("addStateClass", "shuffled");
 			} else {
-				$(this.cssSelector.shuffleOff).hide();
-				$(this.cssSelector.shuffle).show();
+				$(this.cssSelector.jPlayer).jPlayer("removeStateClass", "shuffled");
+			}
+			if($(this.cssSelector.shuffle).length && $(this.cssSelector.shuffleOff).length) {
+				if(this.shuffled) {
+					$(this.cssSelector.shuffleOff).show();
+					$(this.cssSelector.shuffle).hide();
+				} else {
+					$(this.cssSelector.shuffleOff).hide();
+					$(this.cssSelector.shuffle).show();
+				}
 			}
 		},
 		_highlight: function(index) {
