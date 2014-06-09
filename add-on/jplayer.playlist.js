@@ -7,8 +7,8 @@
  * http://www.opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.3.2
- * Date: 8th June 2014
+ * Version: 2.3.3
+ * Date: 9th June 2014
  *
  * Requires:
  *  - jQuery 1.7.0+
@@ -95,24 +95,17 @@
 			}
 		});
 
-		// The blur function executes in the context of the click handler
-		var blur = function() {
-			if($(self.cssSelector.jPlayer).jPlayer("option", "autoBlur")) {
-				$(this).blur();
-			}
-		};
-
 		// Create click handlers for the extra buttons that do playlist functions.
 		$(this.cssSelector.previous).click(function(e) {
 			e.preventDefault();
 			self.previous();
-			blur.call(this);
+			self.blur(this);
 		});
 
 		$(this.cssSelector.next).click(function(e) {
 			e.preventDefault();
 			self.next();
-			blur.call(this);
+			self.blur(this);
 		});
 
 		$(this.cssSelector.shuffle).click(function(e) {
@@ -122,12 +115,12 @@
 			} else {
 				self.shuffle(true);
 			}
-			blur.call(this);
+			self.blur(this);
 		});
 		$(this.cssSelector.shuffleOff).click(function(e) {
 			e.preventDefault();
 			self.shuffle(false);
-			blur.call(this);
+			self.blur(this);
 		}).hide();
 
 		// Put the title in its initial display state
@@ -283,30 +276,30 @@
 		_createItemHandlers: function() {
 			var self = this;
 			// Create live handlers for the playlist items
-			$(this.cssSelector.playlist).off("click", "a." + this.options.playlistOptions.itemClass).on("click", "a." + this.options.playlistOptions.itemClass, function() {
+			$(this.cssSelector.playlist).off("click", "a." + this.options.playlistOptions.itemClass).on("click", "a." + this.options.playlistOptions.itemClass, function(e) {
+				e.preventDefault();
 				var index = $(this).parent().parent().index();
 				if(self.current !== index) {
 					self.play(index);
 				} else {
 					$(self.cssSelector.jPlayer).jPlayer("play");
 				}
-				$(this).blur();
-				return false;
+				self.blur(this);
 			});
 
 			// Create live handlers that disable free media links to force access via right click
-			$(this.cssSelector.playlist).off("click", "a." + this.options.playlistOptions.freeItemClass).on("click", "a." + this.options.playlistOptions.freeItemClass, function() {
+			$(this.cssSelector.playlist).off("click", "a." + this.options.playlistOptions.freeItemClass).on("click", "a." + this.options.playlistOptions.freeItemClass, function(e) {
+				e.preventDefault();
 				$(this).parent().parent().find("." + self.options.playlistOptions.itemClass).click();
-				$(this).blur();
-				return false;
+				self.blur(this);
 			});
 
 			// Create live handlers for the remove controls
-			$(this.cssSelector.playlist).off("click", "a." + this.options.playlistOptions.removeItemClass).on("click", "a." + this.options.playlistOptions.removeItemClass, function() {
+			$(this.cssSelector.playlist).off("click", "a." + this.options.playlistOptions.removeItemClass).on("click", "a." + this.options.playlistOptions.removeItemClass, function(e) {
+				e.preventDefault();
 				var index = $(this).parent().parent().index();
 				self.remove(index);
-				$(this).blur();
-				return false;
+				self.blur(this);
 			});
 		},
 		_updateControls: function() {
@@ -488,6 +481,11 @@
 
 					$(this).slideDown(self.options.playlistOptions.shuffleTime);
 				});
+			}
+		},
+		blur: function(that) {
+			if($(this.cssSelector.jPlayer).jPlayer("option", "autoBlur")) {
+				$(that).blur();
 			}
 		}
 	};
