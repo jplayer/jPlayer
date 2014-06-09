@@ -7,7 +7,7 @@
  * http://www.opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.3.3
+ * Version: 2.3.4
  * Date: 9th June 2014
  *
  * Requires:
@@ -261,14 +261,14 @@
 						} else {
 							listItem += " | ";
 						}
-						listItem += "<a class='" + self.options.playlistOptions.freeItemClass + "' href='" + value + "' tabindex='1'>" + property + "</a>";
+						listItem += "<a class='" + self.options.playlistOptions.freeItemClass + "' href='" + value + "'>" + property + "</a>";
 					}
 				});
 				listItem += ")</span>";
 			}
 
 			// The title is given next in the HTML otherwise the float:right on the free media corrupts in IE6/7
-			listItem += "<a href='javascript:;' class='" + this.options.playlistOptions.itemClass + "' tabindex='1'>" + media.title + (media.artist ? " <span class='jp-artist'>by " + media.artist + "</span>" : "") + "</a>";
+			listItem += "<a href='javascript:;' class='" + this.options.playlistOptions.itemClass + "' tabindex='0'>" + media.title + (media.artist ? " <span class='jp-artist'>by " + media.artist + "</span>" : "") + "</a>";
 			listItem += "</div></li>";
 
 			return listItem;
