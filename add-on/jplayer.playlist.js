@@ -147,7 +147,8 @@
 				itemClass: "jp-playlist-item",
 				freeGroupClass: "jp-free-media",
 				freeItemClass: "jp-playlist-item-free",
-				removeItemClass: "jp-playlist-item-remove"
+				removeItemClass: "jp-playlist-item-remove",
+				downloadPrefix: ''
 			}
 		},
 		option: function(option, value) { // For changing playlist options only
@@ -252,7 +253,7 @@
 						} else {
 							listItem += " | ";
 						}
-						listItem += "<a class='" + self.options.playlistOptions.freeItemClass + "' href='" + value + "' tabindex='1'>" + property + "</a>";
+						listItem += "<a class='" + self.options.playlistOptions.freeItemClass + "' href='" + self.options.playlistOptions.downloadPrefix + value + "' tabindex='1'>Download</a>";
 					}
 				});
 				listItem += ")</span>";
