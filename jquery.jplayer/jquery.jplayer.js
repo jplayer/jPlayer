@@ -711,7 +711,7 @@
 		// 'MPEG-4 support' : canPlayType('video/mp4; codecs="mp4v.20.8"')
 		format: { // Static Object
 			mp3: {
-				codec: 'audio/mpeg; codecs="mp3"',
+				codec: 'audio/mpeg;',
 				flashCanPlay: true,
 				media: 'audio'
 			},
