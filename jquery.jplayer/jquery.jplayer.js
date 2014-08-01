@@ -7,8 +7,8 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.6.3
- * Date: 30th May 2014
+ * Version: 2.6.4
+ * Date: 1st August 2014
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -479,7 +479,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.6.3",
+			script: "2.6.4",
 			needFlash: "2.6.0",
 			flash: "unknown"
 		},
@@ -702,7 +702,7 @@
 		// 'MPEG-4 support' : canPlayType('video/mp4; codecs="mp4v.20.8"')
 		format: { // Static Object
 			mp3: {
-				codec: 'audio/mpeg; codecs="mp3"',
+				codec: 'audio/mpeg',
 				flashCanPlay: true,
 				media: 'audio'
 			},
