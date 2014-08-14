@@ -147,7 +147,9 @@
 				itemClass: "jp-playlist-item",
 				freeGroupClass: "jp-free-media",
 				freeItemClass: "jp-playlist-item-free",
-				removeItemClass: "jp-playlist-item-remove"
+				removeItemClass: "jp-playlist-item-remove",
+				downloadPrefix: '',
+				downloadForceRightClick: true
 			}
 		},
 		option: function(option, value) { // For changing playlist options only
@@ -252,7 +254,7 @@
 						} else {
 							listItem += " | ";
 						}
-						listItem += "<a class='" + self.options.playlistOptions.freeItemClass + "' href='" + value + "' tabindex='1'>" + property + "</a>";
+						listItem += "<a class='" + self.options.playlistOptions.freeItemClass + "' href='" + self.options.playlistOptions.downloadPrefix + value + "' tabindex='1'>Download</a>";
 					}
 				});
 				listItem += ")</span>";
@@ -279,11 +281,13 @@
 			});
 
 			// Create live handlers that disable free media links to force access via right click
-			$(this.cssSelector.playlist).off("click", "a." + this.options.playlistOptions.freeItemClass).on("click", "a." + this.options.playlistOptions.freeItemClass, function() {
-				$(this).parent().parent().find("." + self.options.playlistOptions.itemClass).click();
-				$(this).blur();
-				return false;
-			});
+			if(this.options.downloadForceRightClick) {
+				$(this.cssSelector.playlist).off("click", "a." + this.options.playlistOptions.freeItemClass).on("click", "a." + this.options.playlistOptions.freeItemClass, function() {
+					$(this).parent().parent().find("." + self.options.playlistOptions.itemClass).click();
+					$(this).blur();
+					return false;
+				});
+			}
 
 			// Create live handlers for the remove controls
 			$(this.cssSelector.playlist).off("click", "a." + this.options.playlistOptions.removeItemClass).on("click", "a." + this.options.playlistOptions.removeItemClass, function() {
