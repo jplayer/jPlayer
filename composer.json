@@ -1,0 +1,21 @@
+{
+    "name": "happyworm/jPlayer",
+    "type": "component",
+    "require": {
+        "robloach/component-installer": "*",
+        "components/jquery": ">=1.9"
+    },
+    "extra": {
+        "component": {
+            "scripts": [
+                "jquery.jplayer/jquery.jplayer.js"
+            ],
+            "files": [
+                "jquery.jplayer/Jplayer.swf",
+                "add-on/*.js",
+                "popcorn/player/*.js",
+                "skin/*"
+            ]
+        }
+    }
+}
