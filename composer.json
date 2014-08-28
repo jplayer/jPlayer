@@ -14,7 +14,8 @@
                 "jquery.jplayer/Jplayer.swf",
                 "add-on/*.js",
                 "popcorn/player/*.js",
-                "skin/*"
+                "skin/blue.monday/*",
+                "skin/pink.flag/*"
             ]
         }
     }

@@ -23,6 +23,35 @@ _(*) Optional counterpart formats to increase HTML5 cross-browser support._
 * simple install using `bower install jplayer`
 * see <http://bower.io/> for more information.
 
+## Composer install
+
+Install jPlayer via composer by adding the following lines to your `composer.json` in your project:
+
+    // ...
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/happyworm/jPlayer"
+        }
+    ]
+    // ...
+    "require": {
+        // ...
+        "happyworm/jPlayer": "2.*"
+        // ...
+    }
+    // ...
+    "config": {
+        "component-dir": "your/desired/asset/path"
+    },
+    // ...
+
+Then execute the following:
+
+    php composer.phar update
+
+Composer will now download all components and install the needed files into `your/desired/asset/path`, ready to use.
+
 ## License
 [jPlayer](http://jplayer.org/) is licensed under the [MIT license](http://opensource.org/licenses/MIT).
 
