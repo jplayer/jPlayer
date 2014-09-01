@@ -7,8 +7,8 @@
  * http://www.opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.3.4
- * Date: 9th June 2014
+ * Version: 2.4.0
+ * Date: 1st September 2014
  *
  * Requires:
  *  - jQuery 1.7.0+

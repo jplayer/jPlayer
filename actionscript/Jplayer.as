@@ -7,8 +7,8 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.6.0
- * Date: 2nd April 2014
+ * Version: 2.7.0
+ * Date: 1st September 2014
  *
  * FlashVars expected: (AS3 property of: loaderInfo.parameters)
  *	id: 	(URL Encoded: String) Id of jPlayer instance
@@ -16,7 +16,8 @@
  *	muted:	(Boolean in a String) Sets the initial muted state
  *	jQuery:	(URL Encoded: String) Sets the jQuery var name. Used with: someVar = jQuery.noConflict(true); The someVar name must contain jQuery in it.
  *
- * Compiled using: Adobe Flex Compiler (mxmlc) Version 4.5.1 build 21328
+ * Compiled using: Adobe Flex Compiler (mxmlc) Version 4.6
+ *  mxmlc Jplayer.as -static-link-runtime-shared-libraries=true
  */
 
 package {
