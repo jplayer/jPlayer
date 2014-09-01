@@ -1,6 +1,6 @@
 {
 	"name": "jPlayer",
-	"version": "2.6.4",
+	"version": "2.7.0",
 	"main": [
 		"./jquery.jplayer/jquery.jplayer.js",
 		"./skin/pink.flag/jplayer.pink.flag.css"
