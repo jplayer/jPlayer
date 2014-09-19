@@ -7,8 +7,8 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.7.0
- * Date: 1st September 2014
+ * Version: 2.7.1
+ * Date: 19th September 2014
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -160,7 +160,7 @@
 		// "play", // jPlayer uses internally before bubbling.
 		// "pause", // jPlayer uses internally before bubbling.
 		"loadedmetadata",
-		"loadeddata",
+		// "loadeddata", // jPlayer uses internally before bubbling.
 		// "waiting", // jPlayer uses internally before bubbling.
 		// "playing", // jPlayer uses internally before bubbling.
 		"canplay",
@@ -479,7 +479,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.7.0",
+			script: "2.7.1",
 			needFlash: "2.7.0",
 			flash: "unknown"
 		},
@@ -1295,6 +1295,13 @@
 					if(self.internal.cmdsIgnored && this.readyState > 0) { // Detect iOS executed the command
 						self.internal.cmdsIgnored = false;
 					}
+					self._getHtmlStatus(mediaElement);
+					self._updateInterface();
+					self._trigger($.jPlayer.event.progress);
+				}
+			}, false);
+			mediaElement.addEventListener("loadeddata", function() {
+				if(entity.gate) {
 					self.androidFix.setMedia = false; // Disable the fix after the first progress event.
 					if(self.androidFix.play) { // Play Android audio - performing the fix.
 						self.androidFix.play = false;
@@ -1304,9 +1311,7 @@
 						self.androidFix.pause = false;
 						self.pause(self.androidFix.time);
 					}
-					self._getHtmlStatus(mediaElement);
-					self._updateInterface();
-					self._trigger($.jPlayer.event.progress);
+					self._trigger($.jPlayer.event.loadeddata);
 				}
 			}, false);
 			mediaElement.addEventListener("timeupdate", function() {
