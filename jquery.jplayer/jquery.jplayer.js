@@ -243,7 +243,16 @@
 			ua.indexOf("compatible") < 0 && rmozilla.exec( ua ) ||
 			[];
 
-		return { browser: match[1] || "", version: match[2] || "0" };
+		var oRet = { browser: match[1] || "", version: match[2] || "0" };
+
+		var rchrome = /(chrome)[ \/]([\w.]+)/;
+		var matchChrome = rchrome.exec(ua) || [];
+
+		if (matchChrome[1]) {
+			oRet.chromeVersion = matchChrome[2];
+		}
+
+		return oRet;
 	};
 
 	// Platform sniffer for detecting mobile devices
@@ -277,6 +286,9 @@
 	if ( browserMatch.browser ) {
 		$.jPlayer.browser[ browserMatch.browser ] = true;
 		$.jPlayer.browser.version = browserMatch.version;
+		if (typeof(browserMatch.chromeVersion) != 'undefined') {
+			$.jPlayer.browser.chromeVersion = browserMatch.chromeVersion;
+		}
 	}
 	var platformMatch = $.jPlayer.uaPlatform(navigator.userAgent);
 	if ( platformMatch.platform ) {
@@ -1827,8 +1839,8 @@
 								self._html_setAudio(media);
 								self.html.active = true;
 
-								// Setup the Android Fix - Only for HTML audio.
-								if($.jPlayer.platform.android) {
+								// Setup the Android Fix - Only for HTML audio. And it's not needed not for Chrome 37+.
+								if ( $.jPlayer.platform.android && !(typeof($.jPlayer.browser.chromeVersion) != 'undefined' && parseInt($.jPlayer.browser.chromeVersion) >= 37) ) {
 									self.androidFix.setMedia = true;
 								}
 							} else {
