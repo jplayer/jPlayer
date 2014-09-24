@@ -75,9 +75,6 @@ package {
 
 		private var txLog:TextField;
 		private var debug:Boolean = false; // Set debug to false for release compile!
-		private var localAIRDebug:Boolean = false; // This is autodetermined by AIR app - leave false!
-
-		private var traceOut:TraceOut; // This class was found to cause problems on OSX with Firefox and Safari where more than 8 instances of the SWF are on a page.
 
 		public function Jplayer() {
 
@@ -156,8 +153,6 @@ package {
 					myMp3Player.addEventListener(JplayerEvent.DEBUG_MSG, debugMsgHandler);
 					myMp4Player.addEventListener(JplayerEvent.DEBUG_MSG, debugMsgHandler);
 					myRtmpPlayer.addEventListener(JplayerEvent.DEBUG_MSG, debugMsgHandler);
-
-					traceOut = new TraceOut(); // Instance it only when in debug mode. See comment above at var declaration.
 				}
 			}
 
@@ -510,12 +505,6 @@ package {
 			}
 		}
 		
-		private function tracer(msg:String):void {
-			if(debug) {
-				traceOut.tracer(msg);
-			}
-		}
-		
 		private function extractStatusData(data:JplayerStatus):Object {
 			var myStatus:Object = {
 				version: JplayerStatus.VERSION,
@@ -604,22 +593,16 @@ package {
 				jPlayerFlashEvent(new JplayerEvent(JplayerEvent.JPLAYER_CLICK, myMp4Player.myStatus, "click"))
 			}
 		}
-		// This event is never called. See comments in class constructor.
+		// Handlers for context menu
 		private function menuSelectHandler_jPlayer(e:ContextMenuEvent):void {
 			navigateToURL(new URLRequest("http://jplayer.org/"), "_blank");
 		}
-		// This event is never called. See comments in class constructor.
 		private function menuSelectHandler_happyworm(e:ContextMenuEvent):void {
 			navigateToURL(new URLRequest("http://happyworm.com/"), "_blank");
 		}
 		private function log(t:String):void {
 			if(debug) {
 				txLog.text = t + "\n" + txLog.text;
-				localAIRDebug = traceOut.localAIRDebug();
-				if(localAIRDebug) {
-					tracer(t);
-				}
-
 				if(ExternalInterface.available && !securityIssue) {
 					ExternalInterface.call("console.log", t);
 				}
