@@ -101,6 +101,7 @@ module.exports = function(grunt) {
 	grunt.registerTask('default', ['test', 'build']);
 
 	grunt.registerTask('test', ['jshint']);
-	grunt.registerTask('build', ['uglify', 'flash']);
-	grunt.registerTask('flash', ['mxmlc']);
+	grunt.registerTask('build', ['js', 'swf']);
+	grunt.registerTask('js', ['uglify']);
+	grunt.registerTask('swf', ['mxmlc']);
 };
