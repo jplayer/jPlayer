@@ -76,14 +76,31 @@ module.exports = function(grunt) {
 				}
 */
 			}
+		},
+
+		mxmlc: {
+			options: {
+				rawConfig: '-static-link-runtime-shared-libraries=true'
+			},
+			jplayer: {
+				files: {
+
+					// Plan to rename the SWF... And maybe the top level AS and package name for no caps.
+					// 'js/jplayer/jquery.jplayer.swf': ['src/actionscript/Jplayer.as']
+
+					'js/jplayer/Jplayer.swf': ['src/actionscript/Jplayer.as']
+				}
+			}
 		}
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-mxmlc');
 
-	grunt.registerTask('default', ['jshint', 'uglify']);
+	grunt.registerTask('default', ['test', 'build']);
 
 	grunt.registerTask('test', ['jshint']);
-	grunt.registerTask('build', ['uglify']);
+	grunt.registerTask('build', ['uglify', 'flash']);
+	grunt.registerTask('flash', ['mxmlc']);
 };
