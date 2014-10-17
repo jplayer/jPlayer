@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+
+<!-- Website Design By: www.happyworm.com -->
+<title>Demo : jPlayer as an audio live-stream player</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="../../skin/pink.flag/jplayer.pink.flag.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="../../js/jplayer/jquery.jplayer.min.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+
+	var stream = {
+		title: "ABC Jazz",
+		mp3: "http://listen.radionomy.com/abc-jazz"
+	},
+	ready = false;
+
+	$("#jquery_jplayer_1").jPlayer({
+		ready: function (event) {
+			ready = true;
+			$(this).jPlayer("setMedia", stream);
+		},
+		pause: function() {
+			$(this).jPlayer("clearMedia");
+		},
+		error: function(event) {
+			if(ready && event.jPlayer.error.type === $.jPlayer.error.URL_NOT_SET) {
+				// Setup the media stream again and play it.
+				$(this).jPlayer("setMedia", stream).jPlayer("play");
+			}
+		},
+		swfPath: "../../js/jplayer",
+		supplied: "mp3",
+		preload: "none",
+		wmode: "window",
+		keyEnabled: true
+	});
+
+});
+//]]>
+</script>
+</head>
+<body>
+
+		<div id="jquery_jplayer_1" class="jp-jplayer"></div>
+
+		<div id="jp_container_1" class="jp-audio-stream">
+			<div class="jp-type-single">
+				<div class="jp-gui jp-interface">
+					<ul class="jp-controls">
+						<li><a href="javascript:;" class="jp-play" tabindex="1">play</a></li>
+						<li><a href="javascript:;" class="jp-pause" tabindex="1">pause</a></li>
+						<li><a href="javascript:;" class="jp-mute" tabindex="1" title="mute">mute</a></li>
+						<li><a href="javascript:;" class="jp-unmute" tabindex="1" title="unmute">unmute</a></li>
+						<li><a href="javascript:;" class="jp-volume-max" tabindex="1" title="max volume">max volume</a></li>
+					</ul>
+					<div class="jp-volume-bar">
+						<div class="jp-volume-bar-value"></div>
+					</div>
+				</div>
+				<div class="jp-details">
+					<ul>
+						<li><span class="jp-title"></span></li>
+					</ul>
+				</div>
+				<div class="jp-no-solution">
+					<span>Update Required</span>
+					To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
+				</div>
+			</div>
+		</div>
+</body>
+
+</html>
