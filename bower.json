@@ -2,7 +2,7 @@
 	"name": "jPlayer",
 	"version": "2.7.1",
 	"main": [
-		"./jquery.jplayer/jquery.jplayer.js",
+		"./js/jplayer/jquery.jplayer.min.js",
 		"./skin/pink.flag/jplayer.pink.flag.css"
 	],
 	"dependencies": {
