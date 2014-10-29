@@ -529,7 +529,8 @@
 				seeking: "jp-state-seeking",
 				muted: "jp-state-muted",
 				looped: "jp-state-looped",
-				fullScreen: "jp-state-full-screen"
+				fullScreen: "jp-state-full-screen",
+				noVolume: "jp-state-no-volume"
 			},
 			useStateClassSkin: false, // A state class skin relies on the state classes to change the visual appearance. The single control toggles the effect, for example: play then pause, mute then unmute.
 			autoBlur: true, // GUI control handlers will drop focus after clicks.
@@ -2128,6 +2129,7 @@
 			v = this.options.muted ? 0 : v;
 
 			if(this.status.noVolume) {
+				this.addStateClass('noVolume');
 				if(this.css.jq.volumeBar.length) {
 					this.css.jq.volumeBar.hide();
 				}
@@ -2138,6 +2140,7 @@
 					this.css.jq.volumeMax.hide();
 				}
 			} else {
+				this.removeStateClass('noVolume');
 				if(this.css.jq.volumeBar.length) {
 					this.css.jq.volumeBar.show();
 				}
