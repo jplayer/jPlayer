@@ -9,19 +9,22 @@
  *  - http://www.opensource.org/licenses/mit-license.php
  *
  * Author: Silvia Benvenuti
- * Skin Version: 1.4 (jPlayer 2.7.0)
- * Date: 31st May 2014
+ * Skin Version: 1.5 (jPlayer 2.7.0)
+ * Date: 29th October 2014
  */
 
-div.jp-audio,
-div.jp-audio-stream,
-div.jp-video {
+.jp-audio *:focus,
+.jp-audio-stream *:focus,
+.jp-video *:focus {
+	/* Disable the browser focus highlighting. */
+	outline:none;
+}
 
-	/* Edit the font-size to counteract inherited font sizing.
-	 * Eg. 1.25em = 1 / 0.8em
-	 */
+.jp-audio,
+.jp-audio-stream,
+.jp-video {
 
-	font-size:1.25em; /* 1.25em for testing in site pages */ /* No parent CSS that can effect the size in the demos ZIP */
+	font-size:16px;
 
 	font-family:Verdana, Arial, sans-serif;
 	line-height:1.6;
@@ -32,23 +35,23 @@ div.jp-video {
 	border-bottom:1px solid #180a1f;
 	background-color:#3a2a45;
 }
-div.jp-audio {
+.jp-audio {
 	width:201px;
 	padding:20px;
 }
 
-div.jp-audio-stream {
+.jp-audio-stream {
 	width:101px;
 	padding:20px 20px 10px 20px;
 }
 
-div.jp-video-270p {
+.jp-video-270p {
 	width:480px;
 }
-div.jp-video-360p {
+.jp-video-360p {
 	width:640px;
 }
-div.jp-video-full {
+.jp-video-full {
 	/* Rules for IE6 (full-screen) */
 	width:480px;
 	height:270px;
@@ -57,18 +60,18 @@ div.jp-video-full {
 }
 
 /* The z-index rule is defined in this manner to enable Popcorn plugins that add overlays to video area. EG. Subtitles. */
-div.jp-video-full div div {
+.jp-video-full div div {
 	z-index:1000;
 }
 
-div.jp-video-full div.jp-jplayer {
+.jp-video-full .jp-jplayer {
 	top: 0;
 	left: 0;
 	position: fixed !important; position: relative; /* Rules for IE6 (full-screen) */
 	overflow: hidden;
 }
 
-div.jp-video-full div.jp-gui {
+.jp-video-full .jp-gui {
 	position: fixed !important; position: static; /* Rules for IE6 (full-screen) */
 	top: 0;
 	left: 0;
@@ -76,32 +79,22 @@ div.jp-video-full div.jp-gui {
 	height:100%;
 	z-index:1001; /* 1 layer above the others. */
 }
-div.jp-video-full div.jp-interface {
+.jp-video-full .jp-interface {
 	position: absolute !important; position: relative; /* Rules for IE6 (full-screen) */
 	bottom: 0;
 	left: 0;
 }
 
-div.jp-interface {
+.jp-interface {
 	position: relative;
 	width:100%;
 	background-color:#3a2a45; /* Required for the full screen */
 }
 
 
-div.jp-audio .jp-interface {
-	height: 80px;
-	padding-top:30px;
-}
-
-div.jp-audio-stream .jp-interface {
-	height: 50px;
-	padding-top:30px;
-}
-
 /* @group CONTROLS */
 
-div.jp-controls-holder {
+.jp-video .jp-controls-holder {
 	clear: both;
 	width:440px;
 	margin:0 auto 10px auto;
@@ -109,78 +102,81 @@ div.jp-controls-holder {
 	overflow:hidden;
 }
 
-div.jp-interface ul.jp-controls {
+.jp-audio .jp-controls-holder {
+	height: 80px;
+}
+.jp-audio-stream .jp-controls-holder {
+	height: 50px;
+}
+
+.jp-controls {
 	background: url("jplayer.pink.flag.jpg") 0 0 no-repeat;
-	list-style-type:none;
 	padding: 1px 0 2px 1px;
 	overflow:hidden;
 	width: 201px;
 	height: 34px;
 }
 
-div.jp-audio ul.jp-controls,
-div.jp-audio-stream ul.jp-controls {
+.jp-audio .jp-controls,
+.jp-audio-stream .jp-controls {
 	margin:0 auto;
 }
 
-div.jp-audio-stream ul.jp-controls {
+.jp-audio-stream .jp-controls {
 	width: 100px;
 }
 
-div.jp-video ul.jp-controls {
+.jp-video .jp-controls {
 	margin:0 0 0 115px;
 	float:left;
 	display:inline; /* need this to fix IE6 double margin */
 }
 
-div.jp-interface ul.jp-controls li {
-	display:inline;
-	float: left;
-}
-div.jp-interface ul.jp-controls a {
+.jp-controls button {
 	display:block;
+	float:left;
 	overflow:hidden;
 	text-indent:-9999px;
 	height: 34px;
 	margin: 0 1px 2px 0;
 	padding: 0;
-}
-
-
-/* @group single player controls */
-
-div.jp-type-single  .jp-controls li a{
-	width: 99px;
+	border:none;
 	cursor: pointer;
 }
 
-div.jp-type-single  .jp-play {
+/* @group single player controls */
+
+.jp-type-single .jp-controls button {
+	width: 99px;
+}
+
+.jp-type-single  .jp-play {
 	background: url("jplayer.pink.flag.jpg") 0px -40px no-repeat;
 }
 
-div.jp-type-single  .jp-play:hover {
+.jp-type-single  .jp-play:focus {
 	background: url("jplayer.pink.flag.jpg") -100px -40px no-repeat;
 }
 
-.jp-state-playing div.jp-type-single  .jp-play {
+.jp-state-playing .jp-type-single  .jp-play {
 	background: url("jplayer.pink.flag.jpg") 0px -120px no-repeat;
 }
 
-.jp-state-playing div.jp-type-single  .jp-play:hover {
+.jp-state-playing .jp-type-single  .jp-play:focus {
 	background: url("jplayer.pink.flag.jpg") -100px -120px no-repeat;
 }
 
 /* The right border is normally in the ul background image. */
-div.jp-audio-stream .jp-play,
-div.jp-audio-stream .jp-pause {
+.jp-audio-stream .jp-play,
+.jp-audio-stream .jp-pause {
 	border-right:1px solid #180920;
 }
 
-div.jp-type-single  .jp-stop {
+.jp-type-single .jp-stop {
 	background: url("jplayer.pink.flag.jpg") 0px -80px no-repeat;
 }
 
-div.jp-type-single  .jp-stop:hover {
+.jp-type-single .jp-stop:focus {
 	background: url("jplayer.pink.flag.jpg") -100px -80px no-repeat;
 }
 
@@ -188,16 +184,15 @@ div.jp-type-single  .jp-stop:hover {
 
 /* @group playlist player controls */
 
-div.jp-type-playlist .jp-controls li a{
+.jp-type-playlist .jp-controls button {
 	width: 49px;
-	cursor: pointer;
 }
 
-div.jp-type-playlist .jp-play {
+.jp-type-playlist .jp-play {
 	background: url("jplayer.pink.flag.jpg") -24px -40px no-repeat;
 }
 
-div.jp-type-playlist .jp-play:hover {
+.jp-type-playlist .jp-play:focus {
 	background: url("jplayer.pink.flag.jpg") -124px -40px no-repeat;
 }
 
@@ -205,127 +200,113 @@ div.jp-type-playlist .jp-play:hover {
 	background: url("jplayer.pink.flag.jpg") -24px -120px no-repeat;
 }
 
-.jp-state-playing div.jp-type-playlist .jp-play:hover {
+.jp-state-playing div.jp-type-playlist .jp-play:focus {
 	background: url("jplayer.pink.flag.jpg") -124px -120px no-repeat;
 }
 
-div.jp-type-playlist .jp-stop {
+.jp-type-playlist .jp-stop {
 	background: url("jplayer.pink.flag.jpg") -24px -80px no-repeat;
 }
 
-div.jp-type-playlist .jp-stop:hover {
+.jp-type-playlist .jp-stop:focus {
 	background: url("jplayer.pink.flag.jpg") -124px -80px no-repeat;
 }
 
-div.jp-type-playlist .jp-previous {
+.jp-type-playlist .jp-previous {
 	background: url("jplayer.pink.flag.jpg") -24px -200px no-repeat;
 }
 
-div.jp-type-playlist .jp-previous:hover {
+.jp-type-playlist .jp-previous:focus {
 	background: url("jplayer.pink.flag.jpg") -124px -200px no-repeat;
 }
 
-div.jp-type-playlist .jp-next {
+.jp-type-playlist .jp-next {
 	background: url("jplayer.pink.flag.jpg") -24px -160px no-repeat;
 }
 
-div.jp-type-playlist .jp-next:hover {
+.jp-type-playlist .jp-next:focus {
 	background: url("jplayer.pink.flag.jpg") -124px -160px no-repeat;
 }
 
 /* @end */
 
-/* @end */
-
-
-
 
 /* @group TOGGLES */
 
-ul.jp-toggles {
-	list-style-type:none;
+.jp-toggles {
 	padding:0;
 	margin:0 auto;
 	overflow:hidden;
 }
 
-div.jp-audio ul.jp-toggles {
+.jp-audio .jp-toggles {
 	width:55px;
 }
 
-div.jp-audio .jp-type-single ul.jp-toggles {
+.jp-audio .jp-type-single .jp-toggles {
 	width:25px;
 }
 
-div.jp-video ul.jp-toggles {
-	width:100px;
-	margin-top: 10px;
+.jp-video .jp-toggles {
+	float:left;
+	width:105px;
+	margin: 10px 0 0 15px;
 }
 
-ul.jp-toggles li{
+.jp-toggles button {
 	display:block;
-	float:right;
-}
-
-ul.jp-toggles li a{
-	display:block;
+	float:left;
 	width:25px;
 	height:18px;
 	text-indent:-9999px;
 	line-height:100%; /* need this for IE6 */
+	border:none;
 	cursor: pointer;
 }
 
 .jp-full-screen {
 	background: url("jplayer.pink.flag.jpg") 0 -420px no-repeat;
-	margin-left: 20px;
+	margin-left: 15px;
 }
-
-.jp-full-screen:hover {
+.jp-full-screen:focus {
 	background: url("jplayer.pink.flag.jpg") -30px -420px no-repeat;
 }
-
 .jp-state-full-screen .jp-full-screen {
 	background: url("jplayer.pink.flag.jpg") -60px -420px no-repeat;
-	margin-left: 20px;
 }
-
-.jp-state-full-screen .jp-full-screen:hover {
+.jp-state-full-screen .jp-full-screen:focus {
 	background: url("jplayer.pink.flag.jpg") -90px -420px no-repeat;
 }
 
 .jp-repeat {
 	background: url("jplayer.pink.flag.jpg") 0 -440px no-repeat;
+	margin-left: 0;
 }
-
-.jp-repeat:hover {
+.jp-repeat:focus {
 	background: url("jplayer.pink.flag.jpg") -30px -440px no-repeat;
 }
-
 .jp-state-looped .jp-repeat {
 	background: url("jplayer.pink.flag.jpg") -60px -440px no-repeat;
 }
-
-.jp-state-looped .jp-repeat:hover {
+.jp-state-looped .jp-repeat:focus {
 	background: url("jplayer.pink.flag.jpg") -90px -440px no-repeat;
 }
 
 .jp-shuffle {
 	background: url("jplayer.pink.flag.jpg") 0 -460px no-repeat;
-	margin-left: 5px;
+	margin-left: 15px;
 }
-
-.jp-shuffle:hover {
+.jp-shuffle:focus {
 	background: url("jplayer.pink.flag.jpg") -30px -460px no-repeat;
 }
-
-.jp-shuffle-off {
+.jp-state-shuffled .jp-shuffle {
 	background: url("jplayer.pink.flag.jpg") -60px -460px no-repeat;
-	margin-left: 5px;
 }
-
-.jp-shuffle-off:hover {
+.jp-state-shuffled .jp-shuffle:focus {
 	background: url("jplayer.pink.flag.jpg") -90px -460px no-repeat;
+}
+.jp-audio .jp-shuffle {
+	margin-left: 5px;
 }
 
 
@@ -375,61 +356,73 @@ div.jp-video .jp-progress {
 
 /* @group volume controls */
 
-div.jp-interface ul.jp-controls a.jp-mute,
-div.jp-interface ul.jp-controls a.jp-unmute,
-div.jp-interface ul.jp-controls a.jp-volume-max {
-	position: absolute;
-	width: 16px;
-	height: 11px;
+.jp-state-no-volume .jp-volume-controls {
+	display:none;
 }
 
-div.jp-audio ul.jp-controls a.jp-mute,
-div.jp-audio ul.jp-controls a.jp-unmute,
-div.jp-audio-stream ul.jp-controls a.jp-mute,
-div.jp-audio-stream ul.jp-controls a.jp-unmute {
+.jp-audio .jp-volume-controls,
+.jp-audio-stream .jp-volume-controls {
+	height:30px;
+}
+
+.jp-volume-controls button {
+	position: absolute;
+	display:block;
+	overflow:hidden;
+	text-indent:-9999px;
+	margin: 0;
+	padding: 0;
+	width: 16px;
+	height: 11px;
+	border:none;
+	cursor: pointer;
+}
+
+.jp-audio .jp-volume-controls .jp-mute,
+.jp-audio-stream .jp-volume-controls .jp-mute {
 	top:-6px;
 	left: 0;
 }
 
-div.jp-audio ul.jp-controls a.jp-volume-max,
-div.jp-audio-stream ul.jp-controls a.jp-volume-max {
+.jp-audio .jp-volume-controls .jp-volume-max,
+.jp-audio-stream .jp-volume-controls .jp-volume-max {
 	top:-6px;
 	right: 0;
 }
 
 
-div.jp-video ul.jp-controls a.jp-mute,
-div.jp-video ul.jp-controls a.jp-unmute {
+.jp-video .jp-volume-controls .jp-mute,
+.jp-video .jp-volume-controls .jp-unmute {
 	left: 0;
 	top:14px;
 }
 
-div.jp-video ul.jp-controls a.jp-volume-max {
+.jp-video .jp-volume-controls .jp-volume-max {
 	left: 84px;
 	top:14px;
 }
 
-div.jp-interface ul.jp-controls a.jp-mute {
+.jp-volume-controls .jp-mute {
 	background: url("jplayer.pink.flag.jpg") 0px -330px no-repeat;
 }
 
-div.jp-interface ul.jp-controls a.jp-mute:hover {
+.jp-volume-controls .jp-mute:focus {
 	background: url("jplayer.pink.flag.jpg") -25px -330px no-repeat;
 }
 
-.jp-state-muted div.jp-interface ul.jp-controls a.jp-mute {
+.jp-state-muted .jp-volume-controls .jp-mute {
 	background: url("jplayer.pink.flag.jpg") -60px -330px no-repeat;
 }
 
-.jp-state-muted div.jp-interface ul.jp-controls a.jp-mute:hover {
+.jp-state-muted .jp-volume-controls .jp-mute:focus {
 	background: url("jplayer.pink.flag.jpg") -85px -330px no-repeat;
 }
 
-div.jp-interface ul.jp-controls a.jp-volume-max {
+.jp-volume-controls .jp-volume-max {
 	background: url("jplayer.pink.flag.jpg") 0px -350px no-repeat;
 }
 
-div.jp-interface ul.jp-controls a.jp-volume-max:hover {
+.jp-volume-controls .jp-volume-max:focus {
 	background: url("jplayer.pink.flag.jpg") -25px -350px no-repeat;
 }
 
@@ -440,26 +433,22 @@ div.jp-interface ul.jp-controls a.jp-volume-max:hover {
 	height: 4px;
 	padding: 2px 2px 1px 2px;
 	overflow: hidden;
-}
-
-.jp-volume-bar:hover {
 	cursor:  pointer;
 }
 
-
-div.jp-audio .jp-interface .jp-volume-bar,
-div.jp-audio-stream .jp-interface .jp-volume-bar {
+.jp-audio .jp-interface .jp-volume-bar,
+.jp-audio-stream .jp-interface .jp-volume-bar {
 	top:10px;
 	left: 0;
 }
 
-div.jp-audio-stream .jp-interface .jp-volume-bar {
+.jp-audio-stream .jp-interface .jp-volume-bar {
 	width: 97px;
 	border-right:1px solid #180920;
 	padding-right:1px;
 }
 
-div.jp-video .jp-volume-bar {
+.jp-video .jp-volume-bar {
 	top: 0;
 	left: 0;
 	width:95px;
@@ -485,11 +474,13 @@ div.jp-video .jp-volume-bar {
 
 .jp-current-time {
 	float: left;
+	cursor: default;
 }
 
 .jp-duration {
 	float: right;
 	text-align:right;
+	cursor: pointer;
 }
 
 .jp-video .jp-current-time {
@@ -504,7 +495,26 @@ div.jp-video .jp-volume-bar {
 
 /* @group playlist */
 
-.jp-details ul,
+.jp-details {
+	font-size:.7em;
+	margin:0;
+	padding:0;
+}
+.jp-details .jp-title {
+	padding:0;
+	margin:0;
+	overflow:hidden;
+	text-align:center;
+	cursor: default;
+}
+
+.jp-video .jp-details {
+	margin: 0 90px 10px;
+}
+
+
+
+
 .jp-playlist ul {
 	list-style-type:none;	
 	font-size:.7em;
@@ -512,28 +522,16 @@ div.jp-video .jp-volume-bar {
 	padding: 0;
 }
 
-.jp-video .jp-details ul {
-	margin: 0 20px 10px;
-}
-
 .jp-video .jp-playlist ul {
 	margin: 0 20px;
 }
 
-.jp-details li,
 .jp-playlist li {
 	position: relative;
 	padding: 2px 0;
 	border-top:1px solid #554461;
 	border-bottom:1px solid #180a1f;
 	overflow: hidden;
-}
-
-.jp-details li{
-	border-bottom:none;
-	border-top:none;
-	padding:0;
-	text-align:center;
 }
 
 /* Note that the first-child (IE6) and last-child (IE6/7/8) selectors do not work on IE */
@@ -603,23 +601,22 @@ span.jp-artist {
 /* @end */
 
 
-div.jp-video div.jp-video-play {
+.jp-video .jp-video-play {
 	width:100%;
 	overflow:hidden; /* Important for nested negative margins to work in modern browsers */
-	cursor:pointer;
 }
-div.jp-video-270p div.jp-video-play {
+.jp-video-270p .jp-video-play {
 	margin-top:-270px;
 	height:270px;
 }
-div.jp-video-360p div.jp-video-play {
+.jp-video-360p .jp-video-play {
 	margin-top:-360px;
 	height:360px;
 }
-div.jp-video-full div.jp-video-play {
+.jp-video-full .jp-video-play {
 	height:100%;
 }
-a.jp-video-play-icon {
+.jp-video-play-icon {
 	position:relative;
 	display:block;
 	width: 112px;
@@ -630,21 +627,24 @@ a.jp-video-play-icon {
 	left:50%;
 	top:50%;
 
+	border:none;
+	cursor:pointer;
+
 	background: url("jplayer.pink.flag.video.play.png") 0 0 no-repeat;
 	text-indent:-9999px;
 }
-div.jp-video-play:hover a.jp-video-play-icon {
+.jp-video-play-icon:focus {
 	background: url("jplayer.pink.flag.video.play.png") 0 -100px no-repeat;
 }
 
 
-div.jp-jplayer audio,
-div.jp-jplayer {
+.jp-jplayer audio,
+.jp-jplayer {
 	width:0px;
 	height:0px;
 }
 
-div.jp-jplayer {
+.jp-jplayer {
 	background-color: #000000;
 }
 
