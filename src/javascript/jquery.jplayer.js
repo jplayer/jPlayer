@@ -2203,6 +2203,8 @@
 							self[fn](e);
 							if(self.options.autoBlur) {
 								$(this).blur();
+							} else {
+								$(this).focus(); // Force focus for ARIA.
 							}
 						};
 						this.css.jq[fn].bind("click.jPlayer", handler); // Using jPlayer namespace
