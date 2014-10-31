@@ -1,6 +1,6 @@
 # Contributor License Agreement.
 
-*The document below clarifies the terms under which You, the person listed below, may make "Contributions" (software, bug fixes, configuration changes, documentation, or any other materials) to the project at [https://github.com/happyworm/jPlayer](https://github.com/happyworm/jPlayer). This license protects You, Happyworm Ltd. and licensees; it does not change your rights to use your own Contributions for any other purpose. Please complete the following information about You and the Contributions. If you have questions about these terms, please [contact us](mailto:hello@happyworm.com).*
+*The document below clarifies the terms under which You, the person listed below, may make "Contributions" (software, bug fixes, configuration changes, documentation, or any other materials) to the project at [https://github.com/happyworm/jPlayer](https://github.com/happyworm/jPlayer). This license protects You, [Happyworm Ltd.](http://happyworm.com) and licensees; it does not change your rights to use your own Contributions for any other purpose. Please complete the following information about You and the Contributions. If you have questions about these terms, please [contact us](mailto:hello@happyworm.com).*
 
 ## You and Happyworm Ltd. agree:
 
