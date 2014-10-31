@@ -16,4 +16,4 @@ The Contributions are your original work. You represent that the Contributions a
 
 We determine the code that is in our project. You understand that the decision to include the Contribution in any project or source repository is entirely that of the Happyworm Ltd., and this agreement does not guarantee that the Contributions will be included in any product.
 
-No Implied Warranties. The Happyworm Ltd. acknowledges that, except as explicitly described in this Agreement, the Contribution is provided on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, WITHOUT LIMITATION, ANY WARRANTIES OR CONDITIONS OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+No Implied Warranties. Happyworm Ltd. acknowledges that, except as explicitly described in this Agreement, the Contribution is provided on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, WITHOUT LIMITATION, ANY WARRANTIES OR CONDITIONS OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
