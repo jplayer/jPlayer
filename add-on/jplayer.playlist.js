@@ -456,6 +456,23 @@
 		shuffle: function(shuffled, playNow) {
 			var self = this;
 
+			var arrayShuffle = function (array) {
+				var valueSwap = function(array, i , j) {
+					var tmp = array[i];
+					array[i] = array[j];
+					array[j] = tmp;
+				};
+
+				var getRandomInt = function(min, max) {
+				  return Math.floor(Math.random() * (max - min + 1)) + min;
+				};
+
+				for (var i = 0; i < array.length - 1; i++) {
+					var j = getRandomInt(i + 1, array.length - 1);
+					valueSwap(array, i, j);
+				};
+			};
+
 			if(shuffled === undefined) {
 				shuffled = !this.shuffled;
 			}
@@ -465,9 +482,10 @@
 				$(this.cssSelector.playlist + " ul").slideUp(this.options.playlistOptions.shuffleTime, function() {
 					self.shuffled = shuffled;
 					if(shuffled) {
-						self.playlist.sort(function() {
+						/*self.playlist.sort(function() {
 							return 0.5 - Math.random();
-						});
+						});*/
+						arrayShuffle(self.playlist);
 					} else {
 						self._originalPlaylist();
 					}
