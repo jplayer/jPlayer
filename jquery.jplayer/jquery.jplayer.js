@@ -485,6 +485,7 @@
 		},
 		options: { // Instanced in $.jPlayer() constructor
 			swfPath: "js", // Path to Jplayer.swf. Can be relative, absolute or server root relative.
+			swfFullPathOverride: false, // If true, forces the swfPath option to be treated as the full path to Jplayer.swf, even if it doesn't end with ".swf".
 			solution: "html, flash", // Valid solutions: html, flash. Order defines priority. 1st is highest,
 			supplied: "mp3", // Defines which formats jPlayer will try and support and the priority by the order. 1st is highest,
 			preload: 'metadata',  // HTML5 Spec values: none, metadata, auto.
@@ -903,7 +904,7 @@
 			this.internal.flash = $.extend({}, {
 				id: this.options.idPrefix + "_flash_" + this.count,
 				jq: undefined,
-				swf: this.options.swfPath + (this.options.swfPath.toLowerCase().slice(-4) !== ".swf" ? (this.options.swfPath && this.options.swfPath.slice(-1) !== "/" ? "/" : "") + "Jplayer.swf" : "")
+				swf: this.options.swfPath + (this.options.swfFullPathOverride ? "" : (this.options.swfPath.toLowerCase().slice(-4) !== ".swf" ? (this.options.swfPath && this.options.swfPath.slice(-1) !== "/" ? "/" : "") + "Jplayer.swf" : ""))
 			});
 			this.internal.poster = $.extend({}, {
 				id: this.options.idPrefix + "_poster_" + this.count,
