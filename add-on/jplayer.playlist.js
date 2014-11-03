@@ -465,9 +465,10 @@
 				$(this.cssSelector.playlist + " ul").slideUp(this.options.playlistOptions.shuffleTime, function() {
 					self.shuffled = shuffled;
 					if(shuffled) {
-						self.playlist.sort(function() {
-							return 0.5 - Math.random();
-						});
+						for (var tmp, cur, top=self.playlist.length; top--;){
+							cur = (Math.random() * (top + 1)) << 0;
+							tmp = self.playlist[cur]; self.playlist[cur] = self.playlist[top]; self.playlist[top] = tmp;
+						}
 					} else {
 						self._originalPlaylist();
 					}
