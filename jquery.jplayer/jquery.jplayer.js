@@ -1449,6 +1449,11 @@
 				this.status.duration = media.duration;
 			}
 
+			// uses a supplied backup duration if the file can't be cached
+			if (this.status.duration == 0 && this.options.backupduration) {
+				this.status.duration = this.options.backupduration;
+			}
+
 			ct = media.currentTime;
 			cpa = (this.status.duration > 0) ? 100 * ct / this.status.duration : 0;
 			if((typeof media.seekable === "object") && (media.seekable.length > 0)) {
