@@ -85,10 +85,10 @@ module.exports = function(grunt) {
 			jplayer: {
 				files: {
 
-					// Plan to rename the SWF... And maybe the top level AS and package name for no caps.
-					// 'js/jplayer/jquery.jplayer.swf': ['src/actionscript/Jplayer.as']
+					// Compile and give the SWF a filename like the JavaScript filenames. Important as it is the options.
+					'js/jplayer/jquery.jplayer.swf': ['src/actionscript/Jplayer.as']
 
-					'js/jplayer/Jplayer.swf': ['src/actionscript/Jplayer.as']
+					// 'js/jplayer/Jplayer.swf': ['src/actionscript/Jplayer.as']
 				}
 			}
 		}
