@@ -7,8 +7,8 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.7.1
- * Date: 19th September 2014
+ * Version: 2.8.0
+ * Date: 11th November 2014
  */
 
 /* Code verified using http://www.jshint.com/ */
@@ -479,12 +479,12 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.7.1",
-			needFlash: "2.7.0",
+			script: "2.8.0",
+			needFlash: "2.8.0",
 			flash: "unknown"
 		},
 		options: { // Instanced in $.jPlayer() constructor
-			swfPath: "js", // Path to Jplayer.swf. Can be relative, absolute or server root relative.
+			swfPath: "js", // Path to jquery.jplayer.swf. Can be relative, absolute or server root relative.
 			solution: "html, flash", // Valid solutions: html, flash. Order defines priority. 1st is highest,
 			supplied: "mp3", // Defines which formats jPlayer will try and support and the priority by the order. 1st is highest,
 			preload: 'metadata',  // HTML5 Spec values: none, metadata, auto.
@@ -904,7 +904,7 @@
 			this.internal.flash = $.extend({}, {
 				id: this.options.idPrefix + "_flash_" + this.count,
 				jq: undefined,
-				swf: this.options.swfPath + (this.options.swfPath.toLowerCase().slice(-4) !== ".swf" ? (this.options.swfPath && this.options.swfPath.slice(-1) !== "/" ? "/" : "") + "Jplayer.swf" : "")
+				swf: this.options.swfPath + (this.options.swfPath.toLowerCase().slice(-4) !== ".swf" ? (this.options.swfPath && this.options.swfPath.slice(-1) !== "/" ? "/" : "") + "jquery.jplayer.swf" : "")
 			});
 			this.internal.poster = $.extend({}, {
 				id: this.options.idPrefix + "_poster_" + this.count,
