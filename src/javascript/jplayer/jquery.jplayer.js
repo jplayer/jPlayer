@@ -11,10 +11,6 @@
  * Date: 11th November 2014
  */
 
-/* Code verified using http://www.jshint.com/ */
-/*jshint asi:false, bitwise:false, boss:false, browser:true, curly:true, debug:false, eqeqeq:true, eqnull:false, evil:false, forin:false, immed:false, jquery:true, laxbreak:false, newcap:true, noarg:true, noempty:true, nonew:true, onevar:false, passfail:false, plusplus:false, regexp:false, undef:true, sub:false, strict:false, white:false, smarttabs:true */
-/*global define:false, ActiveXObject:false, alert:false */
-
 /* Support for Zepto 1.0 compiled with optional data module.
  * For AMD support, you will need to manually switch the 2 lines in the code below.
  * Search terms: "jQuery Switch" and "Zepto Switch"
