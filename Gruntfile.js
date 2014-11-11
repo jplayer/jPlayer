@@ -12,7 +12,7 @@ module.exports = function(grunt) {
 					banner: '/*! jPlayer <%= pkg.version %> for jQuery ~ (c) 2009-<%= grunt.template.today("yyyy") %> <%= pkg.organization %> ~ <%= pkg.license %> License */\n'
 				},
 				files: {
-					'js/jplayer/jquery.jplayer.min.js': ['src/javascript/jquery.jplayer.js']
+					'js/jplayer/jquery.jplayer.min.js': ['src/javascript/jplayer/jquery.jplayer.js']
 				}
 			},
 			playlist: {
@@ -20,7 +20,7 @@ module.exports = function(grunt) {
 					banner: '/*! jPlayerPlaylist for jPlayer <%= pkg.version %> ~ (c) 2009-<%= grunt.template.today("yyyy") %> <%= pkg.organization %> ~ <%= pkg.license %> License */\n'
 				},
 				files: {
-					'js/add-on/jplayer.playlist.min.js': ['src/javascript/jplayer.playlist.js']
+					'js/add-on/jplayer.playlist.min.js': ['src/javascript/add-on/jplayer.playlist.js']
 				}
 			},
 			inspector: {
@@ -28,7 +28,7 @@ module.exports = function(grunt) {
 					banner: '/*! jPlayerInspector for jPlayer <%= pkg.version %> ~ (c) 2009-<%= grunt.template.today("yyyy") %> <%= pkg.organization %> ~ <%= pkg.license %> License */\n'
 				},
 				files: {
-					'js/add-on/jquery.jplayer.inspector.min.js': ['src/javascript/jquery.jplayer.inspector.js']
+					'js/add-on/jquery.jplayer.inspector.min.js': ['src/javascript/add-on/jquery.jplayer.inspector.js']
 				}
 			},
 			popcorn: {
@@ -36,7 +36,7 @@ module.exports = function(grunt) {
 					banner: '/*! Popcorn Player for jPlayer <%= pkg.version %> ~ (c) 2009-<%= grunt.template.today("yyyy") %> <%= pkg.organization %> ~ <%= pkg.license %> License */\n'
 				},
 				files: {
-					'js/popcorn/popcorn.jplayer.min.js': ['src/javascript/popcorn.jplayer.js']
+					'js/popcorn/popcorn.jplayer.min.js': ['src/javascript/popcorn/popcorn.jplayer.js']
 				}
 			},
 		},
@@ -46,7 +46,7 @@ module.exports = function(grunt) {
 			test: {
 				src: [
 					'Gruntfile.js',
-					'src/javascript/*.js',
+					'src/javascript/**/*.js',
 					'!**/jquery.jplayer.inspector.js' // The inspector does not pass jshint, and this will be addressed in due course.
 				]
 			},
