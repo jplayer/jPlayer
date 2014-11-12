@@ -1,18 +1,20 @@
 # Contributing
 
-*This doc is "work in progress", please use the link to sign the CLA*
+jPlayer is an open source project and you are welcome to contribute.
+
 
 ## Code Style
 
-Follow the jQuery guidelines.
+Please follow the [jQuery Style Guide](http://contribute.jquery.org/style-guide/),
+in particular the [JavaScript Style Guide](http://contribute.jquery.org/style-guide/js/).
 
 
 ## Pull Requests
 
-* Make a branch in your fork. EG: issue-123
+* Make a branch in your fork. EG: patch-1
 * Apply your changes to that branch.
-* **Do not include built files in the PR**
-* Make a Pull Request to the ....... Still writing this doc.
+* **Do not include built files in the Pull Request**
+* Make a Pull Request to the master branch.
 
 
 ## Accept the CLA
