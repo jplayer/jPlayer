@@ -51,30 +51,11 @@ module.exports = function(grunt) {
 				]
 			},
 
-			// configure JSHint (Documented at http://www/jshint.com/docs/)
+			// jQuery linting guide http://contribute.jquery.org/style-guide/js/#linting
+			// docs http://www/jshint.com/docs/
 			options: {
-				// Using the jshint defaults
-
-				// For the jQuery code for extend.
-				eqnull: true,
-
-				// Prevent leaky vars
-				// undef: true,  // Turn that on later since lots of errors!
-				browser: true,
-
-				globals: {
-					hyperaudio: true
-				}
-
-/*
-				// lots of other options...
-				curly: true,
-				eqeqeq: true,
-				browser: true,
-				globals: {
-					jQuery: true
-				}
-*/
+				// Using .jshintrc files for the options.
+				jshintrc: true
 			}
 		},
 
@@ -84,11 +65,8 @@ module.exports = function(grunt) {
 			},
 			jplayer: {
 				files: {
-
-					// Compile and give the SWF a filename like the JavaScript filenames. Important as it is the options.
+					// Compile and give the SWF a filename like the JavaScript filenames. Important as it is the jPlayer code.
 					'js/jplayer/jquery.jplayer.swf': ['src/actionscript/Jplayer.as']
-
-					// 'js/jplayer/Jplayer.swf': ['src/actionscript/Jplayer.as']
 				}
 			}
 		}
