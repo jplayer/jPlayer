@@ -11,10 +11,10 @@ in particular the [JavaScript Style Guide](http://contribute.jquery.org/style-gu
 
 ## Pull Requests
 
-* Make a branch in your fork. EG: patch-1
-* Apply your changes to that branch.
+* Make a branch in your fork. For example, **patch-1**
+* Apply your changes to that branch
 * **Do not include built files in the Pull Request**
-* Make a Pull Request to the master branch.
+* Make a Pull Request to the **master** branch
 
 
 ## Accept the CLA
