@@ -7,11 +7,11 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 1.1.4
- * Date: 1st September 2014
+ * Version: 1.1.5
+ * Date: 11th November 2014
  *
  * For Popcorn Version: 1.3
- * For jPlayer Version: 2.7.0
+ * For jPlayer Version: 2.8.0
  * Requires: jQuery 1.7+
  * Note: jQuery dependancy cannot be removed since jPlayer 2 is a jQuery plugin. Use of jQuery will be kept to a minimum.
  */
@@ -19,8 +19,8 @@
 (function(Popcorn) {
 
 	var JQUERY_SCRIPT = '//code.jquery.com/jquery-1.11.1.min.js', // Used if jQuery not already present.
-	JPLAYER_SCRIPT = '//www.jplayer.org/2.7.0/js/jquery.jplayer.min.js', // Used if jPlayer not already present.
-	JPLAYER_SWFPATH = '//www.jplayer.org/2.7.0/js/Jplayer.swf', // Used if not specified in jPlayer options via SRC Object.
+	JPLAYER_SCRIPT = '//code.jplayer.org/2.8.0/jquery.jplayer.min.js', // Used if jPlayer not already present.
+	JPLAYER_SWFPATH = '//code.jplayer.org/2.8.0/jquery.jplayer.swf', // Used if not specified in jPlayer options via SRC Object.
 	SOLUTION = 'html,flash', // The default solution option.
 	DEBUG = false, // Decided to leave the debugging option and console output in for the time being. Overhead is trivial.
 	jQueryDownloading = false, // Flag to stop multiple instances from each pulling in jQuery, thus corrupting it.
