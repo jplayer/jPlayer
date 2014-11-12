@@ -1,7 +1,7 @@
 {
   "name": "jplayer",
-  "version": "2.7.1",
-  "description": "The jQuery HTML5 Audio / Video Library",
+  "version": "2.8.0",
+  "description": "The jQuery HTML5 Audio / Video Library. jPlayer allows you to create a media player with a consistent interface and experience across all browsers.",
   "organization": "Happyworm Ltd",
   "author": {
     "name": "Mark J Panaghiston",
@@ -10,16 +10,26 @@
   },
   "homepage": "http://www.jplayer.org/",
   "keywords": [
+    "jquery-plugin",
     "audio",
-    "video"
+    "video",
+    "media",
+    "player",
+    "jplayer"
   ],
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/happyworm/jPlayer.git"
   },
+  "bugs": "https://github.com/happyworm/jPlayer/issues",
   "github": "http://github.com/happyworm/jPlayer",
   "main": "js/jplayer/jquery.jplayer.min.js",
+  "files": [
+    "js",
+    "skin/blue.monday",
+    "skin/pink.flag"
+  ],
   "dependencies": {
     "jquery": ">1.7.0"
   },

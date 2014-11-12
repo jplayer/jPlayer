@@ -46,6 +46,7 @@ module.exports = function(grunt) {
 			test: {
 				src: [
 					'Gruntfile.js',
+					'*.json',
 					'src/javascript/**/*.js',
 					'!**/jquery.jplayer.inspector.js' // The inspector does not pass jshint, and this will be addressed in due course.
 				]
