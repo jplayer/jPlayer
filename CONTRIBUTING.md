@@ -19,4 +19,4 @@ in particular the [JavaScript Style Guide](http://contribute.jquery.org/style-gu
 
 ## Accept the CLA
 
-[Sign the Contributor License Agreement](https://www.clahub.com/agreements/happyworm/jPlayer)
+Contributors must [sign the Contributor License Agreement](https://www.clahub.com/agreements/happyworm/jPlayer).
