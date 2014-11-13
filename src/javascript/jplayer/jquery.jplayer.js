@@ -7,8 +7,8 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.8.0
- * Date: 11th November 2014
+ * Version: 2.8.1
+ * Date: 13th November 2014
  */
 
 /* Support for Zepto 1.0 compiled with optional data module.
@@ -1861,15 +1861,15 @@
 						}
 					}
 				}
-				if(this.css.jq.title.length) {
-					if(typeof media.title === 'string') {
+				if(typeof media.title === 'string') {
+					if(this.css.jq.title.length) {
 						this.css.jq.title.html(media.title);
-						if(this.htmlElement.audio) {
-							this.htmlElement.audio.setAttribute('title', media.title);
-						}
-						if(this.htmlElement.video) {
-							this.htmlElement.video.setAttribute('title', media.title);
-						}
+					}
+					if(this.htmlElement.audio) {
+						this.htmlElement.audio.setAttribute('title', media.title);
+					}
+					if(this.htmlElement.video) {
+						this.htmlElement.video.setAttribute('title', media.title);
 					}
 				}
 				this.status.srcSet = true;
