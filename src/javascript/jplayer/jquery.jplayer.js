@@ -475,7 +475,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.8.0",
+			script: "2.8.1",
 			needFlash: "2.8.0",
 			flash: "unknown"
 		},
