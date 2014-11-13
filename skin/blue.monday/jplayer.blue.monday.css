@@ -4,13 +4,13 @@
  *
  * Skin Name: Blue Monday
  *
- * Copyright (c) 2010-2014 Happyworm Ltd
+ * Copyright (c) 2010 - 2014 Happyworm Ltd
  * Licensed under the MIT license.
  *  - http://www.opensource.org/licenses/mit-license.php
  *
  * Author: Silvia Benvenuti
- * Skin Version: 5.0 (jPlayer 2.8.0)
- * Date: 4th November 2014
+ * Skin Version: 5.1 (jPlayer 2.8.0)
+ * Date: 13th November 2014
  */
 
 .jp-audio *:focus,
@@ -18,6 +18,13 @@
 .jp-video *:focus {
 	/* Disable the browser focus highlighting. */
 	outline:none;
+}
+
+.jp-audio button::-moz-focus-inner,
+.jp-audio-stream button::-moz-focus-inner,
+.jp-video button::-moz-focus-inner {
+	/* Disable the browser CSS3 focus highlighting. */
+	border: 0;
 }
 
 .jp-audio,
