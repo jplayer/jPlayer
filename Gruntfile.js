@@ -41,6 +41,18 @@ module.exports = function(grunt) {
 			},
 		},
 
+  		sass: {
+    		skins: {
+      			options: {
+        			outputStyle: 'nested'
+      			},
+      			files: {
+        			'skin/blue.monday/jplayer.blue.monday.css': 'skin/blue.monday/jplayer.blue.monday.scss',
+        			'skin/pink.flag/jplayer.pink.flag.css': 'skin/pink.flag/jplayer.pink.flag.scss'
+      			}
+    		}
+  		},
+
 		jshint: {
 
 			test: {
@@ -75,12 +87,13 @@ module.exports = function(grunt) {
 
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-sass');
 	grunt.loadNpmTasks('grunt-mxmlc');
 
 	grunt.registerTask('default', ['test', 'build']);
 
 	grunt.registerTask('test', ['jshint']);
-	grunt.registerTask('build', ['js', 'swf']);
+	grunt.registerTask('build', ['js', 'swf', 'sass']);
 	grunt.registerTask('js', ['uglify']);
 	grunt.registerTask('swf', ['mxmlc']);
 };
