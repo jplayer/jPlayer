@@ -7,8 +7,8 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.8.1
- * Date: 13th November 2014
+ * Version: 2.8.2
+ * Date: 19th November 2014
  */
 
 /* Support for Zepto 1.0 compiled with optional data module.
@@ -423,38 +423,33 @@
 	// The current jPlayer instance in focus.
 	$.jPlayer.focus = null;
 
-	// (fallback) The list of element node names to ignore with key controls.
+	// The list of element node names to ignore with key controls.
 	$.jPlayer.keyIgnoreElementNames = "A INPUT TEXTAREA SELECT BUTTON";
 
 	// The function that deals with key presses.
 	var keyBindings = function(event) {
-
 		var f = $.jPlayer.focus,
-			pageFocus = document.activeElement,
 			ignoreKey;
 
 		// A jPlayer instance must be in focus. ie., keyEnabled and the last one played.
 		if(f) {
 			// What generated the key press?
-			if(typeof pageFocus !== 'undefined') {
-				if(pageFocus !== null && pageFocus.nodeName.toUpperCase() !== "BODY") {
+			$.each( $.jPlayer.keyIgnoreElementNames.split(/\s+/g), function(i, name) {
+				// The strings should already be uppercase.
+				if(event.target.nodeName.toUpperCase() === name.toUpperCase()) {
 					ignoreKey = true;
+					return false; // exit each.
 				}
-			} else {
-				// Fallback for no document.activeElement support.
-				$.each( $.jPlayer.keyIgnoreElementNames.split(/\s+/g), function(i, name) {
-					// The strings should already be uppercase.
-					if(event.target.nodeName.toUpperCase() === name.toUpperCase()) {
-						ignoreKey = true;
-						return false; // exit each.
-					}
-				});
-			}
+			});
 			if(!ignoreKey) {
 				// See if the key pressed matches any of the bindings.
 				$.each(f.options.keyBindings, function(action, binding) {
 					// The binding could be a null when the default has been disabled. ie., 1st clause in if()
-					if(binding && event.which === binding.key && $.isFunction(binding.fn)) {
+					if(
+						(binding && $.isFunction(binding.fn)) &&
+						((typeof binding.key === 'number' && event.which === binding.key) ||
+						(typeof binding.key === 'string' && event.key === binding.key))
+					) {
 						event.preventDefault(); // Key being used by jPlayer, so prevent default operation.
 						binding.fn(f);
 						return false; // exit each.
@@ -479,7 +474,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.8.1",
+			script: "2.8.2",
 			needFlash: "2.8.0",
 			flash: "unknown"
 		},
@@ -592,7 +587,7 @@
 				// The parameter, f = $.jPlayer.focus, will be checked truethy before attempting to call any of these functions.
 				// Properties may be added to this object, in key/fn pairs, to enable other key controls. EG, for the playlist add-on.
 				play: {
-					key: 32, // space
+					key: 80, // p
 					fn: function(f) {
 						if(f.status.paused) {
 							f.play();
@@ -602,7 +597,7 @@
 					}
 				},
 				fullScreen: {
-					key: 13, // enter
+					key: 70, // f
 					fn: function(f) {
 						if(f.status.video || f.options.audioFullScreen) {
 							f._setOption("fullScreen", !f.options.fullScreen);
@@ -610,21 +605,27 @@
 					}
 				},
 				muted: {
-					key: 8, // backspace
+					key: 77, // m
 					fn: function(f) {
 						f._muted(!f.options.muted);
 					}
 				},
 				volumeUp: {
-					key: 38, // UP
+					key: 61, // =
 					fn: function(f) {
 						f.volume(f.options.volume + 0.1);
 					}
 				},
 				volumeDown: {
-					key: 40, // DOWN
+					key: 173, // -
 					fn: function(f) {
 						f.volume(f.options.volume - 0.1);
+					}
+				},
+				loop: {
+					key: 76, // l
+					fn: function(f) {
+						f._loop(!f.options.loop);
 					}
 				}
 			},

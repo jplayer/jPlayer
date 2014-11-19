@@ -7,12 +7,12 @@
  * http://www.opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.4.0
- * Date: 1st September 2014
+ * Version: 2.4.1
+ * Date: 19th November 2014
  *
  * Requires:
  *  - jQuery 1.7.0+
- *  - jPlayer 2.7.0+
+ *  - jPlayer 2.8.2+
  */
 
 /*global jPlayerPlaylist:true */
@@ -31,15 +31,21 @@
 		this.options = $.extend(true, {
 			keyBindings: {
 				next: {
-					key: 39, // RIGHT
+					key: 221, // ]
 					fn: function() {
 						self.next();
 					}
 				},
 				previous: {
-					key: 37, // LEFT
+					key: 219, // [
 					fn: function() {
 						self.previous();
+					}
+				},
+				shuffle: {
+					key: 83, // s
+					fn: function() {
+						self.shuffle();
 					}
 				}
 			},

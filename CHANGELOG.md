@@ -1,15 +1,28 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## 2.8.2 - 2014-11-19 date TBD
+## 2.8.2 - 2014-11-19
 ### Added
 - Package Fix: The un-minified source is now also added to the `dist` folder.
 - New Feature: Merged Pull Request to add [commonJS support](https://github.com/happyworm/jPlayer/pull/257) by [nervo](https://github.com/nervo).
-- Added CHANGELOG.md and gave details back to 2.7.1
-- Added MIGRATION.md as placeholder for migration details.
+- Docs: Added CHANGELOG.md and gave details back to 2.7.1
+- Docs: Added MIGRATION.md as placeholder for migration details.
+- Bug Fix: Fixed Internet Explorer key bindings. Removed [`document.activeElement`](https://developer.mozilla.org/en-US/docs/Web/API/document.activeElement) useage from the key bindings code.
+- New Feature: The key bindings option `key` value may now be a number for [`event.which`](http://api.jquery.com/event.which/) and a string for [`event.key`](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent.key) comparison.
+- Default Options: Added to the default key bindings:
+	- **l** loop toggle
+	- **s** shuffle toggle (playlist)
 
 ### Changed
 - Package Fix: Renamed the built folder to `dist`, which is more appropriate than the previous naming of `js`.
+- Default Options: The default key bindings have been changed to:
+	- **p** play/pause toggle
+	- **f** full/restore screen toggle
+	- **m** mute/unmute toggle
+	- **-** decrease volume
+	- **=** increase volume
+	- **[** previous item (playlist)
+	- **]** next item (playlist)
 
 ### Removed
 - The old `js` build folder.
