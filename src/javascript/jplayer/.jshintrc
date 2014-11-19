@@ -18,6 +18,7 @@
 
 	"globals": {
 		"define": false,
+		"require": false,
 		"ActiveXObject": false,
 		"alert": false
 	}

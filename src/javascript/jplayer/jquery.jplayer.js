@@ -12,7 +12,7 @@
  */
 
 /* Support for Zepto 1.0 compiled with optional data module.
- * For AMD support, you will need to manually switch the 2 lines in the code below.
+ * For AMD or NODE/CommonJS support, you will need to manually switch the related 2 lines in the code below.
  * Search terms: "jQuery Switch" and "Zepto Switch"
  */
 
@@ -21,6 +21,10 @@
 		// AMD. Register as an anonymous module.
 		define(['jquery'], factory); // jQuery Switch
 		// define(['zepto'], factory); // Zepto Switch
+	} else if (typeof exports === 'object') {
+		// Node/CommonJS
+		factory(require('jquery')); // jQuery Switch
+		//factory(require('zepto')); // Zepto Switch
 	} else {
 		// Browser globals
 		if(root.jQuery) { // Use jQuery if available
