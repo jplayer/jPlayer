@@ -24,9 +24,9 @@
   },
   "bugs": "https://github.com/happyworm/jPlayer/issues",
   "github": "http://github.com/happyworm/jPlayer",
-  "main": "js/jplayer/jquery.jplayer.min.js",
+  "main": "dist/jplayer/jquery.jplayer.js",
   "files": [
-    "js",
+    "dist",
     "skin/blue.monday",
     "skin/pink.flag"
   ],
