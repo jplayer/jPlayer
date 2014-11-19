@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Package Fix: The un-minified source is now also added to the `dist` folder.
 - New Feature: Merged Pull Request to add [commonJS support](https://github.com/happyworm/jPlayer/pull/257) by [nervo](https://github.com/nervo).
+- New Feature: Merged Pull Request to add [commonJS support](#257) by @nervo.
 - Added CHANGELOG.md and gave details back to 2.7.1
 - Added MIGRATION.md as placeholder for migration details.
 
