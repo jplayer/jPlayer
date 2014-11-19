@@ -12,7 +12,7 @@ module.exports = function(grunt) {
 					banner: '/*! jPlayer <%= pkg.version %> for jQuery ~ (c) 2009-<%= grunt.template.today("yyyy") %> <%= pkg.organization %> ~ <%= pkg.license %> License */\n'
 				},
 				files: {
-					'js/jplayer/jquery.jplayer.min.js': ['src/javascript/jplayer/jquery.jplayer.js']
+					'dist/jplayer/jquery.jplayer.min.js': ['src/javascript/jplayer/jquery.jplayer.js']
 				}
 			},
 			playlist: {
@@ -20,7 +20,7 @@ module.exports = function(grunt) {
 					banner: '/*! jPlayerPlaylist for jPlayer <%= pkg.version %> ~ (c) 2009-<%= grunt.template.today("yyyy") %> <%= pkg.organization %> ~ <%= pkg.license %> License */\n'
 				},
 				files: {
-					'js/add-on/jplayer.playlist.min.js': ['src/javascript/add-on/jplayer.playlist.js']
+					'dist/add-on/jplayer.playlist.min.js': ['src/javascript/add-on/jplayer.playlist.js']
 				}
 			},
 			inspector: {
@@ -28,7 +28,7 @@ module.exports = function(grunt) {
 					banner: '/*! jPlayerInspector for jPlayer <%= pkg.version %> ~ (c) 2009-<%= grunt.template.today("yyyy") %> <%= pkg.organization %> ~ <%= pkg.license %> License */\n'
 				},
 				files: {
-					'js/add-on/jquery.jplayer.inspector.min.js': ['src/javascript/add-on/jquery.jplayer.inspector.js']
+					'dist/add-on/jquery.jplayer.inspector.min.js': ['src/javascript/add-on/jquery.jplayer.inspector.js']
 				}
 			},
 			popcorn: {
@@ -36,7 +36,7 @@ module.exports = function(grunt) {
 					banner: '/*! Popcorn Player for jPlayer <%= pkg.version %> ~ (c) 2009-<%= grunt.template.today("yyyy") %> <%= pkg.organization %> ~ <%= pkg.license %> License */\n'
 				},
 				files: {
-					'js/popcorn/popcorn.jplayer.min.js': ['src/javascript/popcorn/popcorn.jplayer.js']
+					'dist/popcorn/popcorn.jplayer.min.js': ['src/javascript/popcorn/popcorn.jplayer.js']
 				}
 			},
 		},
@@ -67,7 +67,7 @@ module.exports = function(grunt) {
 			jplayer: {
 				files: {
 					// Compile and give the SWF a filename like the JavaScript filenames. Important as it is the jPlayer code.
-					'js/jplayer/jquery.jplayer.swf': ['src/actionscript/Jplayer.as']
+					'dist/jplayer/jquery.jplayer.swf': ['src/actionscript/Jplayer.as']
 				}
 			}
 		}
