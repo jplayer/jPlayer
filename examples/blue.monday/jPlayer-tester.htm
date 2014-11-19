@@ -7,8 +7,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <link href="../../skin/blue.monday/jplayer.blue.monday.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../lib/jquery.min.js"></script>
-<script type="text/javascript" src="../../js/jplayer/jquery.jplayer.min.js"></script>
-<script type="text/javascript" src="../../js/add-on/jquery.jplayer.inspector.min.js"></script>
+<script type="text/javascript" src="../../dist/jplayer/jquery.jplayer.min.js"></script>
+<script type="text/javascript" src="../../dist/add-on/jquery.jplayer.inspector.min.js"></script>
 <script type="text/javascript">
 //<![CDATA[
 
@@ -16,7 +16,7 @@ $(document).ready(function(){
 
 	$("#addHtmlFlash").click( function() {
 		$("#jquery_jplayer").jPlayer({
-			swfPath: "../../js/jplayer",
+			swfPath: "../../dist/jplayer",
 			supplied: "m4v, ogv, m4a, mp3, oga",
 			errorAlerts:true,
 			warningAlerts:true
@@ -32,7 +32,7 @@ $(document).ready(function(){
 
 	$("#addFlashHtml").click( function() {
 		$("#jquery_jplayer").jPlayer({
-			swfPath: "../../js/jplayer",
+			swfPath: "../../dist/jplayer",
 			supplied: "m4v, ogv, m4a, mp3, oga",
 			solution: "flash, html",
 			errorAlerts:true,
@@ -49,11 +49,11 @@ $(document).ready(function(){
 
 	$("#addCurrentTest").click( function() {
 		$("#jquery_jplayer").jPlayer({
-			swfPath: "../../js/jplayer",
-			// swfPath: "../../js/jplayer/", // Check trailing slash
-			// swfPath: "../../js/jplayer/broken", // Check broken swfPath errors.
-			// swfPath: "../../js/jplayer/Jplayer.swf", // Check URLs work
-			// swfPath: "../../js/jplayer/Jplayer.SWF", // Check URLs extension case insensative (Apache did not mind the extension's case not matching and worked too.)
+			swfPath: "../../dist/jplayer",
+			// swfPath: "../../dist/jplayer/", // Check trailing slash
+			// swfPath: "../../dist/jplayer/broken", // Check broken swfPath errors.
+			// swfPath: "../../dist/jplayer/Jplayer.swf", // Check URLs work
+			// swfPath: "../../dist/jplayer/Jplayer.SWF", // Check URLs extension case insensative (Apache did not mind the extension's case not matching and worked too.)
 			// swfPath: "/", // Checks various
 			// supplied: "flv",
 			supplied: "flv,m4v,webmv",
@@ -149,7 +149,7 @@ $(document).ready(function(){
 		play: function() {
 			$(this).jPlayer("pauseOthers");
 		},
-		swfPath: "../../js/jplayer",
+		swfPath: "../../dist/jplayer",
 		supplied: "m4a, oga",
 		cssSelectorAncestor: "#jp_container_2"
 	});
