@@ -7,7 +7,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Robert M. Hall
- * Date: 3rd November 2013
+ * Date: 20th November 2014
  * Based on JplayerMp4.as with modifications for rtmp
  */
 
