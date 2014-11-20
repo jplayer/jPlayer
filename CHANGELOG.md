@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## 2.8.3 - 2014-11-20 TBD
+## 2.8.3 - 2014-11-20
 
 ### Added
 - Bug fix: Merged Pull Request to [Return good ratio in Flash players when file loaded but no total length](https://github.com/happyworm/jPlayer/pull/185) by [Afterster](https://github.com/Afterster).
