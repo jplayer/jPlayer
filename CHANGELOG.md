@@ -62,3 +62,4 @@ All notable changes to this project will be documented in this file.
 
 
 ## 2.7.0 - 2014-09-01
+For older changes, view these [release notes](http://jplayer.org/latest/release-notes/).
