@@ -32,7 +32,7 @@ All notable changes to this project will be documented in this file.
 	- **]** next item (playlist)
 
 ### Removed
-- The old `js` build folder.
+- Package Fix: The old `js` build folder.
 
 
 ## 2.8.1 - 2014-11-13
