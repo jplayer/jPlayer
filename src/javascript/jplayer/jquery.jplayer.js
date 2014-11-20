@@ -1764,7 +1764,7 @@
 		_absoluteMediaUrls: function(media) {
 			var self = this;
 			$.each(media, function(type, url) {
-				if(url && self.format[type]) {
+				if(url && self.format[type] && url.substr(0, 5) !== "data:") {
 					media[type] = self._qualifyURL(url);
 				}
 			});
