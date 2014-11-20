@@ -1,10 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## 2.8.3 - 2014-11-20
+## 2.8.3 - 2014-11-20 TBD
 
 ### Added
 - Bug fix: Merged Pull Request to [Return good ratio in Flash players when file loaded but no total length](https://github.com/happyworm/jPlayer/pull/185) by [Afterster](https://github.com/Afterster).
+- Bug fix: Merged Pull Request to [fix for wrong mousemove event on Chrome browser](https://github.com/happyworm/jPlayer/pull/217) by [HobieCat](https://github.com/HobieCat).
 
 
 ## 2.8.2 - 2014-11-19
