@@ -7,7 +7,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Robert M. Hall
- * Date: 3rd November 2013
+ * Date: 20th November 2014
  * Based on JplayerMp4.as with modifications for rtmp
  */
 
@@ -871,10 +871,11 @@ package happyworm.jPlayer
 		return 1;
 		/*trace("LoadRatio:"+myStream.bytesLoaded, myStream.bytesTotal);
 		if((myStatus.isLoading || myStatus.isLoaded) && myStream.bytesTotal > 0) {
-		
-		return myStream.bytesLoaded / myStream.bytesTotal;
+			return myStream.bytesLoaded / myStream.bytesTotal;
+		} else if (myStatus.isLoaded && myStream.bytesLoaded > 0) {
+			return 1;
 		} else {
-		return 0;
+			return 0;
 		}
 		*/
 

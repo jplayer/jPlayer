@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 2.8.3 - 2014-11-20
+
+### Added
+- Bug fix: Merged Pull Request to [Return good ratio in Flash players when file loaded but no total length](https://github.com/happyworm/jPlayer/pull/185) by [Afterster](https://github.com/Afterster).
+
+
 ## 2.8.2 - 2014-11-19
 ### Added
 - Package Fix: The un-minified source is now also added to the `dist` folder.
@@ -27,10 +33,12 @@ All notable changes to this project will be documented in this file.
 ### Removed
 - The old `js` build folder.
 
+
 ## 2.8.1 - 2014-11-13
 ### Added
 - Skin Fix: Added the CSS3 rule to disable the default Firefox focus highlighting. Fixed both the Blue Monday and Pink Flag skins.
 - Bug Fix: Fixed the media title being displayed in iOS Control Center when there is no GUI title element.
+
 
 ## 2.8.0 - 2014-11-11
 ### Added
@@ -45,8 +53,10 @@ All notable changes to this project will be documented in this file.
 ## Removed
 - Refactor: Refactored the Flash ActionScript, removing the `TraceOut` class from the `Jplayer.as` code and the `happyworm` package.
 
+
 ## 2.7.1 - 2014-09-19
 ### Added
 - Bug Fix: Fixed the legacy Android fix to work with latest Android. This moved the android fix code to the `loadeddata` event from the `progress` event.
+
 
 ## 2.7.0 - 2014-09-01
