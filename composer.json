@@ -1,5 +1,5 @@
 {
-    "name": "happyworm/jPlayer",
+    "name": "happyworm/jplayer",
     "description": "jPlayer allows you to create a media player with a consistent interface and experience across all browsers.",
     "type": "component",
     "homepage": "http://jplayer.org/",
@@ -16,8 +16,7 @@
     "authors": [
         {
             "name": "Mark J Panaghiston",
-            "email": "markp@happyworm.com",
-            "url": "http://happyworm.com/"
+            "email": "markp@happyworm.com"
         }
     ],
     "require": {
