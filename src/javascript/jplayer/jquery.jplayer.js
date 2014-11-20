@@ -611,13 +611,13 @@
 					}
 				},
 				volumeUp: {
-					key: 61, // =
+					key: 190, // .
 					fn: function(f) {
 						f.volume(f.options.volume + 0.1);
 					}
 				},
 				volumeDown: {
-					key: 173, // -
+					key: 188, // ,
 					fn: function(f) {
 						f.volume(f.options.volume - 0.1);
 					}

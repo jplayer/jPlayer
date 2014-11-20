@@ -19,8 +19,8 @@ All notable changes to this project will be documented in this file.
 	- **p** play/pause toggle
 	- **f** full/restore screen toggle
 	- **m** mute/unmute toggle
-	- **-** decrease volume
-	- **=** increase volume
+	- **,** decrease volume
+	- **.** increase volume
 	- **[** previous item (playlist)
 	- **]** next item (playlist)
 
