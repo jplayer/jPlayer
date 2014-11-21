@@ -28,12 +28,12 @@
     "extra": {
         "component": {
             "scripts": [
-                "jquery.jplayer/jquery.jplayer.js"
+                "dist/jplayer/jquery.jplayer.js"
             ],
             "files": [
-                "jquery.jplayer/Jplayer.swf",
-                "add-on/*.js",
-                "popcorn/player/*.js",
+                "dist/jplayer/jquery.jplayer.swf",
+                "dist/add-on/*.js",
+                "dist/popcorn/*.js",
                 "skin/blue.monday/*",
                 "skin/pink.flag/*"
             ],
