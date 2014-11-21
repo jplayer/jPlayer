@@ -1,8 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## 2.8.3 - 2014-11-20
+## 2.8.4 - WIP
+### Added
+- Bug fix: Merged Pull Request [Add support for native fullscreen api in Internet explorer](https://github.com/happyworm/jPlayer/pull/213) by [mattfawcett](https://github.com/mattfawcett).
 
+
+## 2.8.3 - 2014-11-20
 ### Added
 - Bug fix: Merged Pull Request to [Return good ratio in Flash players when file loaded but no total length](https://github.com/happyworm/jPlayer/pull/185) by [Afterster](https://github.com/Afterster).
 - Bug fix: Merged Pull Request to [fix for wrong mousemove event on Chrome browser](https://github.com/happyworm/jPlayer/pull/217) by [HobieCat](https://github.com/HobieCat).
