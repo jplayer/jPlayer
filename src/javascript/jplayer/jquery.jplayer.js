@@ -3166,12 +3166,12 @@
 		},
 		_aurora_mute: function(m) {
 			if (m) {
-				this.aurora.properties['lastvolume'] = this.aurora.player.volume;
+				this.aurora.properties.lastvolume = this.aurora.player.volume;
 				this.aurora.player.volume = 0;
 			} else {
-				this.aurora.player.volume = this.aurora.properties['lastvolume'];
+				this.aurora.player.volume = this.aurora.properties.lastvolume;
 			}
-			this.aurora.properties['muted'] = m;
+			this.aurora.properties.muted = m;
 		},
 		_flash_setAudio: function(media) {
 			var self = this;
