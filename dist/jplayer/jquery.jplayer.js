@@ -7,8 +7,8 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.8.3
- * Date: 20th November 2014
+ * Version: 2.8.4
+ * Date: 24th November 2014
  */
 
 /* Support for Zepto 1.0 compiled with optional data module.
@@ -175,6 +175,7 @@
 	];
 
 	$.jPlayer.pause = function() {
+		$.jPlayer.prototype.destroyRemoved();
 		$.each($.jPlayer.prototype.instances, function(i, element) {
 			if(element.data("jPlayer").status.srcSet) { // Check that media is set otherwise would cause error event.
 				element.jPlayer("pause");
@@ -484,7 +485,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.8.3",
+			script: "2.8.4",
 			needFlash: "2.8.3",
 			flash: "unknown"
 		},
@@ -1216,6 +1217,17 @@
 			this.element.empty(); // Remove the inserted child elements
 			
 			delete this.instances[this.internal.instance]; // Clear the instance on the static instance object
+		},
+		destroyRemoved: function() { // Destroy any instances that have gone away.
+			var self = this;
+			$.each(this.instances, function(i, element) {
+				if(self.element !== element) { // Do not destroy this instance.
+					if(!element.data("jPlayer")) { // Check that element is a real jPlayer.
+						element.jPlayer("destroy");
+						delete self.instances[i];
+					}
+				}
+			});
 		},
 		enable: function() { // Plan to implement
 			// options.disabled = false
@@ -1991,6 +2003,7 @@
 				args.splice(1, 1); // Remove the conditions from the arguments
 			}
 
+			$.jPlayer.prototype.destroyRemoved();
 			$.each(this.instances, function() {
 				// Remember that "this" is the instance's "element" in the $.each() loop.
 				if(self.element !== this) { // Do not tell my instance.
