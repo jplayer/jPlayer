@@ -3149,7 +3149,8 @@
 		},
 		_aurora_playHead: function(percent) {
 			if(this.aurora.player.duration > 0) {
-				this.aurora.player.seek(percent * this.aurora.player.duration / 100);
+				// The seek() sould be in milliseconds, but the only codec that works with seek (aac.js) uses seconds.
+				this.aurora.player.seek(percent * this.aurora.player.duration / 100); // Using seconds
 			}
 				
 			if(!this.status.waitForLoad) {
