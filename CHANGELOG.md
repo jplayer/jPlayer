@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 2.9 - Dev Branch Notes
+### Added
+- New Feature: Merged Pull Request [Add Aurora.js solution](https://github.com/happyworm/jPlayer/pull/246) by [Afterster](https://github.com/Afterster).
+
+
 ## 2.8.4 - WIP
 ### Added
 - Bug fix: Merged Pull Request [Add support for native fullscreen api in Internet explorer](https://github.com/happyworm/jPlayer/pull/213) by [mattfawcett](https://github.com/mattfawcett).
