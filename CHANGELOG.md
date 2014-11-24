@@ -7,9 +7,11 @@ All notable changes to this project will be documented in this file.
 - New Feature: Merged Pull Request [Add Aurora.js solution](https://github.com/happyworm/jPlayer/pull/246) by [Afterster](https://github.com/Afterster).
 
 
-## 2.8.4 - WIP
+## 2.8.4 - 2014-11-24
 ### Added
 - Bug fix: Merged Pull Request [Add support for native fullscreen api in Internet explorer](https://github.com/happyworm/jPlayer/pull/213) by [mattfawcett](https://github.com/mattfawcett).
+- Bug fix: Merged Pull Request [Chrome on android mobile supports full screen](https://github.com/happyworm/jPlayer/pull/207) by [mattfawcett](https://github.com/mattfawcett).
+- Bug fix: Merged Pull Request [Automatically destroy removed instances](https://github.com/happyworm/jPlayer/pull/150) by [sterlinghirsh](https://github.com/sterlinghirsh).
 
 
 ## 2.8.3 - 2014-11-20
