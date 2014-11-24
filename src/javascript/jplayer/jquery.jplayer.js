@@ -569,7 +569,7 @@
 				iphone: /iphone/,
 				ipod: /ipod/,
 				android_pad: /android [0-3]\.(?!.*?mobile)/,
-				android_phone: /android.*?mobile/,
+				android_phone: /(?=.*android)(?!.*chrome)(?=.*mobile)/,
 				blackberry: /blackberry/,
 				windows_ce: /windows ce/,
 				iemobile: /iemobile/,

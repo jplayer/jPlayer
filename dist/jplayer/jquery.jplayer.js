@@ -402,7 +402,7 @@
 						return elem[s[1]];
 					},
 					requestFullscreen: function(elem) {
-						return elem[s[2]]();
+						return elem[s[2]](); // Chrome and Opera want parameter (Element.ALLOW_KEYBOARD_INPUT) but Safari fails if flag used.
 					},
 					exitFullscreen: function(elem) {
 						elem = elem ? elem : d; // Video element required for webkitVideo
