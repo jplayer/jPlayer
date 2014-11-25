@@ -33,7 +33,8 @@ The author appologises for breaking the [Semantic Versioning](http://semver.org/
 
 ## Changed
 - Refactor: Renamed the SWF file from `Jplayer.swf` to `jquery.jplayer.swf`
-- Refactor: The Flash ``jquery.jplayer.swf` file is now compiled using the Flex compiler in the `grunt-mxmlc` node.js module.
+- Refactor: The Flash `jquery.jplayer.swf` file is now compiled using the Flex compiler in the `grunt-mxmlc` node.js module.
+- Skins: The skins are now designed for ARIA. Please use the options `{useStateClassSkin: true, autoBlur: false}`
 
 ## Removed
 - Refactor: Refactored the Flash ActionScript, removing the `TraceOut` class from the `Jplayer.as` code and the `happyworm` package.
