@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## 2.9 - Dev Branch Notes
+## 2.9.0 - 2014-11-27
 ### Added
 - New Feature: Merged Pull Request [Composer support](https://github.com/happyworm/jPlayer/pull/235) by [thormeier](https://github.com/thormeier).
 - New Feature: Merged Pull Request [Add Aurora.js solution](https://github.com/happyworm/jPlayer/pull/246) by [Afterster](https://github.com/Afterster).
