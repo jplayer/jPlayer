@@ -28,13 +28,6 @@ _(*) Optional counterpart formats to increase HTML5 cross-browser support._
 Install jPlayer via composer by adding the following lines to your `composer.json` in your project:
 
     // ...
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/happyworm/jPlayer"
-        }
-    ]
-    // ...
     "require": {
         // ...
         "happyworm/jPlayer": "2.*"
