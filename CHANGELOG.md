@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 2.9.1 - 2014-12-09
+### Added
+- Bug Fix: Fixed [Bug in IE8](https://github.com/happyworm/jPlayer/issues/269) reported by Denis.
+
+
 ## 2.9.0 - 2014-11-27
 ### Added
 - New Feature: Merged Pull Request [Composer support](https://github.com/happyworm/jPlayer/pull/235) by [thormeier](https://github.com/thormeier).
