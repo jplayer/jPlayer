@@ -5,7 +5,7 @@
 <!-- Website Design By: www.happyworm.com -->
 <title>jPlayer Development Tester</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<link href="../../skin/blue.monday/jplayer.blue.monday.css" rel="stylesheet" type="text/css" />
+<link href="../../dist/skin/blue.monday/css/jplayer.blue.monday.min.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../lib/jquery.min.js"></script>
 <script type="text/javascript" src="../../dist/jplayer/jquery.jplayer.min.js"></script>
 <script type="text/javascript" src="../../dist/add-on/jquery.jplayer.inspector.min.js"></script>
@@ -147,11 +147,13 @@ $(document).ready(function(){
 			});
 		},
 		play: function() {
-			$(this).jPlayer("pauseOthers");
+			// $(this).jPlayer("pauseOthers");
 		},
 		swfPath: "../../dist/jplayer",
 		supplied: "m4a, oga",
-		cssSelectorAncestor: "#jp_container_2"
+		cssSelectorAncestor: "#jp_container_2",
+		useStateClassSkin: true,
+		autoBlur: false
 	});
 
 	$("#breakCssPlay").click(function() {
