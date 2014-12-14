@@ -13,6 +13,8 @@
  * Date: 13th November 2014
  */
 
+$jplayer-images-base-url: "" !default;
+
 .jp-audio *:focus,
 .jp-audio-stream *:focus,
 .jp-video *:focus {
@@ -117,7 +119,7 @@
 }
 
 .jp-controls {
-	background: url("jplayer.pink.flag.jpg") 0 0 no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") 0 0 no-repeat;
 	padding: 1px 0 2px 1px;
 	overflow:hidden;
 	width: 201px;
@@ -158,19 +160,19 @@
 }
 
 .jp-type-single  .jp-play {
-	background: url("jplayer.pink.flag.jpg") 0px -40px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") 0px -40px no-repeat;
 }
 
 .jp-type-single  .jp-play:focus {
-	background: url("jplayer.pink.flag.jpg") -100px -40px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -100px -40px no-repeat;
 }
 
 .jp-state-playing .jp-type-single  .jp-play {
-	background: url("jplayer.pink.flag.jpg") 0px -120px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") 0px -120px no-repeat;
 }
 
 .jp-state-playing .jp-type-single  .jp-play:focus {
-	background: url("jplayer.pink.flag.jpg") -100px -120px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -100px -120px no-repeat;
 }
 
 /* The right border is normally in the ul background image. */
@@ -180,11 +182,11 @@
 }
 
 .jp-type-single .jp-stop {
-	background: url("jplayer.pink.flag.jpg") 0px -80px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") 0px -80px no-repeat;
 }
 
 .jp-type-single .jp-stop:focus {
-	background: url("jplayer.pink.flag.jpg") -100px -80px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -100px -80px no-repeat;
 }
 
 /* @end */
@@ -196,43 +198,43 @@
 }
 
 .jp-type-playlist .jp-play {
-	background: url("jplayer.pink.flag.jpg") -24px -40px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -24px -40px no-repeat;
 }
 
 .jp-type-playlist .jp-play:focus {
-	background: url("jplayer.pink.flag.jpg") -124px -40px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -124px -40px no-repeat;
 }
 
 .jp-state-playing div.jp-type-playlist .jp-play {
-	background: url("jplayer.pink.flag.jpg") -24px -120px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -24px -120px no-repeat;
 }
 
 .jp-state-playing div.jp-type-playlist .jp-play:focus {
-	background: url("jplayer.pink.flag.jpg") -124px -120px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -124px -120px no-repeat;
 }
 
 .jp-type-playlist .jp-stop {
-	background: url("jplayer.pink.flag.jpg") -24px -80px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -24px -80px no-repeat;
 }
 
 .jp-type-playlist .jp-stop:focus {
-	background: url("jplayer.pink.flag.jpg") -124px -80px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -124px -80px no-repeat;
 }
 
 .jp-type-playlist .jp-previous {
-	background: url("jplayer.pink.flag.jpg") -24px -200px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -24px -200px no-repeat;
 }
 
 .jp-type-playlist .jp-previous:focus {
-	background: url("jplayer.pink.flag.jpg") -124px -200px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -124px -200px no-repeat;
 }
 
 .jp-type-playlist .jp-next {
-	background: url("jplayer.pink.flag.jpg") -24px -160px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -24px -160px no-repeat;
 }
 
 .jp-type-playlist .jp-next:focus {
-	background: url("jplayer.pink.flag.jpg") -124px -160px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -124px -160px no-repeat;
 }
 
 /* @end */
@@ -272,45 +274,45 @@
 }
 
 .jp-full-screen {
-	background: url("jplayer.pink.flag.jpg") 0 -420px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") 0 -420px no-repeat;
 	margin-left: 15px;
 }
 .jp-full-screen:focus {
-	background: url("jplayer.pink.flag.jpg") -30px -420px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -30px -420px no-repeat;
 }
 .jp-state-full-screen .jp-full-screen {
-	background: url("jplayer.pink.flag.jpg") -60px -420px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -60px -420px no-repeat;
 }
 .jp-state-full-screen .jp-full-screen:focus {
-	background: url("jplayer.pink.flag.jpg") -90px -420px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -90px -420px no-repeat;
 }
 
 .jp-repeat {
-	background: url("jplayer.pink.flag.jpg") 0 -440px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") 0 -440px no-repeat;
 	margin-left: 0;
 }
 .jp-repeat:focus {
-	background: url("jplayer.pink.flag.jpg") -30px -440px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -30px -440px no-repeat;
 }
 .jp-state-looped .jp-repeat {
-	background: url("jplayer.pink.flag.jpg") -60px -440px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -60px -440px no-repeat;
 }
 .jp-state-looped .jp-repeat:focus {
-	background: url("jplayer.pink.flag.jpg") -90px -440px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -90px -440px no-repeat;
 }
 
 .jp-shuffle {
-	background: url("jplayer.pink.flag.jpg") 0 -460px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") 0 -460px no-repeat;
 	margin-left: 15px;
 }
 .jp-shuffle:focus {
-	background: url("jplayer.pink.flag.jpg") -30px -460px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -30px -460px no-repeat;
 }
 .jp-state-shuffled .jp-shuffle {
-	background: url("jplayer.pink.flag.jpg") -60px -460px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -60px -460px no-repeat;
 }
 .jp-state-shuffled .jp-shuffle:focus {
-	background: url("jplayer.pink.flag.jpg") -90px -460px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -90px -460px no-repeat;
 }
 .jp-audio .jp-shuffle {
 	margin-left: 5px;
@@ -323,11 +325,11 @@
 
 /* The seeking class is added/removed inside jPlayer */
 div.jp-seeking-bg {
-	background: url("jplayer.pink.flag.seeking.gif");
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.seeking.gif");
 }
 
 .jp-progress {
-	background: url("jplayer.pink.flag.jpg") 0px -240px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") 0px -240px no-repeat;
 	width: 197px;
 	height: 13px;
 	padding: 0 2px 2px 2px;
@@ -344,7 +346,7 @@ div.jp-video .jp-progress {
 }
 
 .jp-seek-bar {
-	background: url("jplayer.pink.flag.jpg") 0px -260px repeat-x;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") 0px -260px repeat-x;
 	width:0px;
 	height: 100%;
 	overflow:hidden;
@@ -352,7 +354,7 @@ div.jp-video .jp-progress {
 }
 
 .jp-play-bar {
-	background: url("jplayer.pink.flag.jpg") 0px -280px repeat-x;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") 0px -280px repeat-x;
 	width:0px;
 	height: 100%;
 	overflow:hidden;
@@ -410,31 +412,31 @@ div.jp-video .jp-progress {
 }
 
 .jp-volume-controls .jp-mute {
-	background: url("jplayer.pink.flag.jpg") 0px -330px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") 0px -330px no-repeat;
 }
 
 .jp-volume-controls .jp-mute:focus {
-	background: url("jplayer.pink.flag.jpg") -25px -330px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -25px -330px no-repeat;
 }
 
 .jp-state-muted .jp-volume-controls .jp-mute {
-	background: url("jplayer.pink.flag.jpg") -60px -330px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -60px -330px no-repeat;
 }
 
 .jp-state-muted .jp-volume-controls .jp-mute:focus {
-	background: url("jplayer.pink.flag.jpg") -85px -330px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -85px -330px no-repeat;
 }
 
 .jp-volume-controls .jp-volume-max {
-	background: url("jplayer.pink.flag.jpg") 0px -350px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") 0px -350px no-repeat;
 }
 
 .jp-volume-controls .jp-volume-max:focus {
-	background: url("jplayer.pink.flag.jpg") -25px -350px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") -25px -350px no-repeat;
 }
 
 .jp-volume-bar {
-	background: url("jplayer.pink.flag.jpg") 0px -300px repeat-x;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") 0px -300px repeat-x;
 	position: absolute;
 	width: 197px;
 	height: 4px;
@@ -465,7 +467,7 @@ div.jp-video .jp-progress {
 }
 
 .jp-volume-bar-value {
-	background: url("jplayer.pink.flag.jpg") 0px -320px repeat-x;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.jpg") 0px -320px repeat-x;
 	height: 4px;
 }
 
@@ -637,11 +639,11 @@ span.jp-artist {
 	border:none;
 	cursor:pointer;
 
-	background: url("jplayer.pink.flag.video.play.png") 0 0 no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.video.play.png") 0 0 no-repeat;
 	text-indent:-9999px;
 }
 .jp-video-play-icon:focus {
-	background: url("jplayer.pink.flag.video.play.png") 0 -100px no-repeat;
+	background: url("#{$jplayer-images-base-url}jplayer.pink.flag.video.play.png") 0 -100px no-repeat;
 }
 
 
