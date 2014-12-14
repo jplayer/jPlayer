@@ -75,7 +75,7 @@ module.exports = function(grunt) {
 					banner: '/*! Blue Monday Skin for jPlayer <%= pkg.version %> ~ (c) 2009-<%= grunt.template.today("yyyy") %> <%= pkg.organization %> ~ <%= pkg.license %> License */\n'
 				},
 				files: {
-					'dist/skin/blue.monday/jplayer.blue.monday.min.css': ['src/skin/blue.monday/jplayer.blue.monday.scss']
+					'dist/skin/blue.monday/css/jplayer.blue.monday.min.css': ['src/skin/blue.monday/sass/jplayer.blue.monday.scss']
 				}
 			},
 			"pink.flag": {
@@ -83,7 +83,7 @@ module.exports = function(grunt) {
 					banner: '/*! Pink Flag Skin for jPlayer <%= pkg.version %> ~ (c) 2009-<%= grunt.template.today("yyyy") %> <%= pkg.organization %> ~ <%= pkg.license %> License */\n'
 				},
 				files: {
-					'dist/skin/pink.flag/jplayer.pink.flag.min.css': ['src/skin/pink.flag/jplayer.pink.flag.scss']
+					'dist/skin/pink.flag/css/jplayer.pink.flag.min.css': ['src/skin/pink.flag/sass/jplayer.pink.flag.scss']
 				}
 			}
 		},
