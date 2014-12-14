@@ -68,6 +68,8 @@ module.exports = function(grunt) {
 
 		sass: {
 			options: {
+				noCache: true,
+				sourcemap: 'none',
 				style: 'compressed'
 			},
 			"blue.monday": {
