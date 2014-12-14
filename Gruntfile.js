@@ -68,7 +68,7 @@ module.exports = function(grunt) {
 
 		sass: {
 			options: {
-				outputStyle: 'compressed'
+				style: 'compressed'
 			},
 			"blue.monday": {
 				options: {
@@ -133,7 +133,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-sass');
+	grunt.loadNpmTasks('grunt-contrib-sass');
 	grunt.loadNpmTasks('grunt-mxmlc');
 
 	grunt.registerTask('default', ['test', 'build']);
