@@ -88,6 +88,15 @@ module.exports = function(grunt) {
 			}
 		},
 
+		copy: {
+			skins: {
+				files: [
+					{expand: true, cwd: 'src/skin/blue.monday/', src: ['image/**', 'mustache/**'], dest: 'dist/skin/blue.monday/'},
+					{expand: true, cwd: 'src/skin/pink.flag/', src: ['image/**', 'mustache/**'], dest: 'dist/skin/pink.flag/'}
+				]
+			},
+		},
+
 		jshint: {
 
 			test: {
@@ -122,6 +131,7 @@ module.exports = function(grunt) {
 
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-sass');
 	grunt.loadNpmTasks('grunt-mxmlc');
@@ -132,5 +142,5 @@ module.exports = function(grunt) {
 	grunt.registerTask('build', ['js', 'swf', 'css']);
 	grunt.registerTask('js', ['concat', 'uglify']);
 	grunt.registerTask('swf', ['mxmlc']);
-	grunt.registerTask('css', ['sass']);
+	grunt.registerTask('css', ['sass', 'copy:skins']);
 };
