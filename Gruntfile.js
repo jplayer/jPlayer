@@ -66,6 +66,28 @@ module.exports = function(grunt) {
 			}
 		},
 
+		sass: {
+			options: {
+				outputStyle: 'compressed'
+			},
+			"blue.monday": {
+				options: {
+					banner: '/*! Blue Monday Skin for jPlayer <%= pkg.version %> ~ (c) 2009-<%= grunt.template.today("yyyy") %> <%= pkg.organization %> ~ <%= pkg.license %> License */\n'
+				},
+				files: {
+					'dist/skin/blue.monday/jplayer.blue.monday.min.css': ['src/skin/blue.monday/jplayer.blue.monday.scss']
+				}
+			},
+			"pink.flag": {
+				options: {
+					banner: '/*! Pink Flag Skin for jPlayer <%= pkg.version %> ~ (c) 2009-<%= grunt.template.today("yyyy") %> <%= pkg.organization %> ~ <%= pkg.license %> License */\n'
+				},
+				files: {
+					'dist/skin/pink.flag/jplayer.pink.flag.min.css': ['src/skin/pink.flag/jplayer.pink.flag.scss']
+				}
+			}
+		},
+
 		jshint: {
 
 			test: {
@@ -101,12 +123,14 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-sass');
 	grunt.loadNpmTasks('grunt-mxmlc');
 
 	grunt.registerTask('default', ['test', 'build']);
 
 	grunt.registerTask('test', ['jshint']);
-	grunt.registerTask('build', ['js', 'swf']);
+	grunt.registerTask('build', ['js', 'swf', 'css']);
 	grunt.registerTask('js', ['concat', 'uglify']);
 	grunt.registerTask('swf', ['mxmlc']);
+	grunt.registerTask('css', ['sass']);
 };
