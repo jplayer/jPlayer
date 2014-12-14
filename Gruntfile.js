@@ -69,14 +69,14 @@ module.exports = function(grunt) {
 		sass: {
 			options: {
 				sourcemap: 'none',
-				style: 'compressed'
+				style: 'nested'
 			},
 			"blue.monday": {
 				options: {
 					banner: '/*! Blue Monday Skin for jPlayer <%= pkg.version %> ~ (c) 2009-<%= grunt.template.today("yyyy") %> <%= pkg.organization %> ~ <%= pkg.license %> License */\n'
 				},
 				files: {
-					'dist/skin/blue.monday/css/jplayer.blue.monday.min.css': 'src/skin/blue.monday/scss/jplayer.blue.monday.scss'
+					'dist/skin/blue.monday/css/jplayer.blue.monday.css': 'src/skin/blue.monday/scss/jplayer.blue.monday.scss'
 				}
 			},
 			"pink.flag": {
@@ -84,7 +84,7 @@ module.exports = function(grunt) {
 					banner: '/*! Pink Flag Skin for jPlayer <%= pkg.version %> ~ (c) 2009-<%= grunt.template.today("yyyy") %> <%= pkg.organization %> ~ <%= pkg.license %> License */\n'
 				},
 				files: {
-					'dist/skin/pink.flag/css/jplayer.pink.flag.min.css': 'src/skin/pink.flag/scss/jplayer.pink.flag.scss'
+					'dist/skin/pink.flag/css/jplayer.pink.flag.css': 'src/skin/pink.flag/scss/jplayer.pink.flag.scss'
 				}
 			}
 		},
