@@ -31,11 +31,7 @@
                 "dist/jplayer/jquery.jplayer.js"
             ],
             "files": [
-                "dist/jplayer/jquery.jplayer.swf",
-                "dist/add-on/*.js",
-                "dist/popcorn/*.js",
-                "skin/blue.monday/*",
-                "skin/pink.flag/*"
+                "dist"
             ],
             "shim": {
                 "deps": ["jquery"]

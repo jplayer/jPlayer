@@ -7,8 +7,8 @@
  * http://opensource.org/licenses/MIT
  *
  * Author: Mark J Panaghiston
- * Version: 2.9.1
- * Date: 9th December 2014
+ * Version: 2.9.2
+ * Date: 14th December 2014
  */
 
 /* Support for Zepto 1.0 compiled with optional data module.
@@ -485,7 +485,7 @@
 	$.jPlayer.prototype = {
 		count: 0, // Static Variable: Change it via prototype.
 		version: { // Static Object
-			script: "2.9.1",
+			script: "2.9.2",
 			needFlash: "2.9.0",
 			flash: "unknown"
 		},

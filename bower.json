@@ -1,6 +1,6 @@
 {
 	"name": "jPlayer",
-	"version": "2.9.1",
+	"version": "2.9.2",
 	"description": "The jQuery HTML5 Audio / Video Library. Allows you to create a media player with a consistent interface and experience across all browsers.",
 	"author": {
 		"name": "Mark J Panaghiston",
@@ -24,14 +24,13 @@
 	"main": [
 		"./dist/jplayer/jquery.jplayer.js",
 		"./dist/jplayer/jquery.jplayer.swf",
-		"./skin/pink.flag/jplayer.pink.flag.css",
-		"./skin/pink.flag/mustache/jplayer.pink.flag.audio.single.html"
+		"./dist/skin/pink.flag/jplayer.pink.flag.css",
+		"./dist/skin/pink.flag/mustache/jplayer.pink.flag.audio.single.html"
 	],
 	"ignore": [
 		"artwork",
 		"examples",
 		"lib",
-		"skin/circle.player",
 		"src",
 		"**/*.md",
 		"**/*.txt",
