@@ -5,6 +5,7 @@ All notable changes that affect the backwards compatability of this project will
 ### Changed
 - jPlayer Repository Refactor: The skins source files are now in `src/skin` and the build skins files in the 'dist/skin' folder.
 - jPlayer Repository Refactor: All the circle player specific files are now in the `lib/circle-player` folder.
+- jPlayer Repository Refactor: Changed the html `examples` file extentions from `htm` to `html` for @Laurian.
 
 
 ## 2.8.2 - 2014-11-19
