@@ -1,5 +1,7 @@
 # [jPlayer](http://jplayer.org/) : HTML5 Audio & Video for [jQuery](http://jquery.com/)
 
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/happyworm/jPlayer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Support for [Zepto](http://zeptojs.com/) 1.0+ compiled with the data module.
 
 ## What is jPlayer?
