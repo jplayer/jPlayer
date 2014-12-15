@@ -1,6 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 2.9.2 - 2014-12-14
+### Added
+- New Feature: Implemented Pull Request [Introduce sass skins](https://github.com/happyworm/jPlayer/pull/260) by [nervo](https://github.com/nervo).
+- Bug Fix: Fixed [Example Demo-04 does not work](https://github.com/happyworm/jPlayer/issues/274).
+
+### Changed
+- jPlayer Repository Refactor: The skins source files are now in `src/skin` and the build skins files in the 'dist/skin' folder.
+- jPlayer Repository Refactor: All the circle player specific files are now in the `lib/circle-player` folder.
+
+
 ## 2.9.1 - 2014-12-09
 ### Added
 - Bug Fix: Fixed [Bug in IE8](https://github.com/happyworm/jPlayer/issues/269) reported by Denis.
