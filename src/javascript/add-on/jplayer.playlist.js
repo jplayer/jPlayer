@@ -246,6 +246,8 @@
 			}
 		},
 		_createListItem: function(media) {
+		    if ($.isFunction(this.options.overrideCreateListItem))
+		        return this.options.overrideCreateListItem(media);
 			var self = this;
 
 			// Wrap the <li> contents in a <div>
