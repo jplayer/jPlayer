@@ -1046,7 +1046,7 @@
 							}
 						}
 					});
-					self[solution].desired = (self.require.audio && !audioCanPlay) || (self.require.video && !videoCanPlay);
+					self[solution].desired = (self.require.audio && audioCanPlay) || (self.require.video && videoCanPlay);
 				}
 			});
 			// This is what jPlayer will support, based on solution and supplied.
