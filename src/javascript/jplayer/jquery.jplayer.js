@@ -3289,7 +3289,7 @@
 			if(this.status.waitForPlay) {
 				this.status.waitForPlay = false;
 				if(this.css.jq.videoPlay.length) {
-					this.css.jq.videoPlay.hide();
+					this.css.jq.videoPlay.hide().next().css({zoom:1});
 				}
 				if(this.status.video) {
 					this.internal.poster.jq.hide();
