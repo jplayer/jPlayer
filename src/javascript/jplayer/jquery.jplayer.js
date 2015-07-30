@@ -36,51 +36,49 @@
 	//
 	//The button used like this In my project.
 	//bind the button mousedown event，copy progress&button element
-	$('.jp-play-barButton').mousedown(function(event){
+	var $thisPalyer = $(factory) ; //$thisPalyer is JPlayer Active
+	$thisPalyer.find('.jp-play-barButton').mousedown(function(event){
 		var eventJq = $.event.fix(event||window.event);
-	    var $playBtn = $(eventJq.target) ; 
-	    var $playPro = $playBtn.prev() ; 
-
+	    	var $playBtn = $(eventJq.target) ; 
+	    	var $playPro = $playBtn.prev() ; 
 		var $btnCopy = $playBtn.clone().addClass('moving');
 		var $proCopy = $playPro.clone().addClass('moving');
-
 		$playBtn.before($btnCopy).css({'visibility':'hidden'}).addClass('hidding');
 		$playPro.before($proCopy).css({'visibility':'hidden'}).addClass('hidding');
 	});
-	//after btn mousedown event， wo can let it everywhere，but outside the progress width. 
-	$('#jp_container_1').mousemove(function(event) {
+	//mousemove control the progress bar
+	$thisPalyer.mousemove(function(event) {
 		/* Act on the event */
 		var eventJq = jQuery.event.fix(event || window.event); 
 		var pageX = eventJq.pageX ;
 
-		var parentX = $('.jp-seek-bar').offset().left ;
-		// console.log($('.jp-seek-bar').width());
+		var parentX = $thisPalyer.find('.jp-seek-bar').offset().left ;
 
-		var valueX = ((pageX-parentX-8)>$('.jp-seek-bar').width())?$('.jp-seek-bar').width():(pageX-parentX-8);
+		var valueX = ((pageX-parentX-8)>$thisPalyer.find('.jp-seek-bar').width())?$thisPalyer.find('.jp-seek-bar').width():(pageX-parentX-8);
 		valueX = (valueX<0)?0:valueX;
 		
-		$('.jp-play-barButton.moving').css({'left': valueX}) ;
-		$('.jp-play-bar.moving').css({'width':valueX});
+		$thisPalyer.find('.jp-play-barButton.moving').css({'left': valueX}) ;
+		$thisPalyer.find('.jp-play-bar.moving').css({'width':valueX});
 	});
-    	//bind the mouseup event in the body element，when mouseup，stop the button moving event，and reset the progress position.
+    	//body event
 	$('body').mouseup(function(e){	
 		// Using $(e.currentTarget) to enable multiple seek bars
-		if ($('.jp-play-barButton').hasClass('moving')){
+		if ($thisPalyer.find('.jp-play-barButton').hasClass('moving')){
 
-			var $bar = $('.jp-seek-bar'),
+			var $bar = $thisPalyer.find('.jp-seek-bar'),
 			offset = $bar.offset(),
-			//x = e.pageX - offset.left,
-			x = parseInt($('.jp-play-barButton.moving').css('left'));
+
+			x = parseInt($thisPalyer.find('.jp-play-barButton.moving').css('left'));
 			w = $bar.width(),
 			p = 100 * x / w;
 		
-			$targetAudioPlayer = $('.jp-play-barButton.moving').parent().parent().parent().prev();
+			$targetAudioPlayer = $thisPalyer.find('.jp-play-barButton.moving').parent().parent().parent().prev();
 			$targetAudioPlayer.jPlayer( "playHead", p ); 
 
-			$('.jp-play-barButton.moving').remove();
-			$('.jp-play-barButton.hidding').css({'visibility':'visible'}).removeClass('hidding');
-			$('.jp-play-bar.moving').remove();
-			$('.jp-play-bar.hidding').css({'visibility':'visible'}).removeClass('hidding');		
+			$thisPalyer.find('.jp-play-barButton.moving').remove();
+			$thisPalyer.find('.jp-play-barButton.hidding').css({'visibility':'visible'}).removeClass('hidding');
+			$thisPalyer.find('.jp-play-bar.moving').remove();
+			$thisPalyer.find('.jp-play-bar.hidding').css({'visibility':'visible'}).removeClass('hidding');		
 		}else{
 				
 		}
