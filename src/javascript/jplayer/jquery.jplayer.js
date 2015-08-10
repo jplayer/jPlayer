@@ -649,7 +649,8 @@
 			emulateHtml: false, // Emulates the HTML5 Media element on the jPlayer element.
 			consoleAlerts: true, // Alerts are sent to the console.log() instead of alert().
 			errorAlerts: false,
-			warningAlerts: false
+			warningAlerts: false,
+			dashAlerts: false
 		},
 		optionsAudio: {
 			size: {
@@ -809,6 +810,13 @@
 			rtmpv: { // RTMP VIDEO
 				codec: 'video/rtmp; codecs="rtmp"',
 				flashCanPlay: true,
+				media: 'video'
+			},
+			mpdv: { // MPEG-DASH
+				codec: 'application/dash+xml',
+				flashCanPlay: false,
+				htmlCanPlay: !!(window.Dash && (window.WebKitMediaSource || window.MediaSource)),
+				isDash: true,
 				media: 'video'
 			}
 		},
@@ -1024,7 +1032,8 @@
 			this.aurora.canPlay = {};
 			this.flash.canPlay = {};
 			$.each(this.formats, function(priority, format) {
-				self.html.canPlay[format] = self.html[self.format[format].media].available && "" !== self.htmlElement[self.format[format].media].canPlayType(self.format[format].codec);
+
+				self.html.canPlay[format] = self.html[self.format[format].media].available && (self.format[format].htmlCanPlay || "" !== self.htmlElement[self.format[format].media].canPlayType(self.format[format].codec));
 				self.aurora.canPlay[format] = ($.inArray(format, self.aurora.formats) > -1);
 				self.flash.canPlay[format] = self.format[format].flashCanPlay && self.flash.available;
 			});
@@ -1912,6 +1921,7 @@
 		},
 		_resetActive: function() {
 			this.html.active = false;
+			this.html.dash = false;
 			this.aurora.active = false;
 			this.flash.active = false;
 		},
@@ -1976,6 +1986,9 @@
 						if(isVideo) {
 							if(isHtml) {
 								self.html.video.gate = true;
+								if(self.format[format].isDash) {
+									self.html.dash = true;
+								}
 								self._html_setVideo(media);
 								self.html.active = true;
 							} else {
@@ -2914,9 +2927,21 @@
 
 			this.htmlElement.media.src = this.status.src;
 
+			if(this.html.dash) {
+				var context = new Dash.di.DashContext();
+				var dashPlayer = new MediaPlayer(context);
+				dashPlayer.startup();
+				dashPlayer.debug.setLogToBrowserConsole(this.options.dashAlerts);
+				dashPlayer.attachView(this.htmlElement.media);
+				dashPlayer.setAutoPlay(false);
+
+				dashPlayer.attachSource(media.mpdv);
+			}
+
 			if(this.options.preload !== 'none') {
 				this._html_load(); // See function for comments
 			}
+
 			this._trigger($.jPlayer.event.timeupdate); // The flash generates this event for its solution.
 		},
 		_html_setFormat: function(media) {
@@ -2964,7 +2989,7 @@
 			// This function remains to allow the early HTML5 browsers to work, such as Firefox 3.6
 			// A change in the W3C spec for the media.load() command means that this is no longer necessary.
 			// This command should be removed and actually causes minor undesirable effects on some browsers. Such as loading the whole file and not only the metadata.
-			if(this.status.waitForLoad) {
+			if(this.status.waitForLoad && !this.html.dash) {
 				this.status.waitForLoad = false;
 				this.htmlElement.media.load();
 			}
