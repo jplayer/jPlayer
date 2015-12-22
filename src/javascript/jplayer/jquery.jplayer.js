@@ -2382,10 +2382,14 @@
 						this.css.jq[fn].unbind(".jPlayer");
 					}
 					this.options.cssSelector[fn] = cssSel;
-					this.css.cs[fn] = this.options.cssSelectorAncestor + " " + cssSel;
+					this.css.cs[fn] = cssSel;
 
 					if(cssSel) { // Checks for empty string
-						this.css.jq[fn] = $(this.css.cs[fn]);
+						if (this.options.cssSelectorAncestor) { // checks if ancestor is defined
+							this.css.jq[fn] = $(this.options.cssSelectorAncestor).find(this.css.cs[fn]);
+						} else {
+							this.css.jq[fn] = $(this.css.cs[fn]);
+						}
 					} else {
 						this.css.jq[fn] = []; // To comply with the css.jq[fn].length check before its use. As of jQuery 1.4 could have used $() for an empty set. 
 					}
@@ -2406,7 +2410,7 @@
 					if(cssSel && this.css.jq[fn].length !== 1) { // So empty strings do not generate the warning. ie., they just remove the old one.
 						this._warning( {
 							type: $.jPlayer.warning.CSS_SELECTOR_COUNT,
-							context: this.css.cs[fn],
+							context: (this.options.cssSelectorAncestor ? this.options.cssSelectorAncestor + " " : "") + this.css.cs[fn],
 							message: $.jPlayer.warningMsg.CSS_SELECTOR_COUNT + this.css.jq[fn].length + " found for " + fn + " method.",
 							hint: $.jPlayer.warningHint.CSS_SELECTOR_COUNT
 						});
