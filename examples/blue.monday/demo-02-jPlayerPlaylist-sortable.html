@@ -21,10 +21,9 @@ div.jp-type-playlist div.jp-playlist div.jp-playlist-item-handle:hover {
 <script type="text/javascript" src="../../src/javascript/add-on/jplayer.playlist.js"></script>
 <script type="text/javascript">
 //<![CDATA[
-var myPlaylist;
 $(document).ready(function(){
 
-	myPlaylist = new jPlayerPlaylist({
+	var myPlaylist = new jPlayerPlaylist({
 		jPlayer: "#jquery_jplayer_N",
 		cssSelectorAncestor: "#jp_container_N"
 	}, [

@@ -52,7 +52,7 @@
 			stateClass: {
 				shuffled: "jp-state-shuffled"
 			},
-			sortablePlaylist: {
+			sortableOptions: {
 				// options
 				appendTo: "parent",
 				axis: "y",
@@ -111,7 +111,7 @@
 		$(this.cssSelector.jPlayer).bind($.jPlayer.event.ready, function() {
 			self._init();
 			if(jQuery().sortable) {
-				$(self.cssSelector.playlist + " ul").sortable(self.options.sortablePlaylist);
+				$(self.cssSelector.playlist + " ul").sortable(self.options.sortableOptions);
 			}
 		});
 
@@ -188,7 +188,7 @@
 				loopOnPrevious: false,
 				shuffleOnLoop: true,
 				enableRemoveControls: false,
-				enableHandleControls: true,
+				enableHandleControls: jQuery().sortable ? true : false,
 				displayTime: 'slow',
 				addTime: 'fast',
 				removeTime: 'fast',
