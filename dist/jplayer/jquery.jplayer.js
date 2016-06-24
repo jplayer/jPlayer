@@ -1031,24 +1031,19 @@
 			this.html.desired = false;
 			this.aurora.desired = false;
 			this.flash.desired = false;
-			$.each(this.solutions, function(solutionPriority, solution) {
-				if(solutionPriority === 0) {
-					self[solution].desired = true;
-				} else {
-					var audioCanPlay = false;
-					var videoCanPlay = false;
-					$.each(self.formats, function(formatPriority, format) {
-						if(self[self.solutions[0]].canPlay[format]) { // The other solution can play
-							if(self.format[format].media === 'video') {
-								videoCanPlay = true;
-							} else {
-								audioCanPlay = true;
-							}
-						}
-					});
-					self[solution].desired = (self.require.audio && !audioCanPlay) || (self.require.video && !videoCanPlay);
-				}
-			});
+            $.each(this.formats, function(formatPriority, format) {
+                var canPlay = false;
+                $.each(self.solutions, function(solutionPriority, solution) {
+                    if (canPlay) {
+                        // If a solution can already play it, return
+                        return;
+                    } else if(self[solution].canPlay[format]) {
+                        // Else, if this solution can play it
+                        self[solution].desired = true;
+                        canPlay = true;
+                    }
+                });
+            });
 			// This is what jPlayer will support, based on solution and supplied.
 			this.html.support = {};
 			this.aurora.support = {};
