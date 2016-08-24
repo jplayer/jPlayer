@@ -495,7 +495,8 @@
 			supplied: "mp3", // Defines which formats jPlayer will try and support and the priority by the order. 1st is highest,
 			auroraFormats: "wav", // List the aurora.js codecs being loaded externally. Its core supports "wav". Specify format in jPlayer context. EG., The aac.js codec gives the "m4a" format.
 			preload: 'metadata',  // HTML5 Spec values: none, metadata, auto.
-			volume: 0.8, // The volume. Number 0 to 1.
+			volume: 0.512, // The volume. Number 0 to 1. 0.512 (logarithmic) == 0.8 (percentile).
+			volumePower: 3, // The factor use for logarithmic volume control. Recommended = 3. Higher values create a sharper curve. See http://dr-lex.be/info-stuff/volumecontrols.html
 			muted: false,
 			remainingDuration: false, // When true, the remaining time is shown in the duration GUI element.
 			toggleDuration: false, // When true, clicks on the duration toggle between the duration and remaining display.
@@ -2265,6 +2266,7 @@
 			}
 		},
 		volume: function(v) {
+			v = Math.pow(v,this.options.volumePower);
 			this.volumeWorker(v);
 			if(this.options.globalVolume) {
 				this.tellOthers("volumeWorker", function() {
@@ -2336,7 +2338,7 @@
 				}
 				if(this.css.jq.volumeBarValue.length) {
 					this.css.jq.volumeBarValue.show();
-					this.css.jq.volumeBarValue[this.options.verticalVolume ? "height" : "width"]((v*100)+"%");
+					this.css.jq.volumeBarValue[this.options.verticalVolume ? "height" : "width"]((Math.pow(v,1/this.options.volumePower)*100)+"%");
 				}
 				if(this.css.jq.volumeMax.length) {
 					this.css.jq.volumeMax.show();
