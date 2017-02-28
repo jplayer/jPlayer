@@ -2728,6 +2728,9 @@
 				case "autoBlur" :
 					this.options[key] = value;
 					break;
+				case "useLogarithmicVolume" :
+					this.options[key] = value;
+					break;
 			}
 
 			return this;
