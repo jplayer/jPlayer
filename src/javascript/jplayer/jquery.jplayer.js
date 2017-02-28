@@ -496,7 +496,6 @@
 			auroraFormats: "wav", // List the aurora.js codecs being loaded externally. Its core supports "wav". Specify format in jPlayer context. EG., The aac.js codec gives the "m4a" format.
 			preload: 'metadata',  // HTML5 Spec values: none, metadata, auto.
 			volume: 0.8, // The volume. Number 0 to 1.
-			logarithmicVolume: 0.512, // The volume. Number 0 to 1. 0.512 (logarithmic) == 0.8 (percentile).
 			volumePower: 3, // The factor use for logarithmic volume control. Recommended = 3. Higher values create a sharper curve. See http://dr-lex.be/info-stuff/volumecontrols.html
 			muted: false,
 			remainingDuration: false, // When true, the remaining time is shown in the duration GUI element.
@@ -865,11 +864,6 @@
 			this.css.jq = {}; // Holds jQuery selectors. ie., $(css.cs.method)
 
 			this.ancestorJq = []; // Holds jQuery selector of cssSelectorAncestor. Init would use $() instead of [], but it is only 1.4+
-
-			// Changes initial volume value if logarithmic volume is required
-			if (this.options.useLogarithmicVolume) {
-				this.options.volume = this.options.logarithmicVolume;
-			}
 
 			this.options.volume = this._limitValue(this.options.volume, 0, 1); // Limit volume value's bounds.
 
