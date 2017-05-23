@@ -1,6 +1,6 @@
 # [jPlayer](http://jplayer.org/) : HTML5 Audio & Video for [jQuery](http://jquery.com/)
 
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/happyworm/jPlayer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[Gitter](https://gitter.im/happyworm/jPlayer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Support for [Zepto](http://zeptojs.com/) 1.0+ compiled with the data module.
 
@@ -58,3 +58,6 @@ Composer will now download all components and install the needed files into `you
 ## Author:
 Mark J Panaghiston [@thepag](http://twitter.com/thepag)
 [happyworm.com](http://happyworm.com/)
+
+## Alternative Versions
+* [react-jPlayer](https://github.com/MartinDawson/react-jPlayer)
