@@ -2443,7 +2443,7 @@
 				// Using $(e.currentTarget) to enable multiple seek bars
 				var $bar = $(e.currentTarget),
 					offset = $bar.offset(),
-					x = e.pageX - offset.left,
+					x = window.pageXOffset + e.pageX - offset.left,
 					w = $bar.width(),
 					p = 100 * x / w;
 				this.playHead(p);
