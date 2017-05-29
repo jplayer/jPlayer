@@ -1,31 +1,45 @@
 {
   "name": "jplayer",
-  "version": "2.3.10",
-  "description": "The jQuery HTML5 Audio / Video Library",
-  "homepage": "http://www.jplayer.org/",
+  "version": "2.9.2",
+  "description": "The jQuery HTML5 Audio / Video Library. Allows you to create a media player with a consistent interface and experience across all browsers.",
+  "organization": "Happyworm Ltd",
+  "author": {
+    "name": "Mark J Panaghiston",
+    "email": "markp@happyworm.com",
+    "url": "http://happyworm.com/"
+  },
+  "homepage": "http://jplayer.org/",
   "keywords": [
+    "jquery-plugin",
     "audio",
-    "video"
+    "video",
+    "media",
+    "player",
+    "jplayer"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/happyworm/jPlayer.git"
+  },
+  "bugs": "https://github.com/happyworm/jPlayer/issues",
+  "github": "http://github.com/happyworm/jPlayer",
+  "main": "dist/jplayer/jquery.jplayer.js",
+  "files": [
+    "dist"
   ],
   "dependencies": {
     "jquery": ">1.7.0"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://www.opensource.org/licenses/mit-license.php"
-    },
-    {
-      "type" : "GPL",
-      "url": "http://www.gnu.org/copyleft/gpl.html"
-    }
-  ],
-  "repositories": [
-    {
-      "type": "git",
-      "url": "https://github.com/happyworm/jPlayer.git"
-    }
-  ],
-  "github": "http://github.com/happyworm/jPlayer",
-  "main": "jquery.jplayer/jquery.jplayer.js"
+  "devDependencies": {
+    "flex-sdk": "~4.6.0-0",
+    "grunt": "~0.4.5",
+    "grunt-contrib-concat": "~0.5.0",
+    "grunt-contrib-copy": "^0.7.0",
+    "grunt-contrib-cssmin": "^0.10.0",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-sass": "^0.8.1",
+    "grunt-contrib-uglify": "~0.6.0",
+    "grunt-mxmlc": "~0.5.2"
+  }
 }

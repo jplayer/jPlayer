@@ -1,5 +1,7 @@
 # [jPlayer](http://jplayer.org/) : HTML5 Audio & Video for [jQuery](http://jquery.com/)
 
+[Gitter](https://gitter.im/happyworm/jPlayer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Support for [Zepto](http://zeptojs.com/) 1.0+ compiled with the data module.
 
 ## What is jPlayer?
@@ -19,6 +21,32 @@ Support for [Zepto](http://zeptojs.com/) 1.0+ compiled with the data module.
 
 _(*) Optional counterpart formats to increase HTML5 cross-browser support._
 
+## Bower Install
+* simple install using `bower install jplayer`
+* see <http://bower.io/> for more information.
+
+## Composer install
+
+Install jPlayer via composer by adding the following lines to your `composer.json` in your project:
+
+    // ...
+    "require": {
+        // ...
+        "happyworm/jPlayer": "2.*"
+        // ...
+    }
+    // ...
+    "config": {
+        "component-dir": "your/desired/asset/path"
+    },
+    // ...
+
+Then execute the following:
+
+    php composer.phar update
+
+Composer will now download all components and install the needed files into `your/desired/asset/path`, ready to use.
+
 ## License
 [jPlayer](http://jplayer.org/) is licensed under the [MIT license](http://opensource.org/licenses/MIT).
 
@@ -30,3 +58,6 @@ _(*) Optional counterpart formats to increase HTML5 cross-browser support._
 ## Author:
 Mark J Panaghiston [@thepag](http://twitter.com/thepag)
 [happyworm.com](http://happyworm.com/)
+
+## Alternative Versions
+* [react-jPlayer](https://github.com/jPlayer/react-jPlayer)

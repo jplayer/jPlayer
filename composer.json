@@ -1,0 +1,41 @@
+{
+    "name": "happyworm/jplayer",
+    "description": "jPlayer allows you to create a media player with a consistent interface and experience across all browsers.",
+    "type": "component",
+    "homepage": "http://jplayer.org/",
+    "license": "MIT",
+    "keywords": [
+        "audio",
+        "video",
+        "media",
+        "player",
+        "jplayer",
+        "html5",
+        "streaming"
+    ],
+    "authors": [
+        {
+            "name": "Mark J Panaghiston",
+            "email": "markp@happyworm.com"
+        }
+    ],
+    "require": {
+        "robloach/component-installer": "*"
+    },
+    "suggest": {
+        "components/jquery": ">=1.7.2"
+    },
+    "extra": {
+        "component": {
+            "scripts": [
+                "dist/jplayer/jquery.jplayer.js"
+            ],
+            "files": [
+                "dist"
+            ],
+            "shim": {
+                "deps": ["jquery"]
+            }
+        }
+    }
+}

@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<!-- Website Design By: www.happyworm.com -->
+<title>jPlayer Development Tester</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="../../dist/skin/blue.monday/css/jplayer.blue.monday.min.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../../lib/jquery.min.js"></script>
+<script type="text/javascript" src="../../dist/jplayer/jquery.jplayer.min.js"></script>
+<script type="text/javascript" src="../../dist/add-on/jquery.jplayer.inspector.min.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+
+$(document).ready(function(){
+
+	$("#addHtmlFlash").click( function() {
+		$("#jquery_jplayer").jPlayer({
+			swfPath: "../../dist/jplayer",
+			supplied: "m4v, ogv, m4a, mp3, oga",
+			errorAlerts:true,
+			warningAlerts:true
+		});
+
+		$("#jplayer_inspector").jPlayerInspector( {
+			jPlayer: $("#jquery_jplayer"),
+			visible: true
+		});
+
+		return false;
+	});
+
+	$("#addFlashHtml").click( function() {
+		$("#jquery_jplayer").jPlayer({
+			swfPath: "../../dist/jplayer",
+			supplied: "m4v, ogv, m4a, mp3, oga",
+			solution: "flash, html",
+			errorAlerts:true,
+			warningAlerts:true
+		});
+
+		$("#jplayer_inspector").jPlayerInspector( {
+			jPlayer: $("#jquery_jplayer"),
+			visible: true
+		});
+
+		return false;
+	});
+
+	$("#addCurrentTest").click( function() {
+		$("#jquery_jplayer").jPlayer({
+			swfPath: "../../dist/jplayer",
+			// swfPath: "../../dist/jplayer/", // Check trailing slash
+			// swfPath: "../../dist/jplayer/broken", // Check broken swfPath errors.
+			// swfPath: "../../dist/jplayer/Jplayer.swf", // Check URLs work
+			// swfPath: "../../dist/jplayer/Jplayer.SWF", // Check URLs extension case insensative (Apache did not mind the extension's case not matching and worked too.)
+			// swfPath: "/", // Checks various
+			// supplied: "flv",
+			supplied: "flv,m4v,webmv",
+			// supplied: "m4v, ogv, m4a, mp3, oga",
+			// supplied: "ogv, m4v, oga, mp3, m4a",
+			// supplied: "m4v, ogv, mp3, oga",
+			// supplied: "oga, mp3",
+			// supplied: "m4v, ogv",
+			// supplied: "m4a, mp3, m4v",
+			// supplied: "m4v, mp3",
+			// supplied: "mp3, m4v",
+			// supplied: "m4v",
+			// supplied: "rtmpv",
+
+			// solution: "flash, html",
+			// solution: "", // To test no solution error event info.
+/*
+			ready: function() {
+				alert("Ready!");
+			},
+
+			cssSelector: {
+				duration: "" // To test destroy() bug fix on empty selectors
+			},
+
+			timeupdate: function(event) {
+				if(event.jPlayer.status.currentTime > 15) {
+					$(this).jPlayer("pause", 20);
+				}
+			},
+
+			click: function(event) {
+				// alert("click: paused = " + event.jPlayer.status.paused);
+				if(event.jPlayer.status.paused) {
+					$(this).jPlayer("play");
+				} else {
+					$(this).jPlayer("pause");
+				}
+			},
+
+			flashreset: function() {
+				alert("flashreset");
+			},
+*/
+
+			keyEnabled: true,
+			audioFullScreen: true,
+/*
+			keyBindings: {
+				play: null
+			},
+			keyBindings: {
+				play: {
+					key: 32,
+					fn: function(f) {
+						alert("This jPlayer instance is " + (f.status.paused ? "paused" : "playing"));
+					}
+				}
+			},
+*/
+
+
+			// preload: "auto",
+			// preload: "metadata",
+			// volume: 0.2,
+			errorAlerts:true,
+			warningAlerts:true
+		});
+
+		$("#jplayer_inspector").jPlayerInspector( {
+			jPlayer: $("#jquery_jplayer"),
+			visible: true
+		});
+
+		return false;
+	});
+
+	$("#jPlayerDestroy").click( function() {
+		$("#jplayer_inspector").jPlayerInspector("destroy"); // Destroy the inspector 1st.
+		$("#jquery_jplayer").jPlayer("destroy");
+		return false;
+	});
+
+
+	// The static player at the bottom
+	$("#jquery_jplayer_2").jPlayer({
+		ready: function (event) {
+			$(this).jPlayer("setMedia", {
+				m4a: "http://www.jplayer.org/audio/m4a/Miaow-07-Bubble.m4a",
+				oga: "http://www.jplayer.org/audio/ogg/Miaow-07-Bubble.ogg"
+			});
+		},
+		play: function() {
+			// $(this).jPlayer("pauseOthers");
+		},
+		swfPath: "../../dist/jplayer",
+		supplied: "m4a, oga",
+		cssSelectorAncestor: "#jp_container_2",
+		useStateClassSkin: true,
+		autoBlur: false
+	});
+
+	$("#breakCssPlay").click(function() {
+			$("#jquery_jplayer").jPlayer("option", "cssSelector.play", ".X-Broken-X"); // Triggered warning
+			// $("#jquery_jplayer").jPlayer("option", "cssSelector", {play:".X-Broken-X"});
+			return false;
+	});
+	$("#emptyCssPlay").click(function() {
+			$("#jquery_jplayer").jPlayer("option", "cssSelector.play", "");
+			// $("#jquery_jplayer").jPlayer("option", "cssSelector", {play:""});
+			return false;
+	});
+	$("#fixCssPlay").click(function() {
+			$("#jquery_jplayer").jPlayer("option", "cssSelector.play", ".jp-play");
+			// $("#jquery_jplayer").jPlayer("option", "cssSelector", {play:".jp-play"});
+			return false;
+	});
+
+	$("#breakCssAncestor").click(function() {
+			$("#jquery_jplayer").jPlayer("option", "cssSelectorAncestor", "#X-Broken-X"); // Triggers many warnings
+			return false;
+	});
+	$("#emptyCssAncestor").click(function() {
+			$("#jquery_jplayer").jPlayer("option", "cssSelectorAncestor", ""); // Still works via class selectors. NB: Would affect multiple instances though. Well, it depends.
+			return false;
+	});
+	$("#fixCssAncestor").click(function() {
+			$("#jquery_jplayer").jPlayer("option", "cssSelectorAncestor", "#jp_container_1");
+			return false;
+	});
+
+	$("#addEndedRepeat").click(function() {
+		$("#jquery_jplayer").bind($.jPlayer.event.ended + ".repeat", function(event) {
+			$(this).jPlayer("play");
+		});
+		return false;
+	});
+	$("#addEndedAlert").click(function() {
+		$("#jquery_jplayer").bind($.jPlayer.event.ended + ".alert", function(event) {
+			alert("jPlayer_ended");
+		});
+		return false;
+	});
+	$("#removeAlert").click(function() {
+		$("#jquery_jplayer").unbind(".alert");
+		return false;
+	});
+	$("#removeRepeat").click(function() {
+		$("#jquery_jplayer").unbind(".repeat");
+		return false;
+	});
+
+	$("#setMedia_broken").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			mp3: "banana.mp3",
+			m4a: "banana.m4a",
+			oga: "banana.oga",
+			m4v: "banana.m4v",
+			ogv: "banana.ogv",
+			poster: "http://www.jplayer.org/audio/poster/Miaow_132x132.jpg" // Valid link helps see behaviour
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Bubble - MP3</li>");
+		return false;
+	});
+
+	$("#setMedia_empty").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			mp3: "",
+			m4a: "",
+			oga: "",
+			m4v: "",
+			ogv: ""
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Bubble - MP3</li>");
+		return false;
+	});
+
+	$("#setMedia_wrong").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			mp3: 1,
+			m4a: true,
+			oga: function() { return "banana.oga"; },
+			m4v: {url: "banana.m4v"},
+			ogv: false
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Bubble - MP3</li>");
+		return false;
+	});
+
+	$("#setAudio_a1").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			mp3: "http://www.jplayer.org/audio/mp3/Miaow-07-Bubble.mp3"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Bubble - MP3</li>");
+		return false;
+	});
+	$("#setAudio_b1").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			mp3: "http://www.jplayer.org/audio/mp3/Miaow-04-Lismore.mp3"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Lismore - MP3</li>");
+		return false;
+	});
+
+	$("#setAudio_a2").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			mp3: "http://www.jplayer.org/audio/mp3/Miaow-07-Bubble.mp3",
+			oga: "http://www.jplayer.org/audio/ogg/Miaow-07-Bubble.ogg"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Bubble - MP3 + OGG</li>");
+		return false;
+	});
+	$("#setAudio_b2").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			mp3: "http://www.jplayer.org/audio/mp3/Miaow-04-Lismore.mp3",
+			oga: "http://www.jplayer.org/audio/ogg/Miaow-04-Lismore.ogg"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Lismore - MP3 + OGG</li>");
+		return false;
+	});
+
+	$("#setAudio_a3").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			mp3: "http://www.jplayer.org/audio/mp3/Miaow-07-Bubble.mp3",
+			oga: "http://www.jplayer.org/audio/ogg/Miaow-07-Bubble.ogg",
+			m4a: "http://www.jplayer.org/audio/m4a/Miaow-07-Bubble.m4a"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Bubble - MP3 + OGG + M4A</li>");
+		return false;
+	});
+	$("#setAudio_b3").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			mp3: "http://www.jplayer.org/audio/mp3/Miaow-04-Lismore.mp3",
+			oga: "http://www.jplayer.org/audio/ogg/Miaow-04-Lismore.ogg",
+			m4a: "http://www.jplayer.org/audio/m4a/Miaow-04-Lismore.m4a"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Lismore - MP3 + OGG + M4A</li>");
+		return false;
+	});
+
+	$("#setAudio_a4").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			mp3: "http://www.jplayer.org/audio/mp3/Miaow-07-Bubble.mp3",
+			poster: "http://www.jplayer.org/audio/poster/Miaow_132x132.jpg"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Bubble - MP3 - Poster</li>");
+		return false;
+	});
+	$("#setAudio_b4").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			mp3: "http://www.jplayer.org/audio/mp3/Miaow-04-Lismore.mp3",
+			poster: "http://www.jplayer.org/audio/poster/Miaow_132x132.jpg"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Lismore - MP3 - Poster</li>");
+		return false;
+	});
+
+	$("#setAudio_a5").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			mp3: "http://www.jplayer.org/audio/mp3/Miaow-07-Bubble.mp3",
+			oga: "http://www.jplayer.org/audio/ogg/Miaow-07-Bubble.ogg",
+			poster: "http://www.jplayer.org/audio/poster/Miaow_132x132.jpg"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Bubble - MP3 + OGG - Poster</li>");
+		return false;
+	});
+	$("#setAudio_b5").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			mp3: "http://www.jplayer.org/audio/mp3/Miaow-04-Lismore.mp3",
+			oga: "http://www.jplayer.org/audio/ogg/Miaow-04-Lismore.ogg",
+			poster: "http://www.jplayer.org/audio/poster/Miaow_132x132.jpg"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Lismore - MP3 + OGG - Poster</li>");
+		return false;
+	});
+
+	$("#setAudio_a6").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			mp3: "http://www.jplayer.org/audio/mp3/Miaow-07-Bubble.mp3",
+			oga: "http://www.jplayer.org/audio/ogg/Miaow-07-Bubble.ogg",
+			m4a: "http://www.jplayer.org/audio/m4a/Miaow-07-Bubble.m4a",
+			poster: "http://www.jplayer.org/audio/poster/Miaow_132x132.jpg"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Bubble - MP3 + OGG + M4A - Poster</li>");
+		return false;
+	});
+	$("#setAudio_b6").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			mp3: "http://www.jplayer.org/audio/mp3/Miaow-04-Lismore.mp3",
+			oga: "http://www.jplayer.org/audio/ogg/Miaow-04-Lismore.ogg",
+			m4a: "http://www.jplayer.org/audio/m4a/Miaow-04-Lismore.m4a",
+			poster: "http://www.jplayer.org/audio/poster/Miaow_132x132.jpg"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Lismore - MP3 + OGG + M4A - Poster</li>");
+		return false;
+	});
+
+	$("#setVideo_a1").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			m4v: "http://www.jplayer.org/video/m4v/Big_Buck_Bunny_Trailer.m4v"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Big Buck Bunny Trailer - M4V</li>");
+		return false;
+	});
+	$("#setVideo_b1").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			m4v: "http://www.jplayer.org/video/m4v/Finding_Nemo_Teaser.m4v"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Finding Nemo Teaser - M4V</li>");
+		return false;
+	});
+	$("#setVideo_c1").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			m4v: "http://www.jplayer.org/video/m4v/Incredibles_Teaser.m4v"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Incredibles Teaser - M4V</li>");
+		return false;
+	});
+
+	$("#setVideo_a2").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			m4v: "http://www.jplayer.org/video/m4v/Big_Buck_Bunny_Trailer.m4v",
+			ogv: "http://www.jplayer.org/video/ogv/Big_Buck_Bunny_Trailer.ogv"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Big Buck Bunny Trailer - M4V + OGV</li>");
+		return false;
+	});
+	$("#setVideo_b2").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			m4v: "http://www.jplayer.org/video/m4v/Finding_Nemo_Teaser.m4v",
+			ogv: "http://www.jplayer.org/video/ogv/Finding_Nemo_Teaser.ogv"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Finding Nemo Teaser - M4V + OGV</li>");
+		return false;
+	});
+	$("#setVideo_c2").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			m4v: "http://www.jplayer.org/video/m4v/Incredibles_Teaser.m4v",
+			ogv: "http://www.jplayer.org/video/ogv/Incredibles_Teaser.ogv"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Incredibles Teaser - M4V + OGV</li>");
+		return false;
+	});
+
+	$("#setVideo_a3").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			m4v: "http://www.jplayer.org/video/m4v/Big_Buck_Bunny_Trailer.m4v",
+			poster: "http://www.jplayer.org/video/poster/Big_Buck_Bunny_Trailer_480x270.png"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Big Buck Bunny Trailer - M4V - Poster</li>");
+		return false;
+	});
+	$("#setVideo_b3").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			m4v: "http://www.jplayer.org/video/m4v/Finding_Nemo_Teaser.m4v",
+			poster: "http://www.jplayer.org/video/poster/Finding_Nemo_Teaser_640x352.png"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Finding Nemo Teaser - M4V - Poster</li>");
+		return false;
+	});
+	$("#setVideo_c3").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			m4v: "http://www.jplayer.org/video/m4v/Incredibles_Teaser.m4v",
+			poster: "http://www.jplayer.org/video/poster/Incredibles_Teaser_640x272.png"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Incredibles Teaser - M4V - Poster</li>");
+		return false;
+	});
+
+	$("#setVideo_a4").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			m4v: "http://www.jplayer.org/video/m4v/Big_Buck_Bunny_Trailer.m4v",
+			ogv: "http://www.jplayer.org/video/ogv/Big_Buck_Bunny_Trailer.ogv",
+			poster: "http://www.jplayer.org/video/poster/Big_Buck_Bunny_Trailer_480x270.png"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Big Buck Bunny Trailer - M4V + OGV - Poster</li>");
+		return false;
+	});
+	$("#setVideo_b4").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			m4v: "http://www.jplayer.org/video/m4v/Finding_Nemo_Teaser.m4v",
+			ogv: "http://www.jplayer.org/video/ogv/Finding_Nemo_Teaser.ogv",
+			poster: "http://www.jplayer.org/video/poster/Finding_Nemo_Teaser_640x352.png"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Finding Nemo Teaser - M4V + OGV - Poster</li>");
+		return false;
+	});
+	$("#setVideo_c4").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			m4v: "http://www.jplayer.org/video/m4v/Incredibles_Teaser.m4v",
+			ogv: "http://www.jplayer.org/video/ogv/Incredibles_Teaser.ogv",
+			poster: "http://www.jplayer.org/video/poster/Incredibles_Teaser_640x272.png"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Incredibles Teaser - M4V + OGV - Poster</li>");
+		return false;
+	});
+
+	// http://www.youtube.com/watch?v=22nBBiDprRA
+
+
+	$("#setRtmp_a1").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			rtmpv: "rtmp://cp67126.edgefcs.net/ondemand/mp4:mediapm/ovp/content/test/video/spacealonehd_sounas_640_300.mp4",
+			poster: "http://www.jplayer.org/video/poster/space_alone.jpg"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Enable RTMP Player</li>");
+		return false;
+	});
+
+
+	$("#setFlash_a1").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			flv: "http://v1.lscache7.c.youtube.com/videoplayback?sparams=id%2Cexpire%2Cip%2Cipbits%2Citag%2Calgorithm%2Cburst%2Cfactor&algorithm=throttle-factor&itag=34&ipbits=8&burst=40&sver=3&signature=C1475B31591C54E246AC7EA41B113F6762C2211E.67833A7B6B40087B1B1F6DBE501905EE7D5BC8C4&expire=1306540800&key=yt1&ip=86.0.0.0&factor=1.25&id=db69c10620e9ad10"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Enable YouTube HTML5 video player - FLV</li>");
+		return false;
+	});
+	$("#setFlash_a2").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			flv: "http://v1.lscache7.c.youtube.com/videoplayback?sparams=id%2Cexpire%2Cip%2Cipbits%2Citag%2Calgorithm%2Cburst%2Cfactor&algorithm=throttle-factor&itag=34&ipbits=8&burst=40&sver=3&signature=C1475B31591C54E246AC7EA41B113F6762C2211E.67833A7B6B40087B1B1F6DBE501905EE7D5BC8C4&expire=1306540800&key=yt1&ip=86.0.0.0&factor=1.25&id=db69c10620e9ad10",
+			webmv: "http://v13.lscache7.c.youtube.com/videoplayback?sparams=id%2Cexpire%2Cip%2Cipbits%2Citag%2Cratebypass%2Coc%3AU0hPS1VPTl9FSkNOOV9NSVJJ&fexp=903103%2C912502&itag=43&ipbits=0&signature=8E22AC37F5A4AD8D415AE94D6B1BA7643803FF4B.271224C8B05A70F40A44D9AF99FBCAF2C6E9A974&sver=3&ratebypass=yes&expire=1306540800&key=yt1&ip=0.0.0.0&id=db69c10620e9ad10",
+			m4v: "http://v10.lscache7.c.youtube.com/videoplayback?sparams=id%2Cexpire%2Cip%2Cipbits%2Citag%2Cratebypass%2Coc%3AU0hPS1VPTl9FSkNOOV9NSVJJ&itag=18&ipbits=0&signature=555786A0A318BCF098D4341D546874A79D160DA1.C99270087B569832A8F935ECCEA1D8430AB125DF&sver=3&ratebypass=yes&expire=1306540800&key=yt1&ip=0.0.0.0&id=db69c10620e9ad10"
+		});
+		$("#jp_container_1 .jp-title ul").html("<li>Enable YouTube HTML5 video player - FLV + WEMBV + M4V</li>");
+		return false;
+	});
+
+
+	$("#clearMedia").click(function() {
+			$("#jquery_jplayer").jPlayer("clearMedia");
+			return false;
+	});
+
+	$("#load").click(function() {
+			$("#jquery_jplayer").jPlayer("load");
+			return false;
+	});
+
+	$("#pause").click(function() {
+			$("#jquery_jplayer").jPlayer("pause");
+			// $("#jquery_jplayer").data("jPlayer").pause(); // This works too!
+			return false;
+	});
+
+	$("#globalPause").click(function() {
+			$.jPlayer.pause();
+			return false;
+	});
+
+	$("#stop").click(function() {
+			$("#jquery_jplayer").jPlayer("stop");
+			return false;
+	});
+
+	$("#mute").click(function() {
+			$("#jquery_jplayer").jPlayer("mute");
+			return false;
+	});
+
+	$("#unmute").click(function() {
+			$("#jquery_jplayer").jPlayer("unmute");
+			return false;
+	});
+
+	$("#volume_a").click(function() {
+			$("#jquery_jplayer").jPlayer("volume", 0.5);
+			return false;
+	});
+
+	$("#play_a").click(function() {
+			$("#jquery_jplayer").jPlayer("play");
+			return false;
+	});
+	$("#play_b").click(function() {
+			$("#jquery_jplayer").jPlayer("play", 0);
+			return false;
+	});
+	$("#play_c").click(function() {
+			$("#jquery_jplayer").jPlayer("play", 15);
+			return false;
+	});
+	$("#play_d").click(function() {
+			$("#jquery_jplayer").jPlayer("play", 30);
+			// $("#jquery_jplayer").jPlayer("play", 30).jPlayer("pause"); // MJP: Test, the pause immediate after play
+			return false;
+	});
+	$("#play_e").click(function() {
+			$("#jquery_jplayer").jPlayer("play", 1e9);
+			return false;
+	});
+
+	$("#pause_a").click(function() {
+			$("#jquery_jplayer").jPlayer("pause");
+			return false;
+	});
+	$("#pause_b").click(function() {
+			$("#jquery_jplayer").jPlayer("pause", 0);
+			return false;
+	});
+	$("#pause_c").click(function() {
+			$("#jquery_jplayer").jPlayer("pause", 15);
+			return false;
+	});
+	$("#pause_d").click(function() {
+			$("#jquery_jplayer").jPlayer("pause", 30);
+			// $("#jquery_jplayer").jPlayer("pause", 30).jPlayer("play"); // MJP: Test, the play immediate after pause
+			return false;
+	});
+	$("#pause_e").click(function() {
+			$("#jquery_jplayer").jPlayer("pause", 1e9);
+			return false;
+	});
+
+	$("#playHead_a").click(function() {
+			$("#jquery_jplayer").jPlayer("playHead", 0);
+			return false;
+	});
+	$("#playHead_b").click(function() {
+			$("#jquery_jplayer").jPlayer("playHead", 50);
+			return false;
+	});
+	$("#playHead_c").click(function() {
+			$("#jquery_jplayer").jPlayer("playHead", 99.9);
+			return false;
+	});
+	$("#playHead_d").click(function() {
+			$("#jquery_jplayer").jPlayer("playHead", 100);
+			return false;
+	});
+	$("#playHead_e").click(function() {
+			$("#jquery_jplayer").jPlayer("playHead", 101);
+			return false;
+	});
+
+	$("#option_size_270p").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "size", {
+			width: "480px",
+			height: "270px",
+			cssClass: "jp-video-270p"
+		});
+		return false;
+	});
+	$("#option_size_360p").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "size", {
+			width: "640px",
+			height: "360px",
+			cssClass: "jp-video-360p"
+		});
+		return false;
+	});
+
+	$("#option_sizeFull_270p").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "sizeFull", {
+			width: "480px",
+			height: "270px",
+			cssClass: "jp-video-270p"
+		});
+		return false;
+	});
+	$("#option_sizeFull_360p").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "sizeFull", {
+			width: "640px",
+			height: "360px",
+			cssClass: "jp-video-360p"
+		});
+		return false;
+	});
+	$("#option_sizeFull_full").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "sizeFull", {
+			width: "100%",
+			height: "90%",
+			cssClass: "jp-video-full"
+		});
+		return false;
+	});
+
+	$("#option_fullScreen_true").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "fullScreen", true);
+		return false;
+	});
+	$("#option_fullScreen_false").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "fullScreen", false);
+		return false;
+	});
+
+	$("#fullScreen").click(function() {
+		$("#jquery_jplayer").jPlayer("fullScreen");
+		return false;
+	});
+	$("#restoreScreen").click(function() {
+		$("#jquery_jplayer").jPlayer("restoreScreen");
+		return false;
+	});
+
+	$("#option_autohide_neither").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "autohide", {
+			restored: false,
+			full: false
+		});
+		return false;
+	});
+	$("#option_autohide_full").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "autohide", {
+			restored: false,
+			full: true
+		});
+		return false;
+	});
+	$("#option_autohide_restored").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "autohide", {
+			restored: true,
+			full: false
+		});
+		return false;
+	});
+	$("#option_autohide_both").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "autohide", {
+			restored: true,
+			full: true
+		});
+		return false;
+	});
+
+	$("#option_autohide_slow").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "autohide", {
+			fadeIn: 2000,
+			fadeOut: 2000,
+			hold: 4000
+		});
+		return false;
+	});
+	$("#option_autohide_fast").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "autohide", {
+			fadeIn: 200,
+			fadeOut: 200,
+			hold: 1000
+		});
+		return false;
+	});
+	$("#option_autohide_instant").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "autohide", {
+			fadeIn: 0,
+			fadeOut: 0,
+			hold: 1000
+		});
+		return false;
+	});
+
+	$("#option_loop_true").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "loop", true);
+		return false;
+	});
+	$("#option_loop_false").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "loop", false);
+		return false;
+	});
+
+	var nativeVideoControlsNone = {};
+	$.each($.jPlayer.prototype.options.nativeVideoControls, function(prop, value) {
+		nativeVideoControlsNone[prop] = false;
+	});
+	nativeVideoControlsNone.all = false;
+
+	$("#option_nativeVideoControls_all").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "nativeVideoControls", {
+			all: /./
+		});
+		return false;
+	});
+
+	$("#option_nativeVideoControls_none").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "nativeVideoControls", nativeVideoControlsNone);
+		return false;
+	});
+
+	var noFullWindowNone = {};
+	$.each($.jPlayer.prototype.options.noFullWindow, function(prop, value) {
+		noFullWindowNone[prop] = false;
+	});
+	noFullWindowNone.all = false;
+
+	$("#option_noFullWindow_all").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "noFullWindow", {
+			all: /./
+		});
+		return false;
+	});
+
+	$("#option_noFullWindow_none").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "noFullWindow", noFullWindowNone);
+		return false;
+	});
+
+	var noVolumeNone = {};
+	$.each($.jPlayer.prototype.options.noVolume, function(prop, value) {
+		noVolumeNone[prop] = false;
+	});
+	noVolumeNone.all = false;
+
+	$("#option_noVolume_all").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "noVolume", {
+			all: /./
+		});
+		return false;
+	});
+
+	$("#option_noVolume_none").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "noVolume", noVolumeNone);
+		return false;
+	});
+
+	// Key bindings tests
+
+	$("#option_keyEnabled_true").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "keyEnabled", true);
+		return false;
+	});
+	$("#option_keyEnabled_false").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "keyEnabled", false);
+		return false;
+	});
+
+	$("#option_keyBindings_default").click(function() {
+		// NB: Could still have properties added that are not in default prototype object.
+		$("#jquery_jplayer").jPlayer("option", "keyBindings", $.jPlayer.prototype.options.keyBindings);
+		return false;
+	});
+	$("#option_keyBindings_alert").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "keyBindings", {
+			play: {
+				key: 32,
+				fn: function(f) {
+					alert("This jPlayer instance is " + (f.status.paused ? "paused" : "playing"));
+				}
+			}
+		});
+		return false;
+	});
+	$("#option_keyBindings_disable").click(function() {
+		$("#jquery_jplayer").jPlayer("option", "keyBindings", {
+			play: null
+		});
+		return false;
+	});
+
+
+/*
+	$("#jp_container_1").hover(
+		function(e) {
+			$("#test").css("background-color","#ff0000");
+		},
+		function(e) {
+			$("#test").css("background-color","#00ff00");
+	});
+	$("#jp_container_1").mousemove(function(e) {
+		var offset = $(this).offset();
+		var x = e.pageX - offset.left;
+		var y = e.pageY - offset.top;
+		$("#test").text("x: " + x + " | y = " + y);
+	});
+	$("#jp_container_1").click(function(e) {
+		$("#option_fullScreen_false").click();
+		return false;
+	});
+*/
+
+	$("#test_flv_as_m4v").click(function() {
+		$("#jquery_jplayer").jPlayer("setMedia", {
+			// m4v: "/jquery/video/flv/epic-fail.flv"
+			m4v: "http://v12.lscache3.c.youtube.com/videoplayback?sparams=id%2Cexpire%2Cip%2Cipbits%2Citag%2Calgorithm%2Cburst%2Cfactor&fexp=901026%2C907302&algorithm=throttle-factor&itag=34&ipbits=8&burst=40&sver=3&signature=4DFBE547740D10CB935D286FB563B70F56F32AE2.1858751FC1790AA171B05DE6F8A4C6A3FABCB2BA&expire=1298419200&key=yt1&ip=86.0.0.0&factor=1.25&id=ddd5920c28e56a87"
+		});
+		return false;
+	});
+
+	$("#show-jplayer").click(function() {
+		$("#jp_container_1").show();
+	});
+	$("#hide-jplayer").click(function() {
+		$("#jp_container_1").hide();
+	});
+
+/*
+	var dom = document.getElementById("jquery_jplayer_1");
+
+	if(dom.addEventListener) {
+		$.each($.jPlayer.event, function(name, type) {
+			dom.addEventListener(name, function() {
+				console.log("DOM: " + name + " | duration = " + this.duration + " | currentTime = " + this.currentTime);
+			}, false);
+		});
+	}
+*/
+
+});
+
+//]]>
+</script>
+</head>
+<body>
+			<h2>jPlayer's Development Tester</h2>
+			<p>Screen size is set through CSS to: 270p {width:"480px"; height:"270px";}</p>
+
+			<a id="test_flv_as_m4v" href="javascript:void(0)">FLV Test from youtube</a>
+
+			<p>
+			Use a constructor option below to instance jPlayer.
+			<br />Otherwise the commands and artwork interface do nothing.
+			<br /><code>jPlayer( {<a href="javascript:void(0)" id="addHtmlFlash">solution:"html, flash"</a>} | {<a href="javascript:void(0)" id="addFlashHtml">solution:"flash, html"</a>} | <a href="javascript:void(0)" id="addCurrentTest">currentTest</a> )</code>
+			<br />Use <a href="javascript:void(0)" id="jPlayerDestroy">jPlayer("destroy")</a> to destroy the jPlayer instance before changing the instance above. Otherwise they try and change the options, which do not support such an action.
+
+			<hr />
+			<code>jPlayer("option", "cssSelector", <a href="javascript:void(0)" id="breakCssPlay">"play", "broken"</a> | <a href="javascript:void(0)" id="emptyCssPlay">"play", ""</a> | <a href="javascript:void(0)" id="fixCssPlay">"play", "fixed"</a>)</code>
+			<br /><code>jPlayer("option", "cssSelectorAncestor", <a href="javascript:void(0)" id="breakCssAncestor">"broken"</a> | <a href="javascript:void(0)" id="emptyCssAncestor">""</a> | <a href="javascript:void(0)" id="fixCssAncestor">"fixed"</a>)</code>
+			<br /><a href="javascript:void(0)" id="addEndedRepeat">bind($.jPlayer.event.ended + ".repeat")</a> | <a href="javascript:void(0)" id="addEndedAlert">bind($.jPlayer.event.ended + ".alert")</a>
+			<br /><a href="javascript:void(0)" id="removeRepeat">unbind(".repeat")</a> | <a href="javascript:void(0)" id="removeAlert">unbind(".alert")</a> | <a href="javascript:void(0)" id="globalPause">$.jPlayer.pause()</a>
+			<!-- <br /><a href="javascript:void(0)" id="resize_a">resize(0x0)</a> | <a href="javascript:void(0)" id="resize_b">resize(480x270):270p</a> | <a href="javascript:void(0)" id="resize_c">resize(640x360):360p</a> -->
+
+			<hr />
+			<a href="javascript:void(0)" id="setMedia_broken">setMedia(BrokenLinks:{mp3,m4a,oga,m4v,ogv})</a>
+			<br /><a href="javascript:void(0)" id="setMedia_empty">setMedia(EmptyStrings:{mp3,m4a,oga,m4v,ogv})</a>
+			<br /><a href="javascript:void(0)" id="setMedia_wrong">setMedia(WrongType:{mp3,m4a,oga,m4v,ogv})</a>
+
+			<hr />
+			<a href="javascript:void(0)" id="setRtmp_a1">setMedia(A:{rtmpv})</a>
+
+			<hr />
+			<a href="javascript:void(0)" id="setFlash_a1">setMedia(A:{flv})</a> | <a href="javascript:void(0)" id="setFlash_b1">setMedia(B:{flv})</a>
+			<br /><a href="javascript:void(0)" id="setFlash_a2">setMedia(A:{flv,m4v,webmv})</a> | <a href="javascript:void(0)" id="setFlash_b2">setMedia(B:{flv,m4v,webmv})</a>
+
+			<hr />
+			<a href="javascript:void(0)" id="setAudio_a1">setMedia(A:{mp3})</a> | <a href="javascript:void(0)" id="setAudio_b1">setMedia(B:{mp3})</a>
+			<br /><a href="javascript:void(0)" id="setAudio_a2">setMedia(A:{mp3,oga})</a> | <a href="javascript:void(0)" id="setAudio_b2">setMedia(B:{mp3,oga})</a>
+			<br /><a href="javascript:void(0)" id="setAudio_a3">setMedia(A:{mp3,oga,m4a})</a> | <a href="javascript:void(0)" id="setAudio_b3">setMedia(B:{mp3,oga,m4a})</a>
+
+			<br /><a href="javascript:void(0)" id="setAudio_a4">setMedia(A:{mp3,poster})</a> | <a href="javascript:void(0)" id="setAudio_b4">setMedia(B:{mp3,poster})</a>
+			<br /><a href="javascript:void(0)" id="setAudio_a5">setMedia(A:{mp3,oga,poster})</a> | <a href="javascript:void(0)" id="setAudio_b5">setMedia(B:{mp3,oga,poster})</a>
+			<br /><a href="javascript:void(0)" id="setAudio_a6">setMedia(A:{mp3,oga,m4a,poster})</a> | <a href="javascript:void(0)" id="setAudio_b6">setMedia(B:{mp3,oga,m4a,poster})</a>
+
+			<hr />
+
+			<a href="javascript:void(0)" id="setVideo_a1">setMedia(A:{m4v})</a> | <a href="javascript:void(0)" id="setVideo_b1">setMedia(B:{m4v})</a> | <a href="javascript:void(0)" id="setVideo_c1">setMedia(C:{m4v})</a>
+			<br /><a href="javascript:void(0)" id="setVideo_a2">setMedia(A:{m4v,ogv})</a> | <a href="javascript:void(0)" id="setVideo_b2">setMedia(B:{m4v,ogv})</a> | <a href="javascript:void(0)" id="setVideo_c2">setMedia(C:{m4v,ogv})</a>
+
+			<br /><a href="javascript:void(0)" id="setVideo_a3">setMedia(A:{m4v,poster})</a> | <a href="javascript:void(0)" id="setVideo_b3">setMedia(B:{m4v,poster})</a> | <a href="javascript:void(0)" id="setVideo_c3">setMedia(C:{m4v,poster})</a>
+			<br /><a href="javascript:void(0)" id="setVideo_a4">setMedia(A:{m4v,ogv,poster})</a> | <a href="javascript:void(0)" id="setVideo_b4">setMedia(B:{m4v,ogv,poster})</a> | <a href="javascript:void(0)" id="setVideo_c4">setMedia(C:{m4v,ogv,poster})</a>
+
+			<hr />
+
+			Set <code>size</code> option object to that for (<a href="javascript:void(0)" id="option_size_270p">270p</a> | <a href="javascript:void(0)" id="option_size_360p">360p</a>) | Set <code>fullScreen</code> option to (<a href="javascript:void(0)" id="option_fullScreen_false">false</a> | <a href="javascript:void(0)" id="option_fullScreen_true">true</a>)
+			<br />Set <code>sizeFull</code> option object to that for (<a href="javascript:void(0)" id="option_sizeFull_270p">270p</a> | <a href="javascript:void(0)" id="option_sizeFull_360p">360p</a> | <a href="javascript:void(0)" id="option_sizeFull_full">full</a>) | <a href="javascript:void(0)" id="restoreScreen">restoreScreen</a> | <a href="javascript:void(0)" id="fullScreen">fullScreen</a>
+			<br />Set <code>autohide</code> option object to that for (<a href="javascript:void(0)" id="option_autohide_neither">neither</a> | <a href="javascript:void(0)" id="option_autohide_full">full</a> | <a href="javascript:void(0)" id="option_autohide_restored">restored</a> | <a href="javascript:void(0)" id="option_autohide_both">both</a>) | (<a href="javascript:void(0)" id="option_autohide_slow">slow</a> | <a href="javascript:void(0)" id="option_autohide_fast">fast</a> | <a href="javascript:void(0)" id="option_autohide_instant">instant</a>)
+			<br />Set <code>loop</code> option to (<a href="javascript:void(0)" id="option_loop_true">true</a> | <a href="javascript:void(0)" id="option_loop_false">false</a>)
+
+			<br /><code>nativeVideoControls</code> (<a href="javascript:void(0)" id="option_nativeVideoControls_all">all</a> | <a href="javascript:void(0)" id="option_nativeVideoControls_none">none</a>)
+			| <code>noFullWindow</code> (<a href="javascript:void(0)" id="option_noFullWindow_all">all</a> | <a href="javascript:void(0)" id="option_noFullWindow_none">none</a>)
+			| <code>noVolume</code> (<a href="javascript:void(0)" id="option_noVolume_all">all</a> | <a href="javascript:void(0)" id="option_noVolume_none">none</a>)
+
+			<br /><code>keyEnabled</code> (<a href="javascript:void(0)" id="option_keyEnabled_true">true</a> | <a href="javascript:void(0)" id="option_keyEnabled_false">false</a>)
+			<code>keyBindings</code> (<a href="javascript:void(0)" id="option_keyBindings_default">default</a> | <a href="javascript:void(0)" id="option_keyBindings_alert">alert</a> | <a href="javascript:void(0)" id="option_keyBindings_disable">disable play/space</a>)
+
+			<hr />
+
+			<a href="javascript:void(0)" id="clearMedia">clearMedia()</a> | <a href="javascript:void(0)" id="load">load()</a> | <a href="javascript:void(0)" id="play_a">play()</a> | <a href="javascript:void(0)" id="pause_a">pause()</a> | <a href="javascript:void(0)" id="stop">stop()</a> | <a href="javascript:void(0)" id="mute">mute()</a> | <a href="javascript:void(0)" id="unmute">unmute()</a> | <a href="javascript:void(0)" id="volume_a">volume(0.5)</a>
+			<br /><a href="javascript:void(0)" id="play_b">play(0)</a> | <a href="javascript:void(0)" id="play_c">play(15)</a> | <a href="javascript:void(0)" id="play_d">play(30)</a> | <a href="javascript:void(0)" id="play_e">play(1e9)</a> | <a href="javascript:void(0)" id="pause_b">pause(0)</a> | <a href="javascript:void(0)" id="pause_c">pause(15)</a> | <a href="javascript:void(0)" id="pause_d">pause(30)</a> | <a href="javascript:void(0)" id="pause_e">pause(1e9)</a>
+			<br /><a href="javascript:void(0)" id="playHead_a">playHead(0)</a> | <a href="javascript:void(0)" id="playHead_b">playHead(50)</a> | <a href="javascript:void(0)" id="playHead_c">playHead(99.9)</a> | <a href="javascript:void(0)" id="playHead_d">playHead(100)</a> | <a href="javascript:void(0)" id="playHead_e">playHead(101)</a>
+			</p>
+		</div>
+
+<div id="jp_container_1" class="jp-video jp-video-270p" role="application" aria-label="media player">
+	<div class="jp-type-single">
+		<div id="jquery_jplayer" class="jp-jplayer"></div>
+		<div class="jp-gui">
+			<div class="jp-video-play">
+				<button class="jp-video-play-icon" role="button" tabindex="0">play</button>
+			</div>
+			<div class="jp-interface">
+				<div class="jp-progress">
+					<div class="jp-seek-bar">
+						<div class="jp-play-bar"></div>
+					</div>
+				</div>
+				<div class="jp-current-time" role="timer" aria-label="time">&nbsp;</div>
+				<div class="jp-duration" role="timer" aria-label="duration">&nbsp;</div>
+				<div class="jp-controls-holder">
+					<div class="jp-controls">
+						<button class="jp-play" role="button" tabindex="0">play</button>
+						<button class="jp-stop" role="button" tabindex="0">stop</button>
+					</div>
+					<div class="jp-volume-controls">
+						<button class="jp-mute" role="button" tabindex="0">mute</button>
+						<button class="jp-volume-max" role="button" tabindex="0">max volume</button>
+						<div class="jp-volume-bar">
+							<div class="jp-volume-bar-value"></div>
+						</div>
+					</div>
+					<div class="jp-toggles">
+						<button class="jp-repeat" role="button" tabindex="0">repeat</button>
+						<button class="jp-full-screen" role="button" tabindex="0">full screen</button>
+					</div>
+				</div>
+				<div class="jp-details">
+					<div class="jp-title" aria-label="title">&nbsp;</div>
+				</div>
+			</div>
+		</div>
+		<div class="jp-no-solution">
+			<span>Update Required</span>
+			To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
+		</div>
+	</div>
+</div>
+		<!-- <div id="test">Test output</div> -->
+			<p><a href="javascript:void(0)" id="show-jplayer">show()</a> | <a href="javascript:void(0)" id="hide-jplayer">hide()</a></p>
+
+			<div id="jplayer_inspector"></div>
+			<p>The player below is set up to play a single audio track. It is included here to test any interactions between the players. In particular the pauseOthers command.</p>
+
+<div id="jquery_jplayer_2" class="jp-jplayer"></div>
+<div id="jp_container_2" class="jp-audio" role="application" aria-label="media player">
+	<div class="jp-type-single">
+		<div class="jp-gui jp-interface">
+			<div class="jp-controls">
+				<button class="jp-play" role="button" tabindex="0">play</button>
+				<button class="jp-stop" role="button" tabindex="0">stop</button>
+			</div>
+			<div class="jp-progress">
+				<div class="jp-seek-bar">
+					<div class="jp-play-bar"></div>
+				</div>
+			</div>
+			<div class="jp-volume-controls">
+				<button class="jp-mute" role="button" tabindex="0">mute</button>
+				<button class="jp-volume-max" role="button" tabindex="0">max volume</button>
+				<div class="jp-volume-bar">
+					<div class="jp-volume-bar-value"></div>
+				</div>
+			</div>
+			<div class="jp-time-holder">
+				<div class="jp-current-time" role="timer" aria-label="time">&nbsp;</div>
+				<div class="jp-duration" role="timer" aria-label="duration">&nbsp;</div>
+				<div class="jp-toggles">
+					<button class="jp-repeat" role="button" tabindex="0">repeat</button>
+				</div>
+			</div>
+		</div>
+		<div class="jp-details">
+			<div class="jp-title" aria-label="title">&nbsp;</div>
+		</div>
+		<div class="jp-no-solution">
+			<span>Update Required</span>
+			To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
+		</div>
+	</div>
+</div>
+
+			<div id="jplayer_inspector_2"></div>
+</body>
+
+</html>

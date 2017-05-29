@@ -1,0 +1,42 @@
+{
+	"name": "jPlayer",
+	"version": "2.9.2",
+	"description": "The jQuery HTML5 Audio / Video Library. Allows you to create a media player with a consistent interface and experience across all browsers.",
+	"author": {
+		"name": "Mark J Panaghiston",
+		"email": "markp@happyworm.com",
+		"homepage": "http://happyworm.com/"
+	},
+	"homepage": "http://jplayer.org/",
+	"keywords": [
+		"jquery-plugin",
+		"audio",
+		"video",
+		"media",
+		"player",
+		"jplayer"
+	],
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/happyworm/jPlayer.git"
+	},
+	"main": [
+		"./dist/jplayer/jquery.jplayer.js",
+		"./dist/jplayer/jquery.jplayer.swf",
+		"./dist/skin/pink.flag/jplayer.pink.flag.css",
+		"./dist/skin/pink.flag/mustache/jplayer.pink.flag.audio.single.html"
+	],
+	"ignore": [
+		"artwork",
+		"examples",
+		"lib",
+		"src",
+		"**/*.md",
+		"**/*.txt",
+		"Gruntfile.js"
+	],
+	"dependencies": {
+		"jquery": ">=1.7.2"
+	}
+}
