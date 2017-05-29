@@ -1099,13 +1099,14 @@
 			// Add the flash solution if it is being used.
 			if(this.flash.used) {
 				var htmlObj,
+				objStr,
 				flashVars = 'jQuery=' + encodeURI(this.options.noConflict) + '&id=' + encodeURI(this.internal.self.id) + '&vol=' + this.options.volume + '&muted=' + this.options.muted;
 
 				// Code influenced by SWFObject 2.2: http://code.google.com/p/swfobject/
 				// Non IE browsers have an initial Flash size of 1 by 1 otherwise the wmode affected the Flash ready event. 
 
 				if($.jPlayer.browser.msie && (Number($.jPlayer.browser.version) < 9 || $.jPlayer.browser.documentMode < 9)) {
-					var objStr = '<object id="' + this.internal.flash.id + '" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="0" height="0" tabindex="-1"></object>';
+					objStr = '<object id="' + this.internal.flash.id + '" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="0" height="0" tabindex="-1"></object>';
 
 					var paramStr = [
 						'<param name="movie" value="' + this.internal.flash.swf + '" />',
@@ -1119,6 +1120,16 @@
 					for(var i=0; i < paramStr.length; i++) {
 						htmlObj.appendChild(document.createElement(paramStr[i]));
 					}
+				} else if ($.jPlayer.browser.msie && (Number($.jPlayer.browser.version) < 11 || $.jPlayer.browser.documentMode < 11)) {
+				    objStr = '<object id="' + this.internal.flash.id + '" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="0" height="0" tabindex="-1">';
+				    objStr += '<param name="movie" value="' + this.internal.flash.swf + '" />';
+					objStr += '<param name="FlashVars" value="' + flashVars + '" />';
+				    objStr += '<param name="allowScriptAccess" value="always" />';
+				    objStr += '<param name="bgcolor" value="' + this.options.backgroundColor + '" />';
+				    objStr += '<param name="wmode" value="' + this.options.wmode + '" />';
+				    objStr += '</object>';
+				                        
+				    htmlObj = $(objStr)[0];
 				} else {
 					var createParam = function(el, n, v) {
 						var p = document.createElement("param");
