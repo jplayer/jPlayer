@@ -33,6 +33,57 @@
 			factory(root.Zepto);
 		}
 	}
+	//
+	//The button used like this In my project.
+	//bind the button mousedown event，copy progress&button element
+	var $thisPalyer = $(factory) ; //$thisPalyer is JPlayer Active
+	$thisPalyer.find('.jp-play-barButton').mousedown(function(event){
+		var eventJq = $.event.fix(event||window.event);
+	    	var $playBtn = $(eventJq.target) ; 
+	    	var $playPro = $playBtn.prev() ; 
+		var $btnCopy = $playBtn.clone().addClass('moving');
+		var $proCopy = $playPro.clone().addClass('moving');
+		$playBtn.before($btnCopy).css({'visibility':'hidden'}).addClass('hidding');
+		$playPro.before($proCopy).css({'visibility':'hidden'}).addClass('hidding');
+	});
+	//mousemove control the progress bar
+	$thisPalyer.mousemove(function(event) {
+		/* Act on the event */
+		var eventJq = jQuery.event.fix(event || window.event); 
+		var pageX = eventJq.pageX ;
+
+		var parentX = $thisPalyer.find('.jp-seek-bar').offset().left ;
+
+		var valueX = ((pageX-parentX-8)>$thisPalyer.find('.jp-seek-bar').width())?$thisPalyer.find('.jp-seek-bar').width():(pageX-parentX-8);
+		valueX = (valueX<0)?0:valueX;
+		
+		$thisPalyer.find('.jp-play-barButton.moving').css({'left': valueX}) ;
+		$thisPalyer.find('.jp-play-bar.moving').css({'width':valueX});
+	});
+    	//body event
+	$('body').mouseup(function(e){	
+		// Using $(e.currentTarget) to enable multiple seek bars
+		if ($thisPalyer.find('.jp-play-barButton').hasClass('moving')){
+
+			var $bar = $thisPalyer.find('.jp-seek-bar'),
+			offset = $bar.offset(),
+
+			x = parseInt($thisPalyer.find('.jp-play-barButton.moving').css('left'));
+			w = $bar.width(),
+			p = 100 * x / w;
+		
+			$targetAudioPlayer = $thisPalyer.find('.jp-play-barButton.moving').parent().parent().parent().prev();
+			$targetAudioPlayer.jPlayer( "playHead", p ); 
+
+			$thisPalyer.find('.jp-play-barButton.moving').remove();
+			$thisPalyer.find('.jp-play-barButton.hidding').css({'visibility':'visible'}).removeClass('hidding');
+			$thisPalyer.find('.jp-play-bar.moving').remove();
+			$thisPalyer.find('.jp-play-bar.hidding').css({'visibility':'visible'}).removeClass('hidding');		
+		}else{
+				
+		}
+	});
+	
 }(this, function ($, undefined) {
 
 	// Adapted from jquery.ui.widget.js (1.8.7): $.widget.bridge - Tweaked $.data(this,XYZ) to $(this).data(XYZ) for Zepto
@@ -515,6 +566,7 @@
 				stop: ".jp-stop",
 				seekBar: ".jp-seek-bar",
 				playBar: ".jp-play-bar",
+				playBarButton: ".jp-play-barButton", //add a control button above the progress bar.
 				mute: ".jp-mute",
 				unmute: ".jp-unmute",
 				volumeBar: ".jp-volume-bar",
@@ -1859,8 +1911,12 @@
 					this.css.jq.playBar.stop().animate({
 						width: this.status.currentPercentAbsolute+"%"
 					}, 250, "linear");
+					this.css.jq.playBarButton.stop().animate({
+						left: this.status.currentPercentAbsolute+"%"
+					}, 250, "linear"); //moving method the same as progress bar 
 				} else {
 					this.css.jq.playBar.width(this.status.currentPercentRelative+"%");
+					this.css.jq.playBarButton.left(this.status.currentPercentRelative+"%");//the same
 				}
 			}
 			var currentTimeText = '';
