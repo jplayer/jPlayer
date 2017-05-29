@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>XARIS JPLAYER REMAKE</title>
+   <link rel="stylesheet" type="text/css" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+   <link rel="stylesheet" type="text/css" href="css/player.css" media="all">
+</head>
+<body>
+
+<!----------------------------------------------------- AUDIO PLAYER HTML TAG STRUCTURE ------------------------------------------------------>
+
+
+	<video width="640" height="360" id="player1" preload="none">
+
+        <source type="video/youtube" src="https://www.youtube.com/watch?v=vjW8wmF5VWc" />
+
+    </video>
+
+	<div id="main-player" data-track-id="" data-track-url="" data-status="">
+
+		<div id="main-player-btns">
+			
+			<div id="player-previous"><i class="ion-skip-backward"></i></div>
+			<div id="player-play"><i class="ion-play"></i></div>
+			<div id="player-pause"><i class="ion-pause"></i></div>
+			<div id="player-next"><i class="ion-skip-forward"></i></div>
+			<div id="player-shuffle" class="shuffle-off"><i class="ion-shuffle"></i></div>
+
+		</div>
+
+		<div id="sound">
+
+		    <div id="vol-low-icon"><i class="ion-volume-low"></i></div>
+			
+			<div id="sound-bar"><div id="sound-bar-inner"><div class="silver-btn"></div></div></div>
+
+			<div id="vol-high-icon"><i class="ion-volume-high"></i></div>
+
+		</div>
+
+		<div id="playing-data">
+			
+			<div id="player-track-details"><span class="player-track-title"></span> - <span class="player-track-artist"></span></div>
+			<div id="player-track-duration-bar">
+				
+				<div id="current-time">00:00</div>
+				<div id="duration-bar"><div id="duration-bar-inner"><div class="silver-btn"></div></div><div id="duration-bar-loaded"></div></div>
+				<div id="duration-time">00:00</div>
+
+			</div>
+
+		</div>
+
+		<div id="social-share">
+			
+			<ul>
+				
+				<li> <a href="" id="google-plus" class="popup"> <i class="ion-social-googleplus-outline"></i> </a> </li>
+				<li> <a href="" id="facebook" class="popup"> <i class="ion-social-facebook"></i> </a> </li>
+				<li> <a href="" id="twitter" class="popup"> <i class="ion-social-twitter"></i> </a> </li>
+				<li> <a href="" id="linkedin" class="popup"> <i class="ion-social-linkedin-outline"></i> </a> </li>
+
+			</ul>
+
+		</div>
+
+	</div>
+
+	<div id="sidebar">
+
+	    <p id="play-now">ΠΑΙΖΕΙ ΤΩΡΑ</p>
+		
+		<div id="track-details">
+
+			<div id="playing-track-thumbnail"><img src="img/cover.png" alt="track thumbnail"></div>
+		    <div class="track-details-list" id="artist-name"><i>Τραγουδιστής:</i> -</div>
+		    <div class="track-details-list" id="song-name"><i>Τραγούδι:</i> -</div> 
+		    <div class="track-details-list" id="album"><i>Αλμπουμ:</i> -</div>
+		    <div class="track-details-list" id="country"><i>Χώρα:</i> -</div>
+			<div class="track-details-list" id="release-date"><i>Ημ.Κυκλοφορίας:</i> -</div>
+			<div class="track-details-list" id="genre"><i>Είδος:</i> -</div>
+
+		</div>
+
+		<div id="time-panel"></div>
+
+	</div>
+
+	<div id="playlist">
+
+	    <div id="sort-by">
+	    	
+	    	<div id="sort-inner" class="descending"><span><i class="ion-arrow-down-b"></i></span> Ταξινόμηση κατά δημοτικότητα τραγουδιού</div>
+
+	    </div>
+
+		<div id="tracks">
+			
+
+		</div>
+
+		<div id="add-track">
+			
+			<div id="add-track-label"><i class="ion-plus-circled"></i> Πρόσθεσε τραγούδι στην λίστα αναπαραγωγής από το youtube</div>
+
+			<div id="get-track-info">
+				
+				<div class="track-info"><input type="text" id="get-track-artist" autocomplete="off" placeholder="Καλλιτέχνης"></div>
+				<div class="track-info"><input type="text" id="get-track-title" autocomplete="off" placeholder="Τίτλος τραγουδιού"></div>
+				<div class="track-info"><input type="text" id="get-track-url" autocomplete="off" placeholder="Youtube διεύθυνση url"></div>
+				<div id="submit-track-btn"><i class="ion-plus-round"></i></div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+
+<!----------------------------------------------------- AUDIO PLAYER HTML TAG STRUCTURE ------------------------------------------------------>
+
+
+
+<!------------------------------------------------------------ JS SCRIPTS -------------------------------------------------------------------->
+
+
+	<!-- CALLING JQUERY LIBRARY -->
+	<script src="js/jquery-1.12.0.min.js"></script>
+
+	<!-- CALLING JPLAYER LIBRARY -->
+	<script src="http://mediaelementjs.com/js/mejs-2.9.2/mediaelement-and-player.min.js"></script>
+
+
+	<!-- CALLING ITUNES DATABASE SEARCH SCRIPT -->
+	<script src="js/itunes-data-call.js"></script>
+
+	<!-- CALLING OUR JPLAYER DEVELOPMENT - PROGRESS SCRIPT -->
+	<script src="js/jplayer-development.js"></script>
+
+
+<!------------------------------------------------------------ JS SCRIPTS -------------------------------------------------------------------->
+
+</body>
+</html>
