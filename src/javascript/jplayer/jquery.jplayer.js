@@ -193,7 +193,8 @@
 		padSec: true,
 		sepHour: ":",
 		sepMin: ":",
-		sepSec: ""
+		sepSec: "",
+		remainingDurationNegativeSign:true
 	};
 	var ConvertTime = function() {
 		this.init();
@@ -1882,7 +1883,7 @@
 						remaining = duration - this.status.currentTime;
 					}
 					if(this.options.remainingDuration) {
-						durationText = (remaining > 0 ? '-' : '') + this._convertTime(remaining);
+						durationText = ((remaining > 0 && this.options.timeFormat.remainingDurationNegativeSign) ? '-' : '') + this._convertTime(remaining);
 					} else {
 						durationText = this._convertTime(duration);
 					}
