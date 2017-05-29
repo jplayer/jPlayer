@@ -3332,7 +3332,7 @@
 					}
 				} catch(e) {}
 			}
-			else if(navigator.plugins && navigator.mimeTypes.length > 0) {
+			else if(navigator.plugins && navigator.mimeTypes && navigator.mimeTypes.length > 0) {
 				flash = navigator.plugins["Shockwave Flash"];
 				if(flash) {
 					version = navigator.plugins["Shockwave Flash"].description.replace(/.*\s(\d+\.\d+).*/, "$1");
