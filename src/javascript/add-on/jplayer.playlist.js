@@ -51,6 +51,38 @@
 			},
 			stateClass: {
 				shuffled: "jp-state-shuffled"
+			},
+			sortableOptions: {
+				// options
+				appendTo: "parent",
+				axis: "y",
+				cancel: "input,textarea,button,select,option",
+				connectWith: false,
+				containment: false,
+				cursor: "n-resize",
+				cursorAt: false,
+				delay: 0,
+				disabled: false,
+				distance: 1,
+				dropOnEmpty: true,
+				forceHelperSize: false,
+				forcePlaceholderSize: false,
+				grid: false,
+				handle: ".jp-playlist-item-handle",
+				helper: "original",
+				items: "> *",
+				opacity: false,
+				placeholder: false,
+				revert: false,
+				scroll: true,
+				scrollSensitivity: 20,
+				scrollSpeed: 20,
+				tolerance: "intersect",
+				zIndex: 1000,
+				// events
+				update: function( e, ui ) {
+					self._playlistChanged = true;
+				}
 			}
 		}, this._options, options); // Object: The jPlayer constructor options for this playlist and the playlist options
 
@@ -78,6 +110,9 @@
 		// Create a ready event handler to initialize the playlist
 		$(this.cssSelector.jPlayer).bind($.jPlayer.event.ready, function() {
 			self._init();
+			if(jQuery().sortable) {
+				$(self.cssSelector.playlist + " ul").sortable(self.options.sortableOptions);
+			}
 		});
 
 		// Create an ended event handler to move to the next item
@@ -132,7 +167,7 @@
 			$(this.cssSelector.details).hide();
 		}
 
-		// Remove the empty <li> from the page HTML. Allows page to be valid HTML, while not interfereing with display animations
+		// Remove the empty <li> from the page HTML. Allows page to be valid HTML, while not interfering with display animations
 		$(this.cssSelector.playlist + " ul").empty();
 
 		// Create .on() handlers for the playlist items along with the free media and remove controls.
@@ -153,6 +188,7 @@
 				loopOnPrevious: false,
 				shuffleOnLoop: true,
 				enableRemoveControls: false,
+				enableHandleControls: jQuery().sortable ? true : false,
 				displayTime: 'slow',
 				addTime: 'fast',
 				removeTime: 'fast',
@@ -160,7 +196,8 @@
 				itemClass: "jp-playlist-item",
 				freeGroupClass: "jp-free-media",
 				freeItemClass: "jp-playlist-item-free",
-				removeItemClass: "jp-playlist-item-remove"
+				removeItemClass: "jp-playlist-item-remove",
+				handleItemClass: "jp-playlist-item-handle"
 			}
 		},
 		option: function(option, value) { // For changing playlist options only
@@ -178,6 +215,7 @@
 				case "freeGroupClass":
 				case "freeItemClass":
 				case "removeItemClass":
+				case "handleItemClass":
 					this._refresh(true); // Instant
 					this._createItemHandlers();
 					break;
@@ -186,13 +224,18 @@
 		},
 		_init: function() {
 			var self = this;
-			this._refresh(function() {
-				if(self.options.playlistOptions.autoPlay) {
-					self.play(self.current);
-				} else {
-					self.select(self.current);
-				}
-			});
+			if(this._playlistChanged) {
+				this._refresh(true); // instant
+				this._playlistChanged = false;
+			} else {
+				this._refresh(function() {
+					if(self.options.playlistOptions.autoPlay) {
+						self.play(self.current);
+					} else {
+						self.select(self.current);
+					}
+				});
+			}
 		},
 		_initPlaylist: function(playlist) {
 			this.current = 0;
@@ -213,7 +256,7 @@
 			/* instant: Can be undefined, true or a function.
 			 *	undefined -> use animation timings
 			 *	true -> no animation
-			 *	function -> use animation timings and excute function at half way point.
+			 *	function -> use animation timings and execute function at half way point.
 			 */
 			var self = this;
 
@@ -249,7 +292,11 @@
 			var self = this;
 
 			// Wrap the <li> contents in a <div>
-			var listItem = "<li><div>";
+			// Inject ListItem object in script tag for _rebuildPlaylist method
+			var listItem = "<li><script class='jp-playlist-json' type='application/json'>" + JSON.stringify(media) + "</script><div>";
+
+			// Insert the handle for jQuery UI Sortable
+			listItem += "<div class='" + this.options.playlistOptions.handleItemClass + "'>&equiv;</div>";
 
 			// Create remove control
 			listItem += "<a href='javascript:;' class='" + this.options.playlistOptions.removeItemClass + "'>&times;</a>";
@@ -312,6 +359,12 @@
 			} else {
 				$(this.cssSelector.playlist + " ." + this.options.playlistOptions.removeItemClass).hide();
 			}
+			
+			if(this.options.playlistOptions.enableHandleControls) {
+				$(this.cssSelector.playlist + " ." + this.options.playlistOptions.handleItemClass).show();
+			} else {
+				$(this.cssSelector.playlist + " ." + this.options.playlistOptions.handleItemClass).hide();
+			}
 
 			if(this.shuffled) {
 				$(this.cssSelector.jPlayer).jPlayer("addStateClass", "shuffled");
@@ -334,6 +387,24 @@
 				$(this.cssSelector.playlist + " li:nth-child(" + (index + 1) + ")").addClass("jp-playlist-current").find(".jp-playlist-item").addClass("jp-playlist-current");
 				// $(this.cssSelector.details + " li").html("<span class='jp-title'>" + this.playlist[index].title + "</span>" + (this.playlist[index].artist ? " <span class='jp-artist'>by " + this.playlist[index].artist + "</span>" : ""));
 			}
+		},
+		_playlistChanged: false,
+		_getIndex: function() {
+			var index = 0;
+			$(this.cssSelector.playlist + " ul li").each( function(){
+				if($(this).hasClass('jp-playlist-current')) {
+					return false; // break
+				}
+				++index;
+			});
+			return index;
+		},
+		_rebuildPlaylist: function() {
+			var playlist = new Array();
+			$(this.cssSelector.playlist + " ul li .jp-playlist-json").each(function(index, element){
+				playlist[index] = JSON.parse($(element).html());
+			});
+			this.setPlaylist(playlist);
 		},
 		setPlaylist: function(playlist) {
 			this._initPlaylist(playlist);
@@ -410,35 +481,46 @@
 			}
 		},
 		select: function(index) {
-			index = (index < 0) ? this.original.length + index : index; // Negative index relates to end of array.
-			if(0 <= index && index < this.playlist.length) {
-				this.current = index;
-				this._highlight(index);
-				$(this.cssSelector.jPlayer).jPlayer("setMedia", this.playlist[this.current]);
-			} else {
-				this.current = 0;
-			}
+			this.current = index;
+			this._highlight(index);
+			$(this.cssSelector.jPlayer).jPlayer("setMedia", this.playlist[this.current]);
 		},
 		play: function(index) {
-			index = (index < 0) ? this.original.length + index : index; // Negative index relates to end of array.
-			if(0 <= index && index < this.playlist.length) {
-				if(this.playlist.length) {
-					this.select(index);
+			if( this._playlistChanged ) {
+				// Check if the DOM playlist has changed, and rebuild the playlist object from DOM.
+				this._rebuildPlaylist();
+				this.select(index);
+				$(this.cssSelector.jPlayer).jPlayer("play");
+			} else {
+				index = (index < 0) ? this.original.length + index : index; // Negative index relates to end of array.
+				if(0 <= index && index < this.playlist.length) {
+					if(this.playlist.length) {
+						this.select(index);
+						$(this.cssSelector.jPlayer).jPlayer("play");
+					}
+				} else if(index === undefined) {
 					$(this.cssSelector.jPlayer).jPlayer("play");
 				}
-			} else if(index === undefined) {
-				$(this.cssSelector.jPlayer).jPlayer("play");
 			}
 		},
 		pause: function() {
 			$(this.cssSelector.jPlayer).jPlayer("pause");
 		},
 		next: function() {
-			var index = (this.current + 1 < this.playlist.length) ? this.current + 1 : 0;
+			if(this._playlistChanged) {
+				// Check if the DOM playlist has changed, and rebuild the playlist object from DOM.
+				var index = this._getIndex(),
+					length = $(this.cssSelector.playlist + " ul li").length;
+				index = ++index == length ? 0 : index;
+				this._rebuildPlaylist();
+			} else {
+				var length = this.playlist.length;
+				var index = (this.current + 1 < length) ? this.current + 1 : 0;
+			}
 
 			if(this.loop) {
 				// See if we need to shuffle before looping to start, and only shuffle if more than 1 item.
-				if(index === 0 && this.shuffled && this.options.playlistOptions.shuffleOnLoop && this.playlist.length > 1) {
+				if(index === 0 && this.shuffled && this.options.playlistOptions.shuffleOnLoop && length > 1) {
 					this.shuffle(true, true); // playNow
 				} else {
 					this.play(index);
@@ -451,9 +533,18 @@
 			}
 		},
 		previous: function() {
-			var index = (this.current - 1 >= 0) ? this.current - 1 : this.playlist.length - 1;
+			if(this._playlistChanged) {
+				// Check if the DOM playlist has changed, and rebuild the playlist object from DOM.
+				var index = this._getIndex(),
+					length = $(this.cssSelector.playlist + " ul li").length;
+				index = index === 0 ? length - 1 : --index;
+				this._rebuildPlaylist();
+			} else {
+				var length = this.playlist.length;
+				var index = (this.current - 1 >= 0) ? this.current - 1 : length - 1;
+			}
 
-			if(this.loop && this.options.playlistOptions.loopOnPrevious || index < this.playlist.length - 1) {
+			if(this.loop && this.options.playlistOptions.loopOnPrevious || index < length - 1) {
 				this.play(index);
 			}
 		},
