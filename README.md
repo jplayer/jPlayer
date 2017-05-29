@@ -60,4 +60,4 @@ Mark J Panaghiston [@thepag](http://twitter.com/thepag)
 [happyworm.com](http://happyworm.com/)
 
 ## Alternative Versions
-* [react-jPlayer](https://github.com/MartinDawson/react-jPlayer)
+* [react-jPlayer](https://github.com/jPlayer/react-jPlayer)
