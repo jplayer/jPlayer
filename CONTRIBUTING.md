@@ -20,3 +20,30 @@ in particular the [JavaScript Style Guide](http://contribute.jquery.org/style-gu
 ## Accept the CLA
 
 Contributors must [sign the Contributor License Agreement](https://www.clahub.com/agreements/happyworm/jPlayer).
+
+## Build instructions
+
+### Dependencies
+* Ruby
+* Java
+* SASS
+* Node JS
+* NPM
+* Grunt
+
+### Building
+* `npm install`
+* `grunt`
+
+### Automatically set up sand-boxed build environment
+
+* Install Virtual Box
+* Install Vagrant
+```bash
+vagrant up
+vagrant ssh
+cd /vagrant
+npm install
+grunt
+```
+
