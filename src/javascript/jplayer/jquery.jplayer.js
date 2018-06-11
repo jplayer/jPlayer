@@ -991,6 +991,8 @@
 			// Create the poster image.
 			this.htmlElement.poster = document.createElement('img');
 			this.htmlElement.poster.id = this.internal.poster.id;
+			// Added img ALT attribute to stop WCAG 2.0 error.
+      			this.htmlElement.poster.alt = "Media";
 			this.htmlElement.poster.onload = function() { // Note that this did not work on Firefox 3.6: poster.addEventListener("onload", function() {}, false); Did not investigate x-browser.
 				if(!self.status.video || self.status.waitForPlay) {
 					self.internal.poster.jq.show();
