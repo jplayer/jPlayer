@@ -297,7 +297,7 @@ package happyworm.jPlayer {
 				if(myStatus.metaDataReady && myStatus.pausePosition > myStatus.duration) { // The time is invalid, ie., past the end.
 					myStatus.pausePosition = 0;
 					myStream.seek(0);
-					seekedEvent(); // Deals with seeking effect when using setMedia() then pause(huge). NB: There is no preceeding seeking event.
+					seekedEvent(); // Deals with seeking effect when using setMedia() then pause(huge). NB: There is no preceding seeking event.
 				} else if(!isNaN(time)) {
 					if(getSeekTimeRatio() > getLoadRatio()) { // Use an estimate based on the downloaded amount
 						seeking(true);

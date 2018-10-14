@@ -700,7 +700,7 @@
 			playbackRate: 1, // Warning - Now both an option and a status property
 			ended: 0
 
-/*		Persistant status properties created dynamically at _init():
+/*		Persistent status properties created dynamically at _init():
 			width
 			height
 			cssClass

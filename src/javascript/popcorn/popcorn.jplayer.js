@@ -13,7 +13,7 @@
  * For Popcorn Version: 1.3
  * For jPlayer Version: 2.9.0
  * Requires: jQuery 1.7+
- * Note: jQuery dependancy cannot be removed since jPlayer 2 is a jQuery plugin. Use of jQuery will be kept to a minimum.
+ * Note: jQuery dependency cannot be removed since jPlayer 2 is a jQuery plugin. Use of jQuery will be kept to a minimum.
  */
 
 (function(Popcorn) {
@@ -249,7 +249,7 @@
 			mediaType = 'unknown',
 			jpMedia = {},
 			jpOptions = {},
-			ready = false, // Used during init to override the annoying duration dependance in the track event padding during Popcorn's isReady(). ie., We is ready after loadeddata and duration can then be set real value at leisure.
+			ready = false, // Used during init to override the annoying duration dependence in the track event padding during Popcorn's isReady(). ie., We is ready after loadeddata and duration can then be set real value at leisure.
 			duration = 0, // For the durationchange event with both HTML5 and Flash solutions. Used with 'ready' to keep control during the Popcorn isReady() via loadeddata event. (Duration=0 is bad.)
 			durationchangeId = null, // A timeout ID used with delayed durationchange event. (Because of the duration=NaN fudge to avoid Popcorn track event corruption.)
 			canplaythrough = false,
@@ -367,7 +367,7 @@
 						if(event.jPlayer.flash.used) {
 							jPlayerFlashEventsPatch();
 						}
-						// Set the media andd load it, so that the Flash solution behaves similar to HTML5 solution.
+						// Set the media and load it, so that the Flash solution behaves similar to HTML5 solution.
 						// This also allows the loadstart event to be used to know jPlayer is ready.
 						$(this).jPlayer('setMedia', jpMedia).jPlayer('load');
 					});

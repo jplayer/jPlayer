@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - jPlayer Repository Refactor: The skins source files are now in `src/skin` and the build skins files in the `dist/skin` folder.
 - jPlayer Repository Refactor: All the circle player specific files are now in the `lib/circle-player` folder.
-- jPlayer Repository Refactor: Changed the html `examples` file extentions from `htm` to `html` for @Laurian.
+- jPlayer Repository Refactor: Changed the html `examples` file extensions from `htm` to `html` for @Laurian.
 
 
 ## 2.9.1 - 2014-12-09
@@ -43,7 +43,7 @@ All notable changes to this project will be documented in this file.
 - New Feature: Merged Pull Request to add [commonJS support](https://github.com/happyworm/jPlayer/pull/257) by [nervo](https://github.com/nervo).
 - Docs: Added CHANGELOG.md and gave details back to 2.7.1
 - Docs: Added MIGRATION.md as placeholder for migration details.
-- Bug Fix: Fixed Internet Explorer key bindings. Removed [`document.activeElement`](https://developer.mozilla.org/en-US/docs/Web/API/document.activeElement) useage from the key bindings code.
+- Bug Fix: Fixed Internet Explorer key bindings. Removed [`document.activeElement`](https://developer.mozilla.org/en-US/docs/Web/API/document.activeElement) usage from the key bindings code.
 - New Feature: The key bindings option `key` value may now be a number for [`event.which`](http://api.jquery.com/event.which/) and a string for [`event.key`](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent.key) comparison.
 - Default Options: Added to the default key bindings:
 	- **l** loop toggle
