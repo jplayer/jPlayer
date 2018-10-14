@@ -145,7 +145,7 @@
 					config.eventTimeout[e.type] = setTimeout(function() {
 						config.eventJq[e.type].css("background-color","#fff");
 					}, 1000);
-					// The timer to handle the occurences.
+					// The timer to handle the occurrences.
 					setTimeout(function() {
 						config.eventOccurrence[e.type]--;
 						config.eventJq[e.type].text(eventName + " (" + config.eventOccurrence[e.type] + ")");

@@ -54,7 +54,7 @@ package {
 		private var jQuery:String;
 		private var sentNumberFractionDigits:uint = 2;
 
-		public var commonStatus:JplayerStatus = new JplayerStatus(); // Used for inital ready event so volume is correct.
+		public var commonStatus:JplayerStatus = new JplayerStatus(); // Used for initial ready event so volume is correct.
 
 		private var myInitTimer:Timer = new Timer(100, 0);
 
@@ -159,7 +159,7 @@ package {
 			// Known Flash problem with contextMenu over video player.
 			// Add a transparent rectangle into the sprite.
 			contextMenuFix.graphics.beginFill(0x000000, 0); // Transparent black
-			contextMenuFix.graphics.drawRect(0, 0, 10, 10); // Arbitary rectangle
+			contextMenuFix.graphics.drawRect(0, 0, 10, 10); // Arbitrary rectangle
 			contextMenuFix.graphics.endFill();
 			addChild(contextMenuFix); // Put the sprite on the top layer.
 

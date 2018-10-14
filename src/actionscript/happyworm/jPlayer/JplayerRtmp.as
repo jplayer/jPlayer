@@ -280,14 +280,14 @@ package happyworm.jPlayer
 						myStatus.isPlaying = true; // Should be handled elsewhere.
 					}
 
-					// Under RTMP, this event code occurs every time the media starts playing and when a new position is seeked to, even when paused.
+					// Under RTMP, this event code occurs every time the media starts playing and when a new position is sought to, even when paused.
 
 					// Since under RTMP the event behaviour is quite different, believe a refactor is best here.
 					// ie., Under RTMP we should be able to know a lot more info about the stream.
 
 					// See onMetaDataHandler() for other condition, since duration is vital.
 					// See onResult() response handler too.
-					// Appears to be some duplication between onMetaDataHandler() and onResult(), along with a race between them occuring.
+					// Appears to be some duplication between onMetaDataHandler() and onResult(), along with a race between them occurring.
 
 					break;
 				case "NetStream.Play.UnpublishNotify":
@@ -418,7 +418,7 @@ package happyworm.jPlayer
 		{
 			// videoSupport turns on/off video - by default no video, audio only
 			videoBinding=videoSupport;
-			/* Dont close the stream or netconnection here anymore so we can recycle if host/appname are the same
+			/* Don't close the stream or netconnection here anymore so we can recycle if host/appname are the same
 			if ((myStream != null))
 			{
 				myStream.close();
@@ -466,7 +466,7 @@ package happyworm.jPlayer
 			if (myStream != null)
 			{
 				myStream.close();
-				// Dont close the netConnection here any longer, as we may recycle it later
+				// Don't close the netConnection here any longer, as we may recycle it later
 				// may need an extra way to close manually if switching media types after an rtmp session - revisit
 				// myConnection.close();
 				myStatus.reset();
@@ -806,7 +806,7 @@ package happyworm.jPlayer
 				
 				trace("GOT HERE!");
 				myStream.seek(0);
-				seekedEvent();// Deals with seeking effect when using setMedia() then pause(huge). NB: There is no preceeding seeking event.
+				seekedEvent();// Deals with seeking effect when using setMedia() then pause(huge). NB: There is no preceding seeking event.
 			}
 			else if (! isNaN(time))
 			{
