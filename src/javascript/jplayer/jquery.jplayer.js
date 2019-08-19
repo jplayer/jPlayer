@@ -87,7 +87,7 @@
 				options
 			);
 			var self = this;
-			this.element.bind( "remove.jPlayer", function() {
+			this.element.on( "remove.jPlayer", function() {
 				self.destroy();
 			});
 			this._init();
@@ -555,11 +555,11 @@
 			loop: false,
 			repeat: function(event) { // The default jPlayer repeat event handler
 				if(event.jPlayer.options.loop) {
-					$(this).unbind(".jPlayerRepeat").bind($.jPlayer.event.ended + ".jPlayer.jPlayerRepeat", function() {
+					$(this).off(".jPlayerRepeat").on($.jPlayer.event.ended + ".jPlayer.jPlayerRepeat", function() {
 						$(this).jPlayer("play");
 					});
 				} else {
-					$(this).unbind(".jPlayerRepeat");
+					$(this).off(".jPlayerRepeat");
 				}
 			},
 			nativeVideoControls: {
@@ -950,7 +950,7 @@
 			// Register listeners defined in the constructor
 			$.each($.jPlayer.event, function(eventName,eventType) {
 				if(self.options[eventName] !== undefined) {
-					self.element.bind(eventType + ".jPlayer", self.options[eventName]); // With .jPlayer namespace.
+					self.element.on(eventType + ".jPlayer", self.options[eventName]); // With .jPlayer namespace.
 					self.options[eventName] = undefined; // Destroy the handler pointer copy on the options. Reason, events can be added/removed in other ways so this could be obsolete and misleading.
 				}
 			});
@@ -1001,7 +1001,7 @@
 			this.internal.poster.jq = $("#" + this.internal.poster.id);
 			this.internal.poster.jq.css({'width': this.status.width, 'height': this.status.height});
 			this.internal.poster.jq.hide();
-			this.internal.poster.jq.bind("click.jPlayer", function() {
+			this.internal.poster.jq.on("click.jPlayer", function() {
 				self._trigger($.jPlayer.event.click);
 			});
 
@@ -1175,7 +1175,7 @@
 					} else {
 						this.internal.video.jq.css({'width':'0px', 'height':'0px'}); // Using size 0x0 since a .hide() causes issues in iOS
 					}
-					this.internal.video.jq.bind("click.jPlayer", function() {
+					this.internal.video.jq.on("click.jPlayer", function() {
 						self._trigger($.jPlayer.event.click);
 					});
 				}
@@ -1228,13 +1228,13 @@
 			$.each(this.css.jq, function(fn, jq) {
 				// Check selector is valid before trying to execute method.
 				if(jq.length) {
-					jq.unbind(".jPlayer");
+					jq.off(".jPlayer");
 				}
 			});
 			// Remove the click handlers for $.jPlayer.event.click
-			this.internal.poster.jq.unbind(".jPlayer");
+			this.internal.poster.jq.off(".jPlayer");
 			if(this.internal.video.jq) {
-				this.internal.video.jq.unbind(".jPlayer");
+				this.internal.video.jq.off(".jPlayer");
 			}
 			// Remove the fullscreen event handlers
 			this._fullscreenRemoveEventListeners();
@@ -1247,7 +1247,7 @@
 				this._destroyHtmlBridge();
 			}
 			this.element.removeData("jPlayer"); // Remove jPlayer data
-			this.element.unbind(".jPlayer"); // Remove all event handlers created by the jPlayer constructor
+			this.element.off(".jPlayer"); // Remove all event handlers created by the jPlayer constructor
 			this.element.empty(); // Remove the inserted child elements
 
 			delete this.instances[this.internal.instance]; // Clear the instance on the static instance object
@@ -2381,7 +2381,7 @@
 			if(typeof cssSel === 'string') {
 				if($.jPlayer.prototype.options.cssSelector[fn]) {
 					if(this.css.jq[fn] && this.css.jq[fn].length) {
-						this.css.jq[fn].unbind(".jPlayer");
+						this.css.jq[fn].off(".jPlayer");
 					}
 					this.options.cssSelector[fn] = cssSel;
 					this.css.cs[fn] = this.options.cssSelectorAncestor + " " + cssSel;
@@ -2397,12 +2397,12 @@
 							e.preventDefault();
 							self[fn](e);
 							if(self.options.autoBlur) {
-								$(this).blur();
+								$(this).trigger('blur');
 							} else {
-								$(this).focus(); // Force focus for ARIA.
+								$(this).trigger('focus'); // Force focus for ARIA.
 							}
 						};
-						this.css.jq[fn].bind("click.jPlayer", handler); // Using jPlayer namespace
+						this.css.jq[fn].on("click.jPlayer", handler); // Using jPlayer namespace
 					}
 
 					if(cssSel && this.css.jq[fn].length !== 1) { // So empty strings do not generate the warning. ie., they just remove the old one.
@@ -2812,13 +2812,13 @@
 				// undefine mouse
 				delete this.internal.mouse;
 
-				this.element.unbind(namespace);
-				this.css.jq.gui.unbind(namespace);
+				this.element.off(namespace);
+				this.css.jq.gui.off(namespace);
 
 				if(!this.status.nativeVideoControls) {
 					if(this.options.fullWindow && this.options.autohide.full || !this.options.fullWindow && this.options.autohide.restored) {
-						this.element.bind(eventType, handler);
-						this.css.jq.gui.bind(eventType, handler);
+						this.element.on(eventType, handler);
+						this.css.jq.gui.on(eventType, handler);
 						this.css.jq.gui.hide();
 					} else {
 						this.css.jq.gui.show();
@@ -3419,7 +3419,7 @@
 					}
 				});
 				if(nativeEvent) {
-					self.element.bind(eventType + ".jPlayer.jPlayerHtml", function() { // With .jPlayer & .jPlayerHtml namespaces.
+					self.element.on(eventType + ".jPlayer.jPlayerHtml", function() { // With .jPlayer & .jPlayerHtml namespaces.
 						self._emulateHtmlUpdate();
 						var domEvent = document.createEvent("Event");
 						domEvent.initEvent(eventName, false, true);
@@ -3445,7 +3445,7 @@
 			var self = this;
 
 			// Bridge event handlers are also removed by destroy() through .jPlayer namespace.
-			this.element.unbind(".jPlayerHtml"); // Remove all event handlers created by the jPlayer bridge. So you can change the emulateHtml option.
+			this.element.off(".jPlayerHtml"); // Remove all event handlers created by the jPlayer bridge. So you can change the emulateHtml option.
 
 			// Remove the methods and properties
 			var emulated = $.jPlayer.emulateMethods + " " + $.jPlayer.emulateStatus + " " + $.jPlayer.emulateOptions;

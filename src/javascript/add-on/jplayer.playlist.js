@@ -76,22 +76,22 @@
 		};
 
 		// Create a ready event handler to initialize the playlist
-		$(this.cssSelector.jPlayer).bind($.jPlayer.event.ready, function() {
+		$(this.cssSelector.jPlayer).on($.jPlayer.event.ready, function() {
 			self._init();
 		});
 
 		// Create an ended event handler to move to the next item
-		$(this.cssSelector.jPlayer).bind($.jPlayer.event.ended, function() {
+		$(this.cssSelector.jPlayer).on($.jPlayer.event.ended, function() {
 			self.next();
 		});
 
 		// Create a play event handler to pause other instances
-		$(this.cssSelector.jPlayer).bind($.jPlayer.event.play, function() {
+		$(this.cssSelector.jPlayer).on($.jPlayer.event.play, function() {
 			$(this).jPlayer("pauseOthers");
 		});
 
 		// Create a resize event handler to show the title in full screen mode.
-		$(this.cssSelector.jPlayer).bind($.jPlayer.event.resize, function(event) {
+		$(this.cssSelector.jPlayer).on($.jPlayer.event.resize, function(event) {
 			if(event.jPlayer.options.fullScreen) {
 				$(self.cssSelector.details).show();
 			} else {
@@ -100,19 +100,19 @@
 		});
 
 		// Create click handlers for the extra buttons that do playlist functions.
-		$(this.cssSelector.previous).click(function(e) {
+		$(this.cssSelector.previous).on('click', function(e) {
 			e.preventDefault();
 			self.previous();
 			self.blur(this);
 		});
 
-		$(this.cssSelector.next).click(function(e) {
+		$(this.cssSelector.next).on('click', function(e) {
 			e.preventDefault();
 			self.next();
 			self.blur(this);
 		});
 
-		$(this.cssSelector.shuffle).click(function(e) {
+		$(this.cssSelector.shuffle).on('click', function(e) {
 			e.preventDefault();
 			if(self.shuffled && $(self.cssSelector.jPlayer).jPlayer("option", "useStateClassSkin")) {
 				self.shuffle(false);
@@ -121,7 +121,7 @@
 			}
 			self.blur(this);
 		});
-		$(this.cssSelector.shuffleOff).click(function(e) {
+		$(this.cssSelector.shuffleOff).on('click', function(e) {
 			e.preventDefault();
 			self.shuffle(false);
 			self.blur(this);
@@ -229,7 +229,7 @@
 				$(this.cssSelector.playlist + " ul").slideUp(displayTime, function() {
 					var $this = $(this);
 					$(this).empty();
-					
+
 					$.each(self.playlist, function(i) {
 						$this.append(self._createListItem(self.playlist[i]));
 					});
@@ -294,7 +294,7 @@
 			// Create live handlers that disable free media links to force access via right click
 			$(this.cssSelector.playlist).off("click", "a." + this.options.playlistOptions.freeItemClass).on("click", "a." + this.options.playlistOptions.freeItemClass, function(e) {
 				e.preventDefault();
-				$(this).parent().parent().find("." + self.options.playlistOptions.itemClass).click();
+				$(this).parent().parent().find("." + self.options.playlistOptions.itemClass).trigger('click');
 				self.blur(this);
 			});
 
@@ -489,7 +489,7 @@
 		},
 		blur: function(that) {
 			if($(this.cssSelector.jPlayer).jPlayer("option", "autoBlur")) {
-				$(that).blur();
+				$(that).trigger('blur');
 			}
 		}
 	};
