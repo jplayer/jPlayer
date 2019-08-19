@@ -200,7 +200,7 @@
 
 					// Figure out how jPlayer will play it.
 					// This may not work properly when both audio and video is supplied. ie., A media player. But it should return truethy and jPlayer can figure it out.
-					
+
 					var solution = srcObj.options.solution.toLowerCase().split(","), // Create the solution array, with prority based on the order of the solution string.
 					supplied = srcObj.options.supplied.toLowerCase().split(","); // Create the supplied formats array, with prority based on the order of the supplied formats string.
 
@@ -319,21 +319,21 @@
 					}
 				};
 
-				myPlayer.bind($.jPlayer.event.loadstart, function() {
+				myPlayer.on($.jPlayer.event.loadstart, function() {
 					setTimeout(function() {
 						if(DEBUG) console.log('Trigger : loadeddata');
 						jPlayerObj._trigger($.jPlayer.event.loadeddata);
 					}, 0);
 				})
-				.bind($.jPlayer.event.progress, function(event) {
+				.on($.jPlayer.event.progress, function(event) {
 					checkDuration(event);
 					checkCanPlayThrough(event);
 				})
-				.bind($.jPlayer.event.timeupdate, function(event) {
+				.on($.jPlayer.event.timeupdate, function(event) {
 					checkDuration(event);
 					checkCanPlayThrough(event);
 				})
-				.bind($.jPlayer.event.play, function() {
+				.on($.jPlayer.event.play, function() {
 					setTimeout(function() {
 						if(DEBUG) console.log('Trigger : playing');
 						jPlayerObj._trigger($.jPlayer.event.playing);
@@ -363,7 +363,7 @@
 					// Allow the swfPath to be set to local server. ie., If the jPlayer Plugin is local and already on the page, then you can also use the local SWF.
 					jpOptions.swfPath = jpOptions.swfPath || JPLAYER_SWFPATH;
 
-					myPlayer.bind($.jPlayer.event.ready, function(event) {
+					myPlayer.on($.jPlayer.event.ready, function(event) {
 						if(event.jPlayer.flash.used) {
 							jPlayerFlashEventsPatch();
 						}
@@ -381,7 +381,7 @@
 					// Generate event handlers for all the standard HTML5 media events. (Except durationchange)
 
 					var bindEvent = function(name) {
-						myPlayer.bind($.jPlayer.event[name], function(event) {
+						myPlayer.on($.jPlayer.event[name], function(event) {
 							if(DEBUG) console.log('Dispatched event: ' + name + (event && event.jPlayer ? ' (' + event.jPlayer.status.currentTime + 's)' : '')); // Must be after dispatch for some reason on Firefox/Opera
 							media.dispatchEvent(name);
 						});
@@ -407,21 +407,21 @@
 						}
 					}
 
-					myPlayer.bind($.jPlayer.event.loadeddata, function(event) {
+					myPlayer.on($.jPlayer.event.loadeddata, function(event) {
 						if(DEBUG) console.log('Dispatched event: loadeddata' + (event && event.jPlayer ? ' (' + event.jPlayer.status.currentTime + 's)' : ''));
 						media.dispatchEvent('loadeddata');
 						ready = true;
 					});
 					if(DEBUG) console.log('Created CUSTOM event handler for: loadeddata');
 
-					myPlayer.bind($.jPlayer.event.durationchange, function(event) {
+					myPlayer.on($.jPlayer.event.durationchange, function(event) {
 						duration = event.jPlayer.status.duration;
 						dispatchDurationChange();
 					});
 					if(DEBUG) console.log('Created CUSTOM event handler for: durationchange');
 
 					// The error event is a special case. Plus jPlayer error event assumes it is a broken URL. (It could also be a decoder error... Or aborted or a Network error.)
-					myPlayer.bind($.jPlayer.event.error, function(event) {
+					myPlayer.on($.jPlayer.event.error, function(event) {
 						// Not sure how to handle the error situation. Popcorn does not appear to have the error or error.code property documented here: http://popcornjs.org/popcorn-docs/media-methods/
 						// If any error event happens, then something has gone pear shaped.
 

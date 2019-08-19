@@ -87,7 +87,7 @@
 				options
 			);
 			var self = this;
-			this.element.bind( "remove.jPlayer", function() {
+			this.element.on( "remove.jPlayer", function() {
 				self.destroy();
 			});
 			this._init();
@@ -473,9 +473,9 @@
 	$.jPlayer.keys = function(en) {
 		var event = "keydown.jPlayer";
 		// Remove any binding, just in case enabled more than once.
-		$(document.documentElement).unbind(event);
+		$(document.documentElement).off(event);
 		if(en) {
-			$(document.documentElement).bind(event, keyBindings);
+			$(document.documentElement).on(event, keyBindings);
 		}
 	};
 
@@ -505,7 +505,7 @@
 			defaultPlaybackRate: 1,
 			minPlaybackRate: 0.5,
 			maxPlaybackRate: 4,
-			wmode: "opaque", // Valid wmode: window, transparent, opaque, direct, gpu. 
+			wmode: "opaque", // Valid wmode: window, transparent, opaque, direct, gpu.
 			backgroundColor: "#000000", // To define the jPlayer div and Flash background color.
 			cssSelectorAncestor: "#jp_container_1",
 			cssSelector: { // * denotes properties that should only be required when video media type required. _cssSelector() would require changes to enable splitting these into Audio and Video defaults.
@@ -555,11 +555,11 @@
 			loop: false,
 			repeat: function(event) { // The default jPlayer repeat event handler
 				if(event.jPlayer.options.loop) {
-					$(this).unbind(".jPlayerRepeat").bind($.jPlayer.event.ended + ".jPlayer.jPlayerRepeat", function() {
+					$(this).off(".jPlayerRepeat").on($.jPlayer.event.ended + ".jPlayer.jPlayerRepeat", function() {
 						$(this).jPlayer("play");
 					});
 				} else {
-					$(this).unbind(".jPlayerRepeat");
+					$(this).off(".jPlayerRepeat");
 				}
 			},
 			nativeVideoControls: {
@@ -815,9 +815,9 @@
 		},
 		_init: function() {
 			var self = this;
-			
+
 			this.element.empty();
-			
+
 			this.status = $.extend({}, this.status); // Copy static to unique instance.
 			this.internal = $.extend({}, this.internal); // Copy static to unique instance.
 
@@ -848,7 +848,7 @@
 			this.formats = []; // Array based on supplied string option. Order defines priority.
 			this.solutions = []; // Array based on solution string option. Order defines priority.
 			this.require = {}; // Which media types are required: video, audio.
-			
+
 			this.htmlElement = {}; // DOM elements created by jPlayer
 			this.html = {}; // In _init()'s this.desired code and setmedia(): Accessed via this[solution], where solution from this.solutions array.
 			this.html.audio = {};
@@ -857,7 +857,7 @@
 			this.aurora.formats = [];
 			this.aurora.properties = [];
 			this.flash = {}; // In _init()'s this.desired code and setmedia(): Accessed via this[solution], where solution from this.solutions array.
-			
+
 			this.css = {};
 			this.css.cs = {}; // Holds the css selector strings
 			this.css.jq = {}; // Holds jQuery selectors. ie., $(css.cs.method)
@@ -899,7 +899,7 @@
 					}
 				}
 			});
-				
+
 			// Create Aurora.js formats array
 			$.each(this.options.auroraFormats.toLowerCase().split(","), function(index1, value1) {
 				var format = value1.replace(/^\s+|\s+$/g, ""); //trim
@@ -950,7 +950,7 @@
 			// Register listeners defined in the constructor
 			$.each($.jPlayer.event, function(eventName,eventType) {
 				if(self.options[eventName] !== undefined) {
-					self.element.bind(eventType + ".jPlayer", self.options[eventName]); // With .jPlayer namespace.
+					self.element.on(eventType + ".jPlayer", self.options[eventName]); // With .jPlayer namespace.
 					self.options[eventName] = undefined; // Destroy the handler pointer copy on the options. Reason, events can be added/removed in other ways so this could be obsolete and misleading.
 				}
 			});
@@ -1001,10 +1001,10 @@
 			this.internal.poster.jq = $("#" + this.internal.poster.id);
 			this.internal.poster.jq.css({'width': this.status.width, 'height': this.status.height});
 			this.internal.poster.jq.hide();
-			this.internal.poster.jq.bind("click.jPlayer", function() {
+			this.internal.poster.jq.on("click.jPlayer", function() {
 				self._trigger($.jPlayer.event.click);
 			});
-			
+
 			// Generate the required media elements
 			this.html.audio.available = false;
 			if(this.require.audio) { // If a supplied format is audio
@@ -1078,11 +1078,11 @@
 
 			// Set up the css selectors for the control and feedback entities.
 			this._cssSelectorAncestor(this.options.cssSelectorAncestor);
-			
+
 			// If neither html nor aurora nor flash are being used by this browser, then media playback is not possible. Trigger an error event.
 			if(!(this.html.used || this.aurora.used || this.flash.used)) {
 				this._error( {
-					type: $.jPlayer.error.NO_SOLUTION, 
+					type: $.jPlayer.error.NO_SOLUTION,
 					context: "{solution:'" + this.options.solution + "', supplied:'" + this.options.supplied + "'}",
 					message: $.jPlayer.errorMsg.NO_SOLUTION,
 					hint: $.jPlayer.errorHint.NO_SOLUTION
@@ -1102,7 +1102,7 @@
 				flashVars = 'jQuery=' + encodeURI(this.options.noConflict) + '&id=' + encodeURI(this.internal.self.id) + '&vol=' + this.options.volume + '&muted=' + this.options.muted;
 
 				// Code influenced by SWFObject 2.2: http://code.google.com/p/swfobject/
-				// Non IE browsers have an initial Flash size of 1 by 1 otherwise the wmode affected the Flash ready event. 
+				// Non IE browsers have an initial Flash size of 1 by 1 otherwise the wmode affected the Flash ready event.
 
 				if($.jPlayer.browser.msie && (Number($.jPlayer.browser.version) < 9 || $.jPlayer.browser.documentMode < 9)) {
 					var objStr = '<object id="' + this.internal.flash.id + '" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="0" height="0" tabindex="-1"></object>';
@@ -1122,7 +1122,7 @@
 				} else {
 					var createParam = function(el, n, v) {
 						var p = document.createElement("param");
-						p.setAttribute("name", n);	
+						p.setAttribute("name", n);
 						p.setAttribute("value", v);
 						el.appendChild(p);
 					};
@@ -1175,12 +1175,12 @@
 					} else {
 						this.internal.video.jq.css({'width':'0px', 'height':'0px'}); // Using size 0x0 since a .hide() causes issues in iOS
 					}
-					this.internal.video.jq.bind("click.jPlayer", function() {
+					this.internal.video.jq.on("click.jPlayer", function() {
 						self._trigger($.jPlayer.event.click);
 					});
 				}
 			}
-			
+
 			// Add the Aurora.js solution if being used.
 			if(this.aurora.used) {
 				// Aurora.js player need to be created for each media, see setMedia function.
@@ -1228,13 +1228,13 @@
 			$.each(this.css.jq, function(fn, jq) {
 				// Check selector is valid before trying to execute method.
 				if(jq.length) {
-					jq.unbind(".jPlayer");
+					jq.off(".jPlayer");
 				}
 			});
 			// Remove the click handlers for $.jPlayer.event.click
-			this.internal.poster.jq.unbind(".jPlayer");
+			this.internal.poster.jq.off(".jPlayer");
 			if(this.internal.video.jq) {
-				this.internal.video.jq.unbind(".jPlayer");
+				this.internal.video.jq.off(".jPlayer");
 			}
 			// Remove the fullscreen event handlers
 			this._fullscreenRemoveEventListeners();
@@ -1247,9 +1247,9 @@
 				this._destroyHtmlBridge();
 			}
 			this.element.removeData("jPlayer"); // Remove jPlayer data
-			this.element.unbind(".jPlayer"); // Remove all event handlers created by the jPlayer constructor
+			this.element.off(".jPlayer"); // Remove all event handlers created by the jPlayer constructor
 			this.element.empty(); // Remove the inserted child elements
-			
+
 			delete this.instances[this.internal.instance]; // Clear the instance on the static instance object
 		},
 		destroyRemoved: function() { // Destroy any instances that have gone away.
@@ -1348,7 +1348,7 @@
 			// Create the event listeners
 			// Only want the active entity to affect jPlayer and bubble events.
 			// Using entity.gate so that object is referenced and gate property always current
-			
+
 			mediaElement.addEventListener("progress", function() {
 				if(entity.gate) {
 					if(self.internal.cmdsIgnored && this.readyState > 0) { // Detect iOS executed the command
@@ -1508,7 +1508,7 @@
 			// Create the event listeners
 			// Only want the active entity to affect jPlayer and bubble events.
 			// Using entity.gate so that object is referenced and gate property always current
-			
+
 			player.on("progress", function() {
 				if(entity.gate) {
 					if(self.internal.cmdsIgnored && this.readyState > 0) { // Detect iOS executed the command
@@ -1588,7 +1588,7 @@
 				sp = 100;
 				cpr = cpa;
 			}
-			
+
 			if(override) {
 				ct = 0;
 				cpr = 0;
@@ -1624,7 +1624,7 @@
 				sp = 100;
 				cpr = cpa;
 			}
-			
+
 			if(override) {
 				ct = 0;
 				cpr = 0;
@@ -1692,7 +1692,7 @@
 
 							// Need to read original status before issuing the setMedia command.
 							var	currentTime = this.status.currentTime,
-								paused = this.status.paused; 
+								paused = this.status.paused;
 
 							this.setMedia(this.status.media);
 							this.volumeWorker(this.options.volume);
@@ -1944,7 +1944,7 @@
 			}
 		},
 		setMedia: function(media) {
-		
+
 			/*	media[format] = String: URL of format. Must contain all of the supplied option's video or audio formats.
 			 *	media.poster = String: Video poster URL.
 			 *	media.track = Array: Of objects defining the track element: kind, src, srclang, label, def.
@@ -2012,7 +2012,7 @@
 							}
 							self.status.video = false;
 						}
-						
+
 						supported = true;
 						return false; // Exit $.each
 					}
@@ -2381,7 +2381,7 @@
 			if(typeof cssSel === 'string') {
 				if($.jPlayer.prototype.options.cssSelector[fn]) {
 					if(this.css.jq[fn] && this.css.jq[fn].length) {
-						this.css.jq[fn].unbind(".jPlayer");
+						this.css.jq[fn].off(".jPlayer");
 					}
 					this.options.cssSelector[fn] = cssSel;
 					this.css.cs[fn] = this.options.cssSelectorAncestor + " " + cssSel;
@@ -2389,7 +2389,7 @@
 					if(cssSel) { // Checks for empty string
 						this.css.jq[fn] = $(this.css.cs[fn]);
 					} else {
-						this.css.jq[fn] = []; // To comply with the css.jq[fn].length check before its use. As of jQuery 1.4 could have used $() for an empty set. 
+						this.css.jq[fn] = []; // To comply with the css.jq[fn].length check before its use. As of jQuery 1.4 could have used $() for an empty set.
 					}
 
 					if(this.css.jq[fn].length && this[fn]) {
@@ -2397,12 +2397,12 @@
 							e.preventDefault();
 							self[fn](e);
 							if(self.options.autoBlur) {
-								$(this).blur();
+								$(this).trigger('blur');
 							} else {
-								$(this).focus(); // Force focus for ARIA.
+								$(this).trigger('focus'); // Force focus for ARIA.
 							}
 						};
-						this.css.jq[fn].bind("click.jPlayer", handler); // Using jPlayer namespace
+						this.css.jq[fn].on("click.jPlayer", handler); // Using jPlayer namespace
 					}
 
 					if(cssSel && this.css.jq[fn].length !== 1) { // So empty strings do not generate the warning. ie., they just remove the old one.
@@ -2781,7 +2781,7 @@
 						//get the change from last position to this position
 						deltaX = self.internal.mouse.x - event.pageX;
 						deltaY = self.internal.mouse.y - event.pageY;
-						moved = (Math.floor(deltaX) > 0) || (Math.floor(deltaY)>0); 
+						moved = (Math.floor(deltaX) > 0) || (Math.floor(deltaY)>0);
 					} else {
 						moved = true;
 					}
@@ -2812,13 +2812,13 @@
 				// undefine mouse
 				delete this.internal.mouse;
 
-				this.element.unbind(namespace);
-				this.css.jq.gui.unbind(namespace);
+				this.element.off(namespace);
+				this.css.jq.gui.off(namespace);
 
 				if(!this.status.nativeVideoControls) {
 					if(this.options.fullWindow && this.options.autohide.full || !this.options.fullWindow && this.options.autohide.restored) {
-						this.element.bind(eventType, handler);
-						this.css.jq.gui.bind(eventType, handler);
+						this.element.on(eventType, handler);
+						this.css.jq.gui.on(eventType, handler);
 						this.css.jq.gui.hide();
 					} else {
 						this.css.jq.gui.show();
@@ -3097,19 +3097,19 @@
 			}
 		},
 		_aurora_setAudio: function(media) {
-			var self = this;            
-			
+			var self = this;
+
 			// Always finds a format due to checks in setMedia()
 			$.each(this.formats, function(priority, format) {
 				if(self.aurora.support[format] && media[format]) {
 					self.status.src = media[format];
 					self.status.format[format] = true;
 					self.status.formatType = format;
-			
+
 					return false;
 				}
 			});
-			
+
 			this.aurora.player = new AV.Player.fromURL(this.status.src);
 			this._addAuroraEventListeners(this.aurora.player, this.aurora);
 
@@ -3143,7 +3143,7 @@
 			}
 			this.status.waitForLoad = false;
 			this._aurora_checkWaitForPlay();
-			
+
 			// No event from the player, update UI now.
 			this._updateButtons(true);
 			this._trigger($.jPlayer.event.play);
@@ -3153,11 +3153,11 @@
 				this.aurora.player.seek(time * 1000);
 			}
 			this.aurora.player.pause();
-			
+
 			if(time > 0) { // Avoids a setMedia() followed by stop() or pause(0) hiding the video play button.
 				this._aurora_checkWaitForPlay();
 			}
-			
+
 			// No event from the player, update UI now.
 			this._updateButtons(false);
 			this._trigger($.jPlayer.event.pause);
@@ -3167,7 +3167,7 @@
 				// The seek() sould be in milliseconds, but the only codec that works with seek (aac.js) uses seconds.
 				this.aurora.player.seek(percent * this.aurora.player.duration / 100); // Using seconds
 			}
-				
+
 			if(!this.status.waitForLoad) {
 				this._aurora_checkWaitForPlay();
 			}
@@ -3233,7 +3233,7 @@
 								break;
 							case "rtmpv":
 								self._getMovie().fl_setVideo_rtmp(media[format]);
-								break;		
+								break;
 						}
 						self.status.src = media[format];
 						self.status.format[format] = true;
@@ -3419,7 +3419,7 @@
 					}
 				});
 				if(nativeEvent) {
-					self.element.bind(eventType + ".jPlayer.jPlayerHtml", function() { // With .jPlayer & .jPlayerHtml namespaces.
+					self.element.on(eventType + ".jPlayer.jPlayerHtml", function() { // With .jPlayer & .jPlayerHtml namespaces.
 						self._emulateHtmlUpdate();
 						var domEvent = document.createEvent("Event");
 						domEvent.initEvent(eventName, false, true);
@@ -3445,7 +3445,7 @@
 			var self = this;
 
 			// Bridge event handlers are also removed by destroy() through .jPlayer namespace.
-			this.element.unbind(".jPlayerHtml"); // Remove all event handlers created by the jPlayer bridge. So you can change the emulateHtml option.
+			this.element.off(".jPlayerHtml"); // Remove all event handlers created by the jPlayer bridge. So you can change the emulateHtml option.
 
 			// Remove the methods and properties
 			var emulated = $.jPlayer.emulateMethods + " " + $.jPlayer.emulateStatus + " " + $.jPlayer.emulateOptions;
