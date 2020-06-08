@@ -20,7 +20,7 @@
         }
     ],
     "require": {
-        "robloach/component-installer": "*"
+        "oomphinc/composer-installers-extender": "*"
     },
     "suggest": {
         "components/jquery": ">=1.7.2"
